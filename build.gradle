@@ -56,8 +56,10 @@ dependencies {
     }
     compile 'com.android.support:appcompat-v7:25.2.0'
     compile fileTree(include: ['*.jar'], dir: 'libs')
-//    compile 'com.longtailvideo.jwplayer:jwplayer-core-2.7.6+24'
-//    compile 'com.longtailvideo.jwplayer:jwplayer-common-2.7.6+24'
+    //    compile 'com.longtailvideo.jwplayer:jwplayer-core-2.7.6+24'
+    //    compile 'com.longtailvideo.jwplayer:jwplayer-common-2.7.6+24'
+    compile project(':jwplayer-common-2.7.6+24')
+    compile project(':jwplayer-core-2.7.6+24')
 }
 
 //---------------------------------- Bintray ----------------------------------//

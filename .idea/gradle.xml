@@ -8,6 +8,8 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/jwplayer-common-2.7.6+24" />
+            <option value="$PROJECT_DIR$/jwplayer-core-2.7.6+24" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

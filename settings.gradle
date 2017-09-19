@@ -1,0 +1,1 @@
+include ':jwplayer-core-2.7.6+24', ':jwplayer-common-2.7.6+24'

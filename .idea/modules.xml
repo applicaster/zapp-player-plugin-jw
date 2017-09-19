@@ -2,7 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/JWPlayer-Plugin-Android.iml" filepath="$PROJECT_DIR$/JWPlayer-Plugin-Android.iml" />
       <module fileurl="file://$PROJECT_DIR$/JWPlayerPlugin.iml" filepath="$PROJECT_DIR$/JWPlayerPlugin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jwplayer-common-2.7.6+24/jwplayer-common-2.7.6+24.iml" filepath="$PROJECT_DIR$/jwplayer-common-2.7.6+24/jwplayer-common-2.7.6+24.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jwplayer-core-2.7.6+24/jwplayer-core-2.7.6+24.iml" filepath="$PROJECT_DIR$/jwplayer-core-2.7.6+24/jwplayer-core-2.7.6+24.iml" />
     </modules>
   </component>
 </project>

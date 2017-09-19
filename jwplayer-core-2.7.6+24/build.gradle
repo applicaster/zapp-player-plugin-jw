@@ -1,0 +1,2 @@
+configurations.maybeCreate("default")
+artifacts.add("default", file('jwplayer-core-2.7.6+24.aar'))
