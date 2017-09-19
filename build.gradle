@@ -36,14 +36,14 @@ repositories {
         url 'https://dl.bintray.com/applicaster-ltd/maven'
     }
 }
-
-allprojects {
-    repositories {
-        maven {
-            url 'https://mvn.jwplayer.com/content/repositories/releases/'
-        }
-    }
-}
+//
+//allprojects {
+//    repositories {
+//        maven {
+//            url 'https://mvn.jwplayer.com/content/repositories/releases/'
+//        }
+//    }
+//}
 
 dependencies {
     /// Applicaster SDK
@@ -58,8 +58,6 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
 //    compile 'com.longtailvideo.jwplayer:jwplayer-core-2.7.6+24'
 //    compile 'com.longtailvideo.jwplayer:jwplayer-common-2.7.6+24'
-    compile project(':jwplayer-common-2.7.6+24')
-    compile project(':jwplayer-core-2.7.6+24')
 }
 
 //---------------------------------- Bintray ----------------------------------//
