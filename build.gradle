@@ -1,13 +1,12 @@
+apply plugin: 'android-sdk-manager'
 apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
-
     defaultConfig {
         minSdkVersion 17
         targetSdkVersion 25
-
         consumerProguardFiles 'proguard-rules.pro'
     }
 
@@ -21,19 +20,33 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    lintOptions {
+        abortOnError false
+    }
+    publishNonDefault true
 }
 
 repositories {
     jcenter()
     mavenCentral()
     maven { url 'https://jitpack.io' }
-    maven { url 'https://maven.google.com' }
     maven { // Applicaster
         credentials{
-            username 'applicasterapps'
-            password '078882fe17e5198e329a9b3a3d0d7714e68aa2b0'
+            username System.getenv("MAVEN_USERNAME")
+            password System.getenv("MAVEN_PASSWORD")
         }
         url 'https://dl.bintray.com/applicaster-ltd/maven'
+    }
+}
+
+//SDK Manager
+buildscript {
+    repositories {
+        maven { url 'https://jitpack.io' }
+    }
+    dependencies {
+        classpath 'com.github.JakeWharton:sdk-manager-plugin:1d29782dd6ffa18880c8cbada748fb3dea45e7be'
     }
 }
 
@@ -48,7 +61,7 @@ dependencies {
         compile applicasterSDKPath
     }
 
-    compile 'com.android.support:appcompat-v7:25.2.0'
+    compile 'com.android.support:appcompat-v7:25.3.0'
     compile fileTree(dir: 'libs', include: ['*.jar'])
 }
 
@@ -62,7 +75,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
+        classpath 'com.android.tools.build:gradle:2.2.3'
         classpath 'com.github.dcendents:android-maven-plugin:1.2'
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.2'
     }
