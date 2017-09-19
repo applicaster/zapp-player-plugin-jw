@@ -5,20 +5,22 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.view.ViewGroup;
-import android.widget.MediaController;
-import android.widget.VideoView;
 
 import com.applicaster.player.defaultplayer.BasePlayer;
 import com.applicaster.plugin_manager.playersmanager.Playable;
 import com.applicaster.plugin_manager.playersmanager.PlayableConfiguration;
+import com.longtailvideo.jwplayer.JWPlayerView;
+import com.longtailvideo.jwplayer.core.PlayerState;
+import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
+
 import java.util.List;
 import java.util.Map;
 
 public class JWPlayerAdapter extends BasePlayer {
 
     // Properties
-    VideoView videoView;
-    MediaController mediaController;
+    private JWPlayerContainer jwPlayerContainer;
+    private JWPlayerView jwPlayerView;
 
     /**
      * Optional initialization for the PlayerContract - will be called in the App's onCreate
@@ -36,12 +38,10 @@ public class JWPlayerAdapter extends BasePlayer {
     @Override
     public void init(@NonNull Playable playable, @NonNull Context context) {
         super.init(playable, context);
-        videoView = new VideoView(context);
-        if (mediaController == null) {
-            mediaController = new MediaController(context);
-        }
-        videoView.setMediaController(mediaController);
-        videoView.setVideoURI(Uri.parse(getFirstPlayable().getContentVideoURL()));
+        jwPlayerContainer = new JWPlayerContainer(context);
+        jwPlayerView = jwPlayerContainer.getJWPlayerView();
+        PlaylistItem playlistItem = new PlaylistItem(getFirstPlayable().getContentVideoURL());
+        jwPlayerView.load(playlistItem);
     }
 
     /**
@@ -82,7 +82,7 @@ public class JWPlayerAdapter extends BasePlayer {
      */
     @Override
     public boolean isPlayerPlaying() {
-        return videoView.isPlaying();
+        return jwPlayerView.getState() == PlayerState.PLAYING;
     }
 
     /**
@@ -92,7 +92,75 @@ public class JWPlayerAdapter extends BasePlayer {
      */
     @Override
     public Playable getFirstPlayable() {
-        return super.getFirstPlayable();
+        //return super.getFirstPlayable();
+
+        return new Playable() {
+
+            @Override
+            public String getPlayableName() {
+                return null;
+            }
+
+            @Override
+            public String getPlayableDescription() {
+                return null;
+            }
+
+            @Override
+            public String getContentVideoURL() {
+                return "https://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4";
+            }
+
+            @Override
+            public String getOverlayURL() {
+                return null;
+            }
+
+            @Override
+            public boolean isLive() {
+                return false;
+            }
+
+            @Override
+            public String getPublicPageURL() {
+                return null;
+            }
+
+            @Override
+            public boolean isEqualToPlayable(Playable playable) {
+                return false;
+            }
+
+            @Override
+            public Map<String, String> getAnalyticsParams() {
+                return null;
+            }
+
+            @Override
+            public String getPrerollSplashURL() {
+                return null;
+            }
+
+            @Override
+            public String getPrerollVideoURL() {
+                return null;
+            }
+
+            @Override
+            public boolean isCaptureMomentEnabled() {
+                return false;
+            }
+
+            @Override
+            public String getFacebookObjectID() {
+                return null;
+            }
+
+            @Override
+            public boolean is360Video() {
+                return false;
+            }
+        };
     }
 
     /**
@@ -136,7 +204,7 @@ public class JWPlayerAdapter extends BasePlayer {
         ViewGroup.LayoutParams playerContainerLayoutParams
                 = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT
                 , ViewGroup.LayoutParams.MATCH_PARENT);
-        videoContainerView.addView(videoView, playerContainerLayoutParams);
+        videoContainerView.addView(jwPlayerContainer, playerContainerLayoutParams);
     }
 
     /**
@@ -146,8 +214,8 @@ public class JWPlayerAdapter extends BasePlayer {
      */
     @Override
     public void removeInline(@NonNull ViewGroup videoContainerView) {
-        if(videoContainerView.indexOfChild(videoView) >= 0) {
-            videoContainerView.removeView(videoView);
+        if(videoContainerView.indexOfChild(jwPlayerContainer) >= 0) {
+            videoContainerView.removeView(jwPlayerContainer);
         }
     }
 
@@ -157,7 +225,7 @@ public class JWPlayerAdapter extends BasePlayer {
      */
     @Override
     public void playInline() {
-        videoView.start();
+        jwPlayerView.play();
     }
 
     /**
@@ -165,7 +233,7 @@ public class JWPlayerAdapter extends BasePlayer {
      */
     @Override
     public void stopInline() {
-        videoView.stopPlayback();
+        jwPlayerView.stop();
     }
 
     /**
@@ -173,13 +241,13 @@ public class JWPlayerAdapter extends BasePlayer {
      */
     @Override
     public void pauseInline() {
-        videoView.pause();
+        jwPlayerView.pause();
     }
     /**
      * Resumes playing the inline player.
      */
     @Override
     public void resumeInline() {
-        videoView.resume();
+        jwPlayerView.play();
     }
 }
