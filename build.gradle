@@ -7,7 +7,6 @@ android {
     defaultConfig {
         minSdkVersion 17
         targetSdkVersion 25
-
         consumerProguardFiles 'proguard-rules.pro'
     }
 
@@ -30,8 +29,8 @@ repositories {
     maven { url 'https://maven.google.com' }
     maven { // Applicaster
         credentials {
-            username 'applicasterapps'
-            password '078882fe17e5198e329a9b3a3d0d7714e68aa2b0'
+            username System.getenv("MAVEN_USERNAME")
+            password System.getenv("MAVEN_PASSWORD")
         }
         url 'https://dl.bintray.com/applicaster-ltd/maven'
     }
@@ -48,8 +47,8 @@ dependencies {
     }
     compile 'com.android.support:appcompat-v7:25.2.0'
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile project(':jwplayer-common-2.7.6+24')
-    compile project(':jwplayer-core-2.7.6+24')
+    compile 'com.longtailvideo.jwplayer:jwplayer-core:+'
+    compile 'com.longtailvideo.jwplayer:jwplayer-common:+'
 }
 
 //---------------------------------- Bintray ----------------------------------//
