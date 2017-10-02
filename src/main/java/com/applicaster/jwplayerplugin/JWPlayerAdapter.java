@@ -1,10 +1,9 @@
 package com.applicaster.jwplayerplugin;
 
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 
 import com.applicaster.player.defaultplayer.BasePlayer;
 import com.applicaster.plugin_manager.playersmanager.Playable;
@@ -18,9 +17,12 @@ import java.util.Map;
 
 public class JWPlayerAdapter extends BasePlayer {
 
+    private static final String LICENSE_KEY = "LICENSE_KEY";
+
     // Properties
     private JWPlayerContainer jwPlayerContainer;
     private JWPlayerView jwPlayerView;
+    private String licenseKey;
 
     /**
      * Optional initialization for the PlayerContract - will be called in the App's onCreate
@@ -52,6 +54,9 @@ public class JWPlayerAdapter extends BasePlayer {
     @Override
     public void init(@NonNull List<Playable> playableList, @NonNull Context context) {
         super.init(playableList, context);
+        if (licenseKey != null) {
+            JWPlayerView.setLicenseKey(context, licenseKey);
+        }
     }
 
     /**
@@ -63,6 +68,7 @@ public class JWPlayerAdapter extends BasePlayer {
     @Override
     public void setPluginConfigurationParams(Map params) {
         super.setPluginConfigurationParams(params);
+        licenseKey = params.get(LICENSE_KEY).toString();
     }
 
     /**
@@ -187,9 +193,11 @@ public class JWPlayerAdapter extends BasePlayer {
      */
     @Override
     public void playInFullscreen(PlayableConfiguration configuration, int requestCode, @NonNull Context context) {
-        Intent intent = new Intent(Intent.ACTION_VIEW );
-        intent.setDataAndType(Uri.parse(getFirstPlayable().getContentVideoURL()), "video/*");
-        getContext().startActivity(intent);
+        WindowManager.LayoutParams mParams = new WindowManager.LayoutParams();
+        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        windowManager.addView(jwPlayerContainer, mParams);
+        jwPlayerView.play();
+        jwPlayerView.setFullscreen(true, false);
     }
 
 
