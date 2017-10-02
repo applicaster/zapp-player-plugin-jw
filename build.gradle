@@ -29,8 +29,8 @@ repositories {
     maven { url 'https://maven.google.com' }
     maven { // Applicaster
         credentials {
-            username 'applicasterapps' //System.getenv("MAVEN_USERNAME")
-            password '078882fe17e5198e329a9b3a3d0d7714e68aa2b0' //System.getenv("MAVEN_PASSWORD")
+            username System.getenv("MAVEN_USERNAME")
+            password System.getenv("MAVEN_PASSWORD")
         }
         url 'https://dl.bintray.com/applicaster-ltd/maven'
     }
