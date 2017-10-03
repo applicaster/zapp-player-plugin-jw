@@ -19,7 +19,7 @@
   "whitelisted_account_ids": [
 
   ],
-  "min_zapp_sdk": "4.23.12",
+  "min_zapp_sdk": "4.3.13",
   "deprecated_since_zapp_sdk": "",
   "unsupported_since_zapp_sdk": "",
   "react_native": false,
