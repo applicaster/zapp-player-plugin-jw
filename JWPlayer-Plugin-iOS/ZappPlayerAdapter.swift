@@ -9,7 +9,6 @@
 import Foundation
 import ZappPlugins
 import ApplicasterSDK
-import AVKit
 
 ///  No need to import JWPlayer here, we must use the briding header to #import
 ///  #import <JWPlayer-SDK/JWPlayerController.h>

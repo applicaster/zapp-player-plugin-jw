@@ -1,0 +1,33 @@
+{
+  "api": {
+    "require_startup_execution": false,
+    "class_name": "JWPlayer_Plugin_iOS.ZappPlayerAdapter"
+  },
+  "dependency_repository_url": [
+
+  ],
+  "platform": "ios",
+  "author_name": "Nissan Tsafrir",
+  "author_email": "nissan@pixandbyte.com",
+  "manifest_version": "0.1.0",
+  "name": "JWPlayer-Plugin-iOS",
+  "description": "A JWPlayer player plugin for Applicaster Zapp Platform",
+  "type": "player",
+  "identifier": "JWPlayer-Plugin-iOS",
+  "dependency_name": "JWPlayer-Plugin-iOS",
+  "dependency_version": "0.1.0",
+  "whitelisted_account_ids": [
+
+  ],
+  "min_zapp_sdk": "4.23.12",
+  "deprecated_since_zapp_sdk": "",
+  "unsupported_since_zapp_sdk": "",
+  "react_native": false,
+  "custom_configuration_fields": [
+    {
+      "type": "text",
+      "key": "playerKey",
+      "tooltip_text": "License key for JWPlayer"
+    }
+  ]
+}
