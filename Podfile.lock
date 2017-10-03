@@ -1,0 +1,199 @@
+PODS:
+  - AFNetworking (3.1.0):
+    - AFNetworking/NSURLSession (= 3.1.0)
+    - AFNetworking/Reachability (= 3.1.0)
+    - AFNetworking/Security (= 3.1.0)
+    - AFNetworking/Serialization (= 3.1.0)
+    - AFNetworking/UIKit (= 3.1.0)
+  - AFNetworking/NSURLSession (3.1.0):
+    - AFNetworking/Reachability
+    - AFNetworking/Security
+    - AFNetworking/Serialization
+  - AFNetworking/Reachability (3.1.0)
+  - AFNetworking/Security (3.1.0)
+  - AFNetworking/Serialization (3.1.0)
+  - AFNetworking/UIKit (3.1.0):
+    - AFNetworking/NSURLSession
+  - ApplicasterSDK (4.8.0):
+    - AFNetworking (~> 3.1.0)
+    - AppoxeeSDK (~> 4.0.13)
+    - APSiren (~> 1.1.2)
+    - CocoaLumberjack/Swift (~> 3.2.0)
+    - e-planning (~> 1.15)
+    - FBNotifications (~> 1.0.1)
+    - FBSDKCoreKit (~> 4.19.0)
+    - FBSDKLoginKit (~> 4.19.0)
+    - FBSDKShareKit (~> 4.19.0)
+    - Firebase/AdMob (= 4.0.3)
+    - Firebase/Core (= 4.0.3)
+    - Firebase/RemoteConfig (~> 4.0.0)
+    - FLAnimatedImage_Applicaster (~> 1.1.0)
+    - FormatterKit (~> 1.8.1)
+    - Freewheel (~> 5.18.2)
+    - GoogleAds-IMA-iOS-SDK-For-AdMob (~> 3.3.1)
+    - HockeySDK (~> 4.1.3)
+    - MPNotificationView_Applicaster (~> 1.1.2)
+    - NKJWT (~> 0.1.0)
+    - SHMKit_Applicaster (~> 0.1.3)
+    - SSZipArchive (~> 1.6.2)
+    - Toaster
+    - TTTAttributedLabel (~> 2.0.0)
+    - TwitterCore (= 3.0.1)
+    - TwitterKit (= 3.1.1)
+    - ZappAnalyticsPlugins/Flurry (~> 1.11.0)
+    - ZappHelpers (~> 1.1.0)
+    - ZappPlugins (~> 1.11.0)
+  - AppoxeeSDK (4.0.14)
+  - APSiren (1.1.4)
+  - Bolts (1.8.4):
+    - Bolts/AppLinks (= 1.8.4)
+    - Bolts/Tasks (= 1.8.4)
+  - Bolts/AppLinks (1.8.4):
+    - Bolts/Tasks
+  - Bolts/Tasks (1.8.4)
+  - CocoaLumberjack/Default (3.2.1)
+  - CocoaLumberjack/Swift (3.2.1):
+    - CocoaLumberjack/Default
+  - e-planning (1.15)
+  - FBNotifications (1.0.1)
+  - FBSDKCoreKit (4.19.0):
+    - Bolts (~> 1.7)
+  - FBSDKLoginKit (4.19.0):
+    - FBSDKCoreKit
+  - FBSDKShareKit (4.19.0):
+    - FBSDKCoreKit
+  - Firebase/AdMob (4.0.3):
+    - Firebase/Core
+    - Google-Mobile-Ads-SDK (= 7.21.0)
+  - Firebase/Core (4.0.3):
+    - FirebaseAnalytics (= 4.0.2)
+    - FirebaseCore (= 4.0.3)
+  - Firebase/RemoteConfig (4.0.3):
+    - Firebase/Core
+    - FirebaseRemoteConfig (= 2.0.1)
+  - FirebaseAnalytics (4.0.2):
+    - FirebaseCore (~> 4.0)
+    - FirebaseInstanceID (~> 2.0)
+    - GoogleToolboxForMac/NSData+zlib (~> 2.1)
+  - FirebaseCore (4.0.3):
+    - GoogleToolboxForMac/NSData+zlib (~> 2.1)
+  - FirebaseInstanceID (2.0.3)
+  - FirebaseRemoteConfig (2.0.1):
+    - FirebaseAnalytics (~> 4.0)
+    - FirebaseInstanceID (~> 2.0)
+    - GoogleToolboxForMac/NSData+zlib (~> 2.1)
+    - Protobuf (~> 3.1)
+  - FLAnimatedImage_Applicaster (1.1.0):
+    - CocoaLumberjack/Swift
+  - Flurry-iOS-SDK (7.6.6):
+    - Flurry-iOS-SDK/FlurrySDK (= 7.6.6)
+  - Flurry-iOS-SDK/FlurrySDK (7.6.6)
+  - FormatterKit (1.8.2):
+    - FormatterKit/AddressFormatter (= 1.8.2)
+    - FormatterKit/ArrayFormatter (= 1.8.2)
+    - FormatterKit/ColorFormatter (= 1.8.2)
+    - FormatterKit/LocationFormatter (= 1.8.2)
+    - FormatterKit/NameFormatter (= 1.8.2)
+    - FormatterKit/OrdinalNumberFormatter (= 1.8.2)
+    - FormatterKit/Resources (= 1.8.2)
+    - FormatterKit/TimeIntervalFormatter (= 1.8.2)
+    - FormatterKit/UnitOfInformationFormatter (= 1.8.2)
+    - FormatterKit/URLRequestFormatter (= 1.8.2)
+  - FormatterKit/AddressFormatter (1.8.2):
+    - FormatterKit/Resources
+  - FormatterKit/ArrayFormatter (1.8.2):
+    - FormatterKit/Resources
+  - FormatterKit/ColorFormatter (1.8.2):
+    - FormatterKit/Resources
+  - FormatterKit/LocationFormatter (1.8.2):
+    - FormatterKit/Resources
+  - FormatterKit/NameFormatter (1.8.2):
+    - FormatterKit/Resources
+  - FormatterKit/OrdinalNumberFormatter (1.8.2):
+    - FormatterKit/Resources
+  - FormatterKit/Resources (1.8.2)
+  - FormatterKit/TimeIntervalFormatter (1.8.2):
+    - FormatterKit/Resources
+  - FormatterKit/UnitOfInformationFormatter (1.8.2):
+    - FormatterKit/Resources
+  - FormatterKit/URLRequestFormatter (1.8.2):
+    - FormatterKit/Resources
+  - Freewheel (5.18.2)
+  - Google-Mobile-Ads-SDK (7.21.0)
+  - GoogleAds-IMA-iOS-SDK-For-AdMob (3.3.1):
+    - Google-Mobile-Ads-SDK (~> 7.0)
+  - GoogleToolboxForMac/Defines (2.1.1)
+  - GoogleToolboxForMac/NSData+zlib (2.1.1):
+    - GoogleToolboxForMac/Defines (= 2.1.1)
+  - HockeySDK (4.1.6):
+    - HockeySDK/DefaultLib (= 4.1.6)
+  - HockeySDK/DefaultLib (4.1.6)
+  - JWPlayer-SDK (2.7.8)
+  - MPNotificationView_Applicaster (1.1.2)
+  - NKJWT (0.1.0)
+  - Protobuf (3.4.0)
+  - SHMKit_Applicaster (0.1.3)
+  - SSZipArchive (1.6.2)
+  - Toaster (2.1.0)
+  - TTTAttributedLabel (2.0.0)
+  - TwitterCore (3.0.1)
+  - TwitterKit (3.1.1):
+    - TwitterCore (>= 3.0.1)
+  - ZappAnalyticsPlugins/Basic (1.11.0):
+    - ZappAppConnector
+    - ZappPlugins
+  - ZappAnalyticsPlugins/Flurry (1.11.0):
+    - Flurry-iOS-SDK (~> 7.6.4)
+    - ZappAnalyticsPlugins/Basic
+  - ZappAppConnector (1.1.2)
+  - ZappHelpers (1.1.13)
+  - ZappPlugins (1.11.2)
+
+DEPENDENCIES:
+  - ApplicasterSDK
+  - JWPlayer-SDK
+  - ZappPlugins
+
+SPEC CHECKSUMS:
+  AFNetworking: 5e0e199f73d8626b11e79750991f5d173d1f8b67
+  ApplicasterSDK: cddc9281312fc752855598d92a51fb7b0081cbe4
+  AppoxeeSDK: 783c8b78780f4a9383afd5ed407f8b724dc56c4e
+  APSiren: 40679694fd4c960dee227756c5257097b0101e6e
+  Bolts: 8a7995239dbe724f9cba2248b766d48b7ebdd322
+  CocoaLumberjack: 2800c03334042fe80589423c8d80e582dcaec482
+  e-planning: 2ed5b3906e570f9c7e626930176821d6a0ddfe1f
+  FBNotifications: 3f1a9e43ffa2979a685eec29c960ca6a15c70be9
+  FBSDKCoreKit: 894b2b6eda6a4c8c4204e92e59cc355709ef045c
+  FBSDKLoginKit: 83ca4d8f12a2022570af9fd6aacf27f6b425b99f
+  FBSDKShareKit: 5953758366278430dc322d5cdc906db361ed7f81
+  Firebase: 9e33fdfbca37cab635c693883caa90a4475b842b
+  FirebaseAnalytics: ad41720e3e67fc63fbe3d2948d3e26932a8de311
+  FirebaseCore: c709067051de07bdaffdc4e735cd7299a23c463a
+  FirebaseInstanceID: a4fc702b5a026f7322964376047f1a3f1f7cc6ff
+  FirebaseRemoteConfig: 328244399f64226cfdfa32efee596bb010ef5665
+  FLAnimatedImage_Applicaster: 0ab36e510467d4110b21cfbe8cf2e7bd608f6ba0
+  Flurry-iOS-SDK: 97bbeec09cca666c2f1772f6e161c4f8ccff611e
+  FormatterKit: 4b8f29acc9b872d5d12a63efb560661e8f2e1b98
+  Freewheel: c1ca8ff2ff2775fe6989e64e86b804d8e24ecc77
+  Google-Mobile-Ads-SDK: 4a6f1b43c8cc0e1e95a3b59d9f52a01671c6f9f3
+  GoogleAds-IMA-iOS-SDK-For-AdMob: b209bbfd249eadb308af759b9d5ca3ddca833e5a
+  GoogleToolboxForMac: 8e329f1b599f2512c6b10676d45736bcc2cbbeb0
+  HockeySDK: 95db557d54489a570dcdefae0d02f98eecc279a3
+  JWPlayer-SDK: 1dc9b5ca3419c26102c31841d2ca75229ac6c193
+  MPNotificationView_Applicaster: 07c8dbc6c9aa299c3d126e31e433f3faf03eb28b
+  NKJWT: 74fd9c955ad32157d5379e260a1779ad89c9d78e
+  Protobuf: 03eef2ee0b674770735cf79d9c4d3659cf6908e8
+  SHMKit_Applicaster: 616bb1620aff4c4f63a7cab2ae78f69253c779dc
+  SSZipArchive: 428eb1ac8d37dd133404d30f422b23958c1f9acc
+  Toaster: 8c3225dc465bef4aa57e147a288724576df8e439
+  TTTAttributedLabel: 8cffe8e127e4e82ff3af1e5386d4cd0ad000b656
+  TwitterCore: 6856288a1c25e5281363250681f33b42fce1da42
+  TwitterKit: 313bf02baee8427f7649b3640169178e5a8b5a99
+  ZappAnalyticsPlugins: 12fe436194df0b171d92f0f1fd021b56e46d647e
+  ZappAppConnector: c051e33fc1750150db68f57de17c547df78c0a43
+  ZappHelpers: 2ec6e116e2453fc6b7412cb63f4bce42ba5f7877
+  ZappPlugins: 34f93d32c3221aefa97b1a705b30988e9caa3e25
+
+PODFILE CHECKSUM: 6a7af8a74780cdfea98a8f156abdf2b0acd3c894
+
+COCOAPODS: 1.2.1
