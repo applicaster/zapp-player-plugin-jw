@@ -9,6 +9,7 @@
 import UIKit
 import ZappPlugins
 import ApplicasterSDK
+import JWPlayerSDKWrapper
 
 final class JWPlayerViewController: UIViewController, JWPlayerDelegate {
 

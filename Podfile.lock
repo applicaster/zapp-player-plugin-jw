@@ -14,7 +14,7 @@ PODS:
   - AFNetworking/Serialization (3.1.0)
   - AFNetworking/UIKit (3.1.0):
     - AFNetworking/NSURLSession
-  - ApplicasterSDK (4.8.0):
+  - ApplicasterSDK (4.10.0):
     - AFNetworking (~> 3.1.0)
     - AppoxeeSDK (~> 4.0.13)
     - APSiren (~> 1.1.2)
@@ -40,9 +40,8 @@ PODS:
     - TTTAttributedLabel (~> 2.0.0)
     - TwitterCore (= 3.0.1)
     - TwitterKit (= 3.1.1)
-    - ZappAnalyticsPlugins/Flurry (~> 1.11.0)
-    - ZappHelpers (~> 1.1.0)
-    - ZappPlugins (~> 1.11.0)
+    - ZappHelpers (~> 1.2.0)
+    - ZappPlugins (~> 1.12.0)
   - AppoxeeSDK (4.0.14)
   - APSiren (1.1.4)
   - Bolts (1.8.4):
@@ -77,7 +76,7 @@ PODS:
     - GoogleToolboxForMac/NSData+zlib (~> 2.1)
   - FirebaseCore (4.0.3):
     - GoogleToolboxForMac/NSData+zlib (~> 2.1)
-  - FirebaseInstanceID (2.0.3)
+  - FirebaseInstanceID (2.0.4)
   - FirebaseRemoteConfig (2.0.1):
     - FirebaseAnalytics (~> 4.0)
     - FirebaseInstanceID (~> 2.0)
@@ -85,9 +84,6 @@ PODS:
     - Protobuf (~> 3.1)
   - FLAnimatedImage_Applicaster (1.1.0):
     - CocoaLumberjack/Swift
-  - Flurry-iOS-SDK (7.6.6):
-    - Flurry-iOS-SDK/FlurrySDK (= 7.6.6)
-  - Flurry-iOS-SDK/FlurrySDK (7.6.6)
   - FormatterKit (1.8.2):
     - FormatterKit/AddressFormatter (= 1.8.2)
     - FormatterKit/ArrayFormatter (= 1.8.2)
@@ -122,13 +118,17 @@ PODS:
   - Google-Mobile-Ads-SDK (7.21.0)
   - GoogleAds-IMA-iOS-SDK-For-AdMob (3.3.1):
     - Google-Mobile-Ads-SDK (~> 7.0)
-  - GoogleToolboxForMac/Defines (2.1.1)
-  - GoogleToolboxForMac/NSData+zlib (2.1.1):
-    - GoogleToolboxForMac/Defines (= 2.1.1)
+  - GoogleToolboxForMac/Defines (2.1.3)
+  - GoogleToolboxForMac/NSData+zlib (2.1.3):
+    - GoogleToolboxForMac/Defines (= 2.1.3)
   - HockeySDK (4.1.6):
     - HockeySDK/DefaultLib (= 4.1.6)
   - HockeySDK/DefaultLib (4.1.6)
-  - JWPlayer-SDK (2.7.8)
+  - JWPlayer-Plugin-iOS (1.0.0):
+    - ApplicasterSDK
+    - JWPlayerSDKWrapper (~> 0.1)
+    - ZappPlugins
+  - JWPlayerSDKWrapper (0.1.3)
   - MPNotificationView_Applicaster (1.1.2)
   - NKJWT (0.1.0)
   - Protobuf (3.4.0)
@@ -139,24 +139,19 @@ PODS:
   - TwitterCore (3.0.1)
   - TwitterKit (3.1.1):
     - TwitterCore (>= 3.0.1)
-  - ZappAnalyticsPlugins/Basic (1.11.0):
-    - ZappAppConnector
-    - ZappPlugins
-  - ZappAnalyticsPlugins/Flurry (1.11.0):
-    - Flurry-iOS-SDK (~> 7.6.4)
-    - ZappAnalyticsPlugins/Basic
-  - ZappAppConnector (1.1.2)
-  - ZappHelpers (1.1.13)
-  - ZappPlugins (1.11.2)
+  - ZappHelpers (1.2.1)
+  - ZappPlugins (1.12.0)
 
 DEPENDENCIES:
-  - ApplicasterSDK
-  - JWPlayer-SDK
-  - ZappPlugins
+  - JWPlayer-Plugin-iOS (from `JWPlayer-Plugin-iOS.podspec`)
+
+EXTERNAL SOURCES:
+  JWPlayer-Plugin-iOS:
+    :path: JWPlayer-Plugin-iOS.podspec
 
 SPEC CHECKSUMS:
   AFNetworking: 5e0e199f73d8626b11e79750991f5d173d1f8b67
-  ApplicasterSDK: cddc9281312fc752855598d92a51fb7b0081cbe4
+  ApplicasterSDK: 8087b8d43981d9ef0014ed8cf08580386f0aff72
   AppoxeeSDK: 783c8b78780f4a9383afd5ed407f8b724dc56c4e
   APSiren: 40679694fd4c960dee227756c5257097b0101e6e
   Bolts: 8a7995239dbe724f9cba2248b766d48b7ebdd322
@@ -169,17 +164,17 @@ SPEC CHECKSUMS:
   Firebase: 9e33fdfbca37cab635c693883caa90a4475b842b
   FirebaseAnalytics: ad41720e3e67fc63fbe3d2948d3e26932a8de311
   FirebaseCore: c709067051de07bdaffdc4e735cd7299a23c463a
-  FirebaseInstanceID: a4fc702b5a026f7322964376047f1a3f1f7cc6ff
+  FirebaseInstanceID: 70c2b877e9338971b2429ea5a4293df6961aa44e
   FirebaseRemoteConfig: 328244399f64226cfdfa32efee596bb010ef5665
   FLAnimatedImage_Applicaster: 0ab36e510467d4110b21cfbe8cf2e7bd608f6ba0
-  Flurry-iOS-SDK: 97bbeec09cca666c2f1772f6e161c4f8ccff611e
   FormatterKit: 4b8f29acc9b872d5d12a63efb560661e8f2e1b98
   Freewheel: c1ca8ff2ff2775fe6989e64e86b804d8e24ecc77
   Google-Mobile-Ads-SDK: 4a6f1b43c8cc0e1e95a3b59d9f52a01671c6f9f3
   GoogleAds-IMA-iOS-SDK-For-AdMob: b209bbfd249eadb308af759b9d5ca3ddca833e5a
-  GoogleToolboxForMac: 8e329f1b599f2512c6b10676d45736bcc2cbbeb0
+  GoogleToolboxForMac: 2501e2ad72a52eb3dfe7bd9aee7dad11b858bd20
   HockeySDK: 95db557d54489a570dcdefae0d02f98eecc279a3
-  JWPlayer-SDK: 1dc9b5ca3419c26102c31841d2ca75229ac6c193
+  JWPlayer-Plugin-iOS: 71443ce49faa5f13460c017e187119399b0878eb
+  JWPlayerSDKWrapper: 78a4f115a45f21de9ccc455b3fa2c8267f42eea2
   MPNotificationView_Applicaster: 07c8dbc6c9aa299c3d126e31e433f3faf03eb28b
   NKJWT: 74fd9c955ad32157d5379e260a1779ad89c9d78e
   Protobuf: 03eef2ee0b674770735cf79d9c4d3659cf6908e8
@@ -189,11 +184,9 @@ SPEC CHECKSUMS:
   TTTAttributedLabel: 8cffe8e127e4e82ff3af1e5386d4cd0ad000b656
   TwitterCore: 6856288a1c25e5281363250681f33b42fce1da42
   TwitterKit: 313bf02baee8427f7649b3640169178e5a8b5a99
-  ZappAnalyticsPlugins: 12fe436194df0b171d92f0f1fd021b56e46d647e
-  ZappAppConnector: c051e33fc1750150db68f57de17c547df78c0a43
-  ZappHelpers: 2ec6e116e2453fc6b7412cb63f4bce42ba5f7877
-  ZappPlugins: 34f93d32c3221aefa97b1a705b30988e9caa3e25
+  ZappHelpers: 5dc60a431a5b0d561cd2b9fba5c3090d6966c597
+  ZappPlugins: e333e114e271ef1c2b1cfdc0eede12459c19ed8a
 
-PODFILE CHECKSUM: 6a7af8a74780cdfea98a8f156abdf2b0acd3c894
+PODFILE CHECKSUM: 2ec6b610e71734a2104da01787b13f7ae7fbb64f
 
-COCOAPODS: 1.2.1
+COCOAPODS: 1.3.1

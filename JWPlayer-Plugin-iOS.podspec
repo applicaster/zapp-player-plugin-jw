@@ -14,14 +14,8 @@ Pod::Spec.new do |s|
   s.platform     = :ios, '9.0'
   s.requires_arc = true
 
-  s.public_header_files = 'JWPlayer-Plugin-iOS/**/*.h'
-  s.source_files = 'JWPlayer-Plugin-iOS/**/*.{h,m,swift}'
-
-  s.resources = [
-                  "JWPlayer-Plugin-iOS/**/*.xcassets",
-                  "JWPlayer-Plugin-iOS/**/*.storyboard",
-                  "JWPlayer-Plugin-iOS/**/*.xib",
-                  "JWPlayer-Plugin-iOS/**/*.png"]
+  s.public_header_files = 'Classes/**/*.h'
+  s.source_files = 'Classes/**/*.{h,m,swift}'
 
   s.xcconfig =  { 'CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES' => 'YES',
                   'ENABLE_BITCODE' => 'NO',
@@ -32,6 +26,6 @@ Pod::Spec.new do |s|
 
   s.dependency 'ZappPlugins'
   s.dependency 'ApplicasterSDK'
-  s.dependency 'JWPlayer-SDK'
+  s.dependency 'JWPlayerSDKWrapper', '~> 0.1'
 
 end
