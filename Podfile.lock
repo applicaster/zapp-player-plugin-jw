@@ -76,7 +76,7 @@ PODS:
     - GoogleToolboxForMac/NSData+zlib (~> 2.1)
   - FirebaseCore (4.0.3):
     - GoogleToolboxForMac/NSData+zlib (~> 2.1)
-  - FirebaseInstanceID (2.0.4)
+  - FirebaseInstanceID (2.0.5)
   - FirebaseRemoteConfig (2.0.1):
     - FirebaseAnalytics (~> 4.0)
     - FirebaseInstanceID (~> 2.0)
@@ -126,9 +126,9 @@ PODS:
   - HockeySDK/DefaultLib (4.1.6)
   - JWPlayer-Plugin-iOS (1.0.0):
     - ApplicasterSDK
-    - JWPlayerSDKWrapper (~> 0.1)
+    - JWPlayerSDKWrapper
     - ZappPlugins
-  - JWPlayerSDKWrapper (0.1.3)
+  - JWPlayerSDKWrapper (0.1.4)
   - MPNotificationView_Applicaster (1.1.2)
   - NKJWT (0.1.0)
   - Protobuf (3.4.0)
@@ -140,7 +140,7 @@ PODS:
   - TwitterKit (3.1.1):
     - TwitterCore (>= 3.0.1)
   - ZappHelpers (1.2.1)
-  - ZappPlugins (1.12.0)
+  - ZappPlugins (1.12.2)
 
 DEPENDENCIES:
   - JWPlayer-Plugin-iOS (from `JWPlayer-Plugin-iOS.podspec`)
@@ -164,7 +164,7 @@ SPEC CHECKSUMS:
   Firebase: 9e33fdfbca37cab635c693883caa90a4475b842b
   FirebaseAnalytics: ad41720e3e67fc63fbe3d2948d3e26932a8de311
   FirebaseCore: c709067051de07bdaffdc4e735cd7299a23c463a
-  FirebaseInstanceID: 70c2b877e9338971b2429ea5a4293df6961aa44e
+  FirebaseInstanceID: f2b688c66b972f30d7fa9f5f9f91455454a03b47
   FirebaseRemoteConfig: 328244399f64226cfdfa32efee596bb010ef5665
   FLAnimatedImage_Applicaster: 0ab36e510467d4110b21cfbe8cf2e7bd608f6ba0
   FormatterKit: 4b8f29acc9b872d5d12a63efb560661e8f2e1b98
@@ -173,8 +173,8 @@ SPEC CHECKSUMS:
   GoogleAds-IMA-iOS-SDK-For-AdMob: b209bbfd249eadb308af759b9d5ca3ddca833e5a
   GoogleToolboxForMac: 2501e2ad72a52eb3dfe7bd9aee7dad11b858bd20
   HockeySDK: 95db557d54489a570dcdefae0d02f98eecc279a3
-  JWPlayer-Plugin-iOS: 71443ce49faa5f13460c017e187119399b0878eb
-  JWPlayerSDKWrapper: 78a4f115a45f21de9ccc455b3fa2c8267f42eea2
+  JWPlayer-Plugin-iOS: bc5a141293c5c3e6a26e73d0de7662c547816adc
+  JWPlayerSDKWrapper: 4585b8bce646c04e02442e01eef0b1dff5e6a922
   MPNotificationView_Applicaster: 07c8dbc6c9aa299c3d126e31e433f3faf03eb28b
   NKJWT: 74fd9c955ad32157d5379e260a1779ad89c9d78e
   Protobuf: 03eef2ee0b674770735cf79d9c4d3659cf6908e8
@@ -185,8 +185,8 @@ SPEC CHECKSUMS:
   TwitterCore: 6856288a1c25e5281363250681f33b42fce1da42
   TwitterKit: 313bf02baee8427f7649b3640169178e5a8b5a99
   ZappHelpers: 5dc60a431a5b0d561cd2b9fba5c3090d6966c597
-  ZappPlugins: e333e114e271ef1c2b1cfdc0eede12459c19ed8a
+  ZappPlugins: fc2c2ea3cecf12d315db9327d5fe0e37b2f67b15
 
-PODFILE CHECKSUM: 2ec6b610e71734a2104da01787b13f7ae7fbb64f
+PODFILE CHECKSUM: 002107b95ea55d4af80b990b1ef1f9a1a6a31e0f
 
 COCOAPODS: 1.3.1

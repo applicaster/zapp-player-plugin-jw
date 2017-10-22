@@ -17,7 +17,7 @@
   "dependency_name": "JWPlayer-Plugin-iOS",
   "dependency_version": "0.1.0",
   "dependency_repository_url": [
-      "git@github.com:applicaster/JWPlayerSDKWrapper-iOS/Specs.git"
+      "git@github.com:applicaster/JWPlayerSDKWrapper-iOS.git"
   ],
   "whitelisted_account_ids": [
 
