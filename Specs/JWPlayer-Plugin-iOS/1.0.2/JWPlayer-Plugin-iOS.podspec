@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name             = "JWPlayer-Plugin-iOS"
-  s.version          = '1.0.1'
+  s.version          = '1.0.2'
   s.summary          = "An EXample of video player framework for Zapp iOS."
   s.description      = <<-DESC
                         An EXample of video player framework for Zapp iOS.
