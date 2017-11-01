@@ -21,7 +21,9 @@ public class ZappPlayerAdapter: APPlugablePlayerBase {
     
     var playerViewController: JWPlayerViewController?
     var currentPlayableItem: ZPPlayable?
-    
+    var currentPlayerState: ZPPlayerState = .undefined
+    var isOnHold:Bool = false
+
     // MARK: - ZPPlayerProtocol
     
     /// Initialization of player instance view controller with item to play.
@@ -129,6 +131,7 @@ public class ZappPlayerAdapter: APPlugablePlayerBase {
     public override func pluggablePlayerPause() {
         if let player = self.playerViewController?.player {
             player.pause()
+            self.setPlayerState(.paused)
         }
     }
     
@@ -136,6 +139,7 @@ public class ZappPlayerAdapter: APPlugablePlayerBase {
     public override func pluggablePlayerStop() {
         if let player = self.playerViewController?.player {
             player.pause()
+            self.setPlayerState(.stopped)
         }
     }
     
@@ -143,13 +147,18 @@ public class ZappPlayerAdapter: APPlugablePlayerBase {
     ///
     /// - Returns: Returns true if playing a video, otherwise false.
     public override func pluggablePlayerIsPlaying() -> Bool {
-        
+        var retValue = false
         if let player = self.playerViewController?.player {
-            if player.playerState == "playing" { return true }
-            return false
+            if player.playerState == "playing" {
+                retValue = true
+                self.setPlayerState(.playing)
+            }
+            else {
+                retValue = false
+                self.setPlayerState(.stopped)
+            }
         }
-
-        return false
+        return retValue
     }
     
     // MARK: - Available only in Inline mode
@@ -182,6 +191,7 @@ public class ZappPlayerAdapter: APPlugablePlayerBase {
     public func playVideo() {
         if let player = self.playerViewController?.player {
             player.play()
+            self.setPlayerState(.playing)
         }
     }
   
@@ -191,5 +201,20 @@ public class ZappPlayerAdapter: APPlugablePlayerBase {
     
     open static func pluggablePlayerType() -> ZPPlayerType {
         return .undefined
+    }
+    
+    func setPlayerState(_ state: ZPPlayerState) {
+        if !self.isOnHold {
+            self.currentPlayerState = state
+        }
+    }
+    
+    open func setOnHold(isOnHold: Bool) {
+        self.isOnHold = isOnHold
+        self.currentPlayerState = .onHold
+    }
+    
+    open func playerState() -> ZPPlayerState {
+        return self.currentPlayerState
     }
 }
