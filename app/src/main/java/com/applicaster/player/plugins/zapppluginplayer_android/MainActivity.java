@@ -78,16 +78,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * This should not be modified
      */
     private void toggleInline() {
-//        if (!inlineAttached) {
-//            inlineButton.setText("Remove Inline");
-//            inlineAttached = true;
-//            playerContract.attachInline(videoLayout);
-//            playerContract.playInline(null);
-//        } else {
-//            inlineButton.setText("Play Inline");
-//            inlineAttached = false;
-//            playerContract.stopInline();
-//            playerContract.removeInline(videoLayout);
-//        }
+        if (!inlineAttached) {
+            inlineButton.setText("Remove Inline");
+            inlineAttached = true;
+            playerContract.attachInline(videoLayout);
+            playerContract.playInline(null);
+        } else {
+            inlineButton.setText("Play Inline");
+            inlineAttached = false;
+            playerContract.stopInline();
+            playerContract.removeInline(videoLayout);
+        }
     }
 }

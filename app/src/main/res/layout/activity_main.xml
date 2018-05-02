@@ -20,7 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:text="Play Inline"
-        android:visibility="gone" />
+        android:visibility="visible" />
 
     <FrameLayout
         android:id="@+id/video_layout"
