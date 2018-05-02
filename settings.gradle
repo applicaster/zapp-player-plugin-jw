@@ -1,1 +1,1 @@
-include ':jwplayer-plugin-android'
+include ':app',':jwplayer-plugin-android'

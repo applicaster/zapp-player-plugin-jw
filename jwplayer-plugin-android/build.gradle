@@ -28,12 +28,6 @@ android {
     publishNonDefault true
 }
 
-repositories {
-    maven { // jwplayer
-        url 'https://mvn.jwplayer.com/content/repositories/releases/'
-    }
-}
-
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 

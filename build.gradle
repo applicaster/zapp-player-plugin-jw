@@ -27,6 +27,10 @@ allprojects {
             }
             url 'https://dl.bintray.com/applicaster-ltd/maven'
         }
+
+        maven { // jwplayer
+            url 'https://mvn.jwplayer.com/content/repositories/releases/'
+        }
     }
 }
 
