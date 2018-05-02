@@ -227,7 +227,6 @@ public class JWPlayerAdapter extends BasePlayer {
         }
     }
 
-
     /**
      * Starts playing the inline player.
      */

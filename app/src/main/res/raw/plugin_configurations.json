@@ -1,27 +1,22 @@
 [{
   "plugin": {
-    "api": {
-      "class_name": "com.applicaster.player.plugins.divaplayerplugin_android.DivaPlayerAdapter",
-      "require_startup_execution": false
-    },
-    "name": "Diva Player",
-    "type": "player",
-    "platform": "android",
-    "identifier": "Diva Player",
     "author_name": "Ilia Katz",
-    "description": "Diva Player",
     "author_email": "ilia.katz@gmail.com",
-    "min_zapp_sdk": "4.9.0",
-    "dependency_name": "com.applicaster:DivaPlayerPlugin",
-    "manifest_version": "1.0.0",
+    "manifest_version": "1.0",
+    "identifier": "JWPlayer-Plugin-Android",
+    "name": "JWPlayer-Plugin-Android",
+    "description": "Android plugin for JWPlayer",
+    "platform": "android",
+    "type": "player",
+    "dependency_name": "com.applicaster:jwplayerplugin",
     "dependency_version": "1.0.0",
-    "whitelisted_account_ids": [],
-    "dependency_repository_url": [],
-    "deprecated_since_zapp_sdk": "",
-    "unsupported_since_zapp_sdk": ""
+    "min_zapp_sdk": "4.3.12-dev",
+    "api": {
+      "class_name": "com.applicaster.jwplayerplugin.JWPlayerAdapter"
+    },
+    "react_native": false
   },
   "configuration_json": {
-    "shared_key": "1oqqkRMHiacNmllkObzi",
-    "settings_url": "http://product.demo.deltatre.com/DivaPlayerData/settings/4.2.0/settings_mobile.xml"
+    "LICENSE_KEY": "abc"
   }
 }]

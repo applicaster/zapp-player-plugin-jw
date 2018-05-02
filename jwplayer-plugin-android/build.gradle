@@ -1,8 +1,12 @@
+plugins {
+    id "com.jfrog.bintray" version "1.8.0"
+}
+
 apply plugin: 'com.android.library'
+apply from: 'bintray_publisher.gradle'
 
 android {
     compileSdkVersion 25
-//    buildToolsVersion "25.0.2"
 
     defaultConfig {
         minSdkVersion 17
