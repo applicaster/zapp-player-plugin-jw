@@ -25,8 +25,8 @@ deployment:
   production:
     tag: /.*/
     commands:
-      - gradle assembleRelease bintrayUpload
+      - gradle :jwplayer-plugin-android:assembleRelease :jwplayer-plugin-android:bintrayUpload
   beta:
     branch: /.*/
     commands:
-      - gradle assembleRelease
+      - gradle :jwplayer-plugin-android:assembleRelease
