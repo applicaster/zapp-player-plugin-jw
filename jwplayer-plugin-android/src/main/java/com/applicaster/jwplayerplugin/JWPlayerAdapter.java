@@ -8,6 +8,7 @@ import android.view.WindowManager;
 import com.applicaster.player.defaultplayer.BasePlayer;
 import com.applicaster.plugin_manager.playersmanager.Playable;
 import com.applicaster.plugin_manager.playersmanager.PlayableConfiguration;
+import com.applicaster.plugin_manager.playersmanager.internal.PlayableType;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.core.PlayerState;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
@@ -163,9 +164,16 @@ public class JWPlayerAdapter extends BasePlayer {
             }
 
             @Override
-            public boolean is360Video() {
-                return false;
-            }
+            public PlayableType getPlayableType() { return PlayableType.Default; }
+
+            @Override
+            public String getPlayableId() { return null; }
+
+            @Override
+            public Object getExternalPolicy() { return null; }
+
+            @Override
+            public boolean isList() { return false; }
         };
     }
 
@@ -228,10 +236,12 @@ public class JWPlayerAdapter extends BasePlayer {
     }
 
     /**
-     * Starts playing the inline player.
+     * Start the player in inline with configuration.
+     *
+     * @param configuration player configuration.
      */
     @Override
-    public void playInline() {
+    public void playInline(PlayableConfiguration configuration) {
         jwPlayerView.play();
     }
 

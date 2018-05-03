@@ -33,14 +33,14 @@ android {
 }
 
 dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation 'com.android.support:appcompat-v7:25.2.0'
 
     // Applicaster
-    implementation 'com.applicaster:applicaster-android-sdk:+'
-    
+    implementation 'com.applicaster:applicaster-android-sdk:2.29.25'
+
     // JWPlayer
-    implementation 'com.longtailvideo.jwplayer:jwplayer-core:+'
-    implementation 'com.longtailvideo.jwplayer:jwplayer-common:+'
+    implementation 'com.longtailvideo.jwplayer:jwplayer-core:2.8.2+44'
+    implementation 'com.longtailvideo.jwplayer:jwplayer-common:2.8.2+44'
 }
