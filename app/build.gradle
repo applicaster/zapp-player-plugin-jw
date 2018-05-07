@@ -26,12 +26,6 @@ android {
     }
 }
 
-repositories {
-    flatDir {
-        dirs '../divaplayerplugin-android/src/main/libs'
-    }
-}
-
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
