@@ -5,8 +5,13 @@ plugins {
 apply plugin: 'com.android.library'
 apply from: 'bintray_publisher.gradle'
 
+ext {
+    supportLibraryVersion = '25.4.0'
+}
+
 android {
     compileSdkVersion 25
+    buildToolsVersion "${supportLibraryVersion}"
 
     defaultConfig {
         minSdkVersion 17
@@ -32,10 +37,16 @@ android {
     publishNonDefault true
 }
 
+configurations.all {
+    resolutionStrategy.eachDependency { details ->
+        if (details.requested.group == 'com.android.support' && !details.requested.name.contains('multidex')) {
+            details.useVersion "${supportLibraryVersion}"
+        }
+    }
+}
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-
-    implementation 'com.android.support:appcompat-v7:25.2.0'
 
     // Applicaster
     implementation 'com.applicaster:applicaster-android-sdk:2.29.25'
