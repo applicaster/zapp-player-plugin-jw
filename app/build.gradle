@@ -1,0 +1,55 @@
+apply plugin: 'com.android.application'
+
+ext {
+    supportLibraryVersion = '27.0.1'
+}
+
+android {
+    compileSdkVersion 27
+    buildToolsVersion "${supportLibraryVersion}"
+
+    defaultConfig {
+        applicationId "com.applicaster.player.plugins.zapppluginplayer_android"
+        minSdkVersion 19
+        targetSdkVersion 27
+        versionCode 1
+        versionName "1.0"
+        multiDexEnabled true
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    packagingOptions {
+        exclude '**/libRSSupport.so'
+        exclude '**/librsjni.so'
+    }
+}
+
+configurations.all {
+    resolutionStrategy.eachDependency { details ->
+        if (details.requested.group == 'com.android.support' && !details.requested.name.contains('multidex')) {
+            details.useVersion "${supportLibraryVersion}"
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation ('com.applicaster:applicaster-android-sdk:2.29.25') {
+        exclude group:'com.google.android.exoplayer'
+    }
+
+    implementation (project(':jwplayer-plugin-android')) {
+        exclude group:'com.applicaster', module: 'applicaster-android-sdk'
+    }
+
+    implementation 'com.android.support:appcompat-v7'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.0'
+}

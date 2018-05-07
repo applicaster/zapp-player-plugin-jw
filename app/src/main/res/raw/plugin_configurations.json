@@ -1,0 +1,22 @@
+[{
+  "plugin": {
+    "author_name": "Ilia Katz",
+    "author_email": "ilia.katz@gmail.com",
+    "manifest_version": "1.0",
+    "identifier": "JWPlayer-Plugin-Android",
+    "name": "JWPlayer-Plugin-Android",
+    "description": "Android plugin for JWPlayer",
+    "platform": "android",
+    "type": "player",
+    "dependency_name": "com.applicaster:jwplayerplugin",
+    "dependency_version": "1.0.0",
+    "min_zapp_sdk": "4.3.12-dev",
+    "api": {
+      "class_name": "com.applicaster.jwplayerplugin.JWPlayerAdapter"
+    },
+    "react_native": false
+  },
+  "configuration_json": {
+    "LICENSE_KEY": "abc"
+  }
+}]

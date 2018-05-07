@@ -1,0 +1,57 @@
+plugins {
+    id "com.jfrog.bintray" version "1.8.0"
+}
+
+apply plugin: 'com.android.library'
+apply from: 'bintray_publisher.gradle'
+
+ext {
+    supportLibraryVersion = '25.4.0'
+}
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "${supportLibraryVersion}"
+
+    defaultConfig {
+        minSdkVersion 17
+        targetSdkVersion 25
+        consumerProguardFiles 'proguard-rules.pro'
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    publishNonDefault true
+}
+
+configurations.all {
+    resolutionStrategy.eachDependency { details ->
+        if (details.requested.group == 'com.android.support' && !details.requested.name.contains('multidex')) {
+            details.useVersion "${supportLibraryVersion}"
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    // Applicaster
+    implementation 'com.applicaster:applicaster-android-sdk:2.29.25'
+
+    // JWPlayer
+    implementation 'com.longtailvideo.jwplayer:jwplayer-core:2.8.2+44'
+    implementation 'com.longtailvideo.jwplayer:jwplayer-common:2.8.2+44'
+}
