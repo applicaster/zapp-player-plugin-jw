@@ -26,9 +26,10 @@ deployment:
     tag: /.*/
     commands:
       - sudo chmod +x ./gradlew
-      - ./gradlew :jwplayer-plugin-android:assembleRelease :jwplayer-plugin-android:bintrayUpload
+      - ./gradlew jwplayer-plugin-android:assembleRelease 
+      - ./gradlew jwplayer-plugin-android:bintrayUpload
   beta:
     branch: /.*/
     commands:
       - sudo chmod +x ./gradlew
-      - ./gradlew :jwplayer-plugin-android:assembleRelease
+      - ./gradlew jwplayer-plugin-android:assembleRelease
