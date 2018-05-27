@@ -12,7 +12,7 @@ import ApplicasterSDK
 import JWPlayerSDKWrapper
 
 final class JWPlayerViewController: UIViewController, JWPlayerDelegate {
-
+    
     var isPresentedFullScreen = false
     
     override var preferredInterfaceOrientationForPresentation: UIInterfaceOrientation {
@@ -20,7 +20,7 @@ final class JWPlayerViewController: UIViewController, JWPlayerDelegate {
     }
     
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        if player.isInFullscreen {
+        if (player.isInFullscreen || isPresentedFullScreen) && UI_USER_INTERFACE_IDIOM() == .phone {
             return [.landscapeLeft, .landscapeRight]
         }
         return .all
@@ -38,15 +38,8 @@ final class JWPlayerViewController: UIViewController, JWPlayerDelegate {
                 UIViewAutoresizing.flexibleRightMargin,
                 UIViewAutoresizing.flexibleTopMargin,
                 UIViewAutoresizing.flexibleWidth]
-           player.forceLandscapeOnFullScreen = true
-           view.addSubview(player.view)
-        }
-    }
-        
-    func onFullscreenRequested(_ status: Bool) {
-        if player.isInFullscreen && !status && isPresentedFullScreen {
-            player.stop()
-            dismiss(animated: true, completion: nil)
+            player.forceLandscapeOnFullScreen = true
+            view.addSubview(player.view)
         }
     }
 }
