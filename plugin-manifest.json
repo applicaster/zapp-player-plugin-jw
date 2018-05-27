@@ -9,13 +9,13 @@
   "platform": "ios",
   "author_name": "Nissan Tsafrir",
   "author_email": "nissan@pixandbyte.com",
-  "manifest_version": "1.0.2",
+  "manifest_version": "1.0.3",
   "name": "JWPlayer-Plugin-iOS",
   "description": "A JWPlayer player plugin for Applicaster Zapp Platform",
   "type": "player",
   "identifier": "JWPlayer-Plugin-iOS",
   "dependency_name": "JWPlayer-Plugin-iOS",
-  "dependency_version": "1.0.2",
+  "dependency_version": "1.0.3",
   "dependency_repository_url": [
       "git@github.com:applicaster/JWPlayerSDKWrapper-iOS.git",
       "git@github.com:applicaster/JWPlayer-Plugin-iOS.git"
