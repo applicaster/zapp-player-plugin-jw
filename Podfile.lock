@@ -1,48 +1,34 @@
 PODS:
-  - AFNetworking (3.1.0):
-    - AFNetworking/NSURLSession (= 3.1.0)
-    - AFNetworking/Reachability (= 3.1.0)
-    - AFNetworking/Security (= 3.1.0)
-    - AFNetworking/Serialization (= 3.1.0)
-    - AFNetworking/UIKit (= 3.1.0)
-  - AFNetworking/NSURLSession (3.1.0):
+  - AFNetworking (3.2.1):
+    - AFNetworking/NSURLSession (= 3.2.1)
+    - AFNetworking/Reachability (= 3.2.1)
+    - AFNetworking/Security (= 3.2.1)
+    - AFNetworking/Serialization (= 3.2.1)
+    - AFNetworking/UIKit (= 3.2.1)
+  - AFNetworking/NSURLSession (3.2.1):
     - AFNetworking/Reachability
     - AFNetworking/Security
     - AFNetworking/Serialization
-  - AFNetworking/Reachability (3.1.0)
-  - AFNetworking/Security (3.1.0)
-  - AFNetworking/Serialization (3.1.0)
-  - AFNetworking/UIKit (3.1.0):
+  - AFNetworking/Reachability (3.2.1)
+  - AFNetworking/Security (3.2.1)
+  - AFNetworking/Serialization (3.2.1)
+  - AFNetworking/UIKit (3.2.1):
     - AFNetworking/NSURLSession
-  - ApplicasterSDK (5.6.10):
-    - AFNetworking (~> 3.1.0)
-    - AppoxeeSDK (~> 4.0.13)
-    - APSiren (~> 1.2.0)
-    - CocoaLumberjack/Swift (~> 3.4.0)
-    - e-planning (~> 4.2)
-    - FBNotifications (~> 1.0.1)
-    - FBSDKCoreKit (~> 4.31.1)
-    - FBSDKLoginKit (~> 4.31.1)
-    - FBSDKShareKit (~> 4.31.1)
-    - FLAnimatedImage_Applicaster (~> 1.1.0)
-    - FormatterKit (~> 1.8.1)
-    - Freewheel (~> 5.18.2)
-    - GoogleAds-IMA-iOS-SDK (~> 3.7.0)
-    - GoogleMobileAds
-    - HockeySDK (~> 4.1.3)
-    - MPNotificationView_Applicaster (~> 1.1.2)
-    - NKJWT (~> 0.1.0)
-    - SHMKit_Applicaster (~> 0.1.3)
-    - SSZipArchive (~> 2.1.0)
-    - Toaster
-    - TTTAttributedLabel (~> 2.1.0)
+  - ApplicasterSDK (6.4.11):
+    - AFNetworking (= 3.2.1)
+    - CocoaLumberjack/Swift (= 3.4.2)
+    - FBNotifications (= 1.0.1)
+    - FBSDKCoreKit (= 4.33.0)
+    - FBSDKLoginKit (= 4.33.0)
+    - FBSDKShareKit (= 4.33.0)
+    - Google-Mobile-Ads-SDK (= 7.31.0)
+    - GoogleAds-IMA-iOS-SDK (= 3.7.2)
+    - HockeySDK (= 5.1.2)
+    - SSZipArchive (= 2.1.0)
+    - TTTAttributedLabel (= 2.1.0)
     - TwitterCore (= 3.1.0)
     - TwitterKit (= 3.3.0)
-    - ZappAppConnector (~> 2.4.0)
-    - ZappHelpers (~> 1.5.0)
-    - ZappPlugins (~> 2.3.0)
-  - AppoxeeSDK (4.0.14)
-  - APSiren (1.2.4)
+    - ZappPlugins (~> 4.5.3)
   - Bolts (1.9.0):
     - Bolts/AppLinks (= 1.9.0)
     - Bolts/Tasks (= 1.9.0)
@@ -52,143 +38,79 @@ PODS:
   - CocoaLumberjack/Default (3.4.2)
   - CocoaLumberjack/Swift (3.4.2):
     - CocoaLumberjack/Default
-  - e-planning (4.2)
   - FBNotifications (1.0.1)
-  - FBSDKCoreKit (4.31.1):
+  - FBSDKCoreKit (4.33.0):
     - Bolts (~> 1.7)
-  - FBSDKLoginKit (4.31.1):
+  - FBSDKLoginKit (4.33.0):
     - FBSDKCoreKit
-  - FBSDKShareKit (4.31.1):
-    - FBSDKCoreKit (~> 4.31.1)
-  - FLAnimatedImage_Applicaster (1.1.0):
-    - CocoaLumberjack/Swift
-  - FormatterKit (1.8.2):
-    - FormatterKit/AddressFormatter (= 1.8.2)
-    - FormatterKit/ArrayFormatter (= 1.8.2)
-    - FormatterKit/ColorFormatter (= 1.8.2)
-    - FormatterKit/LocationFormatter (= 1.8.2)
-    - FormatterKit/NameFormatter (= 1.8.2)
-    - FormatterKit/OrdinalNumberFormatter (= 1.8.2)
-    - FormatterKit/Resources (= 1.8.2)
-    - FormatterKit/TimeIntervalFormatter (= 1.8.2)
-    - FormatterKit/UnitOfInformationFormatter (= 1.8.2)
-    - FormatterKit/URLRequestFormatter (= 1.8.2)
-  - FormatterKit/AddressFormatter (1.8.2):
-    - FormatterKit/Resources
-  - FormatterKit/ArrayFormatter (1.8.2):
-    - FormatterKit/Resources
-  - FormatterKit/ColorFormatter (1.8.2):
-    - FormatterKit/Resources
-  - FormatterKit/LocationFormatter (1.8.2):
-    - FormatterKit/Resources
-  - FormatterKit/NameFormatter (1.8.2):
-    - FormatterKit/Resources
-  - FormatterKit/OrdinalNumberFormatter (1.8.2):
-    - FormatterKit/Resources
-  - FormatterKit/Resources (1.8.2)
-  - FormatterKit/TimeIntervalFormatter (1.8.2):
-    - FormatterKit/Resources
-  - FormatterKit/UnitOfInformationFormatter (1.8.2):
-    - FormatterKit/Resources
-  - FormatterKit/URLRequestFormatter (1.8.2):
-    - FormatterKit/Resources
-  - Freewheel (5.18.2)
-  - GoogleAds-IMA-iOS-SDK (3.7.1)
-  - GoogleMobileAds (7.8.0)
-  - HockeySDK (4.1.6):
-    - HockeySDK/DefaultLib (= 4.1.6)
-  - HockeySDK/DefaultLib (4.1.6)
-  - JWPlayer-Plugin-iOS (1.0.2):
+  - FBSDKShareKit (4.33.0):
+    - FBSDKCoreKit (~> 4.33.0)
+  - Google-Mobile-Ads-SDK (7.31.0)
+  - GoogleAds-IMA-iOS-SDK (3.7.2)
+  - HockeySDK (5.1.2):
+    - HockeySDK/DefaultLib (= 5.1.2)
+  - HockeySDK/DefaultLib (5.1.2)
+  - JWPlayer-Plugin-iOS (1.0.4):
     - ApplicasterSDK
     - JWPlayerSDKWrapper (~> 0.1)
     - ZappPlugins
   - JWPlayerSDKWrapper (0.1.4)
-  - MPNotificationView_Applicaster (1.1.2)
-  - NKJWT (0.1.0)
-  - SHMKit_Applicaster (0.1.3)
-  - SSZipArchive (2.1.2)
-  - Toaster (2.1.1)
+  - SSZipArchive (2.1.0)
   - TTTAttributedLabel (2.1.0)
   - TwitterCore (3.1.0)
   - TwitterKit (3.3.0):
     - TwitterCore (>= 3.1.0)
-  - ZappAppConnector (2.4.0):
-    - ZappPlugins (~> 2.3.0)
-  - ZappHelpers (1.5.2)
-  - ZappPlugins (2.3.2)
+  - ZappPlugins (4.5.7)
 
 DEPENDENCIES:
-  - JWPlayer-Plugin-iOS
+  - JWPlayer-Plugin-iOS (from `JWPlayer-Plugin-iOS.podspec`)
 
 SPEC REPOS:
   "git@github.com:applicaster/CocoaPods.git":
     - ApplicasterSDK
-    - APSiren
     - TTTAttributedLabel
-    - ZappAppConnector
-    - ZappHelpers
     - ZappPlugins
-  "git@github.com:applicaster/JWPlayer-Plugin-iOS.git":
-    - JWPlayer-Plugin-iOS
   "git@github.com:applicaster/JWPlayerSDKWrapper-iOS.git":
     - JWPlayerSDKWrapper
-  "git@github.com:applicaster/PluginsBuilderCocoaPods.git":
-    - e-planning
-    - Freewheel
   https://github.com/CocoaPods/Specs.git:
     - AFNetworking
-    - AppoxeeSDK
     - Bolts
     - CocoaLumberjack
     - FBNotifications
     - FBSDKCoreKit
     - FBSDKLoginKit
     - FBSDKShareKit
-    - FLAnimatedImage_Applicaster
-    - FormatterKit
+    - Google-Mobile-Ads-SDK
     - GoogleAds-IMA-iOS-SDK
-    - GoogleMobileAds
     - HockeySDK
-    - MPNotificationView_Applicaster
-    - NKJWT
-    - SHMKit_Applicaster
     - SSZipArchive
-    - Toaster
     - TwitterCore
     - TwitterKit
 
+EXTERNAL SOURCES:
+  JWPlayer-Plugin-iOS:
+    :path: JWPlayer-Plugin-iOS.podspec
+
 SPEC CHECKSUMS:
-  AFNetworking: 5e0e199f73d8626b11e79750991f5d173d1f8b67
-  ApplicasterSDK: 63ef896c1f7512997a5d62887ed47d603b7cadf7
-  AppoxeeSDK: 783c8b78780f4a9383afd5ed407f8b724dc56c4e
-  APSiren: 3bdb34d5d613d76e019e841dbb73b61cb72c6685
+  AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
+  ApplicasterSDK: 64e8e318a9d7a90333cb9f367768ecf236d92c93
   Bolts: ac6567323eac61e203f6a9763667d0f711be34c8
   CocoaLumberjack: db7cc9e464771f12054c22ff6947c5a58d43a0fd
-  e-planning: 8ea2d4a8e3beafb1809b7414814360ae0a010848
   FBNotifications: 3f1a9e43ffa2979a685eec29c960ca6a15c70be9
-  FBSDKCoreKit: e08ccfcefa7bc1347a07c276dac9bf6c7fe57024
-  FBSDKLoginKit: 99797ac39252fef6f72600b886f6ee60b4b29cab
-  FBSDKShareKit: e640c41c9fcd61929eeb3d0c21ad335103e7cb62
-  FLAnimatedImage_Applicaster: 0ab36e510467d4110b21cfbe8cf2e7bd608f6ba0
-  FormatterKit: 4b8f29acc9b872d5d12a63efb560661e8f2e1b98
-  Freewheel: c1ca8ff2ff2775fe6989e64e86b804d8e24ecc77
-  GoogleAds-IMA-iOS-SDK: 738f22e72c935cb410f0f6448939bb5012d15e9b
-  GoogleMobileAds: c79931d6eef16b1e4c35d331cf23c47e0dd490d2
-  HockeySDK: 95db557d54489a570dcdefae0d02f98eecc279a3
-  JWPlayer-Plugin-iOS: bdda890969f7922dac2c39ba66cd212f7ebd598e
+  FBSDKCoreKit: 572b047a7e029bc44542bcf8a59414e7ff2b543e
+  FBSDKLoginKit: 88cb456349cfb3b554427ce4f8b43729d85dfb40
+  FBSDKShareKit: 1869cb24db2cea90666a50cb9d568deb38e2d16e
+  Google-Mobile-Ads-SDK: 6e529e748b45507a2ca904e0b5a52669ba3920c4
+  GoogleAds-IMA-iOS-SDK: 58693326633b35aa7e95c45693ec0bb8e88086de
+  HockeySDK: 38b7e2726af1ea86ae97ce4b5de33ab0817e3500
+  JWPlayer-Plugin-iOS: 893a97e97963eee57da02f934b210afb46255d5d
   JWPlayerSDKWrapper: 4585b8bce646c04e02442e01eef0b1dff5e6a922
-  MPNotificationView_Applicaster: 07c8dbc6c9aa299c3d126e31e433f3faf03eb28b
-  NKJWT: 74fd9c955ad32157d5379e260a1779ad89c9d78e
-  SHMKit_Applicaster: 616bb1620aff4c4f63a7cab2ae78f69253c779dc
-  SSZipArchive: d4009d2ce5520a421f231fd97028cc0e2667eed8
-  Toaster: a6c9532de1ded8105e77376f7dffeb2e12b46dbb
+  SSZipArchive: 1e8e53dcb11bca3ded4738958dc49fc467320a14
   TTTAttributedLabel: f8c7f1dbc7b8f7168e23e8b4764dda2e3b74aae8
   TwitterCore: 644d59e75abccb26cf0a9050d2c4dea0e5412241
   TwitterKit: a2e60ddcedbf54091eac6f27685ca7a87681e1d7
-  ZappAppConnector: 1bc5bbd8d2b139845897b9f043f59da08bdf1b07
-  ZappHelpers: e49853355cdd2b224bbe8d62ed6ae82a9cb42ced
-  ZappPlugins: 7367f15ba5fbbf3a1532e7d7ec872b830079084d
+  ZappPlugins: 57cf2972911a27bcfce2987c312a4170f824efbd
 
-PODFILE CHECKSUM: 9cef42ba45b837a56cf49d93e1f17493bd1e69b9
+PODFILE CHECKSUM: cb575d90b661cc087b8d20aec28218d09d551080
 
 COCOAPODS: 1.5.0

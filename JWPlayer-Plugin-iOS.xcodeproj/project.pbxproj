@@ -20,7 +20,7 @@
 /* Begin PBXFileReference section */
 		226BD102E3866B586E9413AC /* Pods-JWPlayer-Plugin-iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JWPlayer-Plugin-iOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-JWPlayer-Plugin-iOS/Pods-JWPlayer-Plugin-iOS.debug.xcconfig"; sourceTree = "<group>"; };
 		52A29B4154B2B45BC72E9F2D /* Pods-JWPlayer-Plugin-iOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JWPlayer-Plugin-iOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-JWPlayer-Plugin-iOS/Pods-JWPlayer-Plugin-iOS.release.xcconfig"; sourceTree = "<group>"; };
-		96E3F9CF1F915FB000BEA10E /* JWPlayer-Plugin-iOS.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = "JWPlayer-Plugin-iOS.podspec"; sourceTree = SOURCE_ROOT; };
+		96E3F9CF1F915FB000BEA10E /* JWPlayer-Plugin-iOS.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = "JWPlayer-Plugin-iOS.podspec"; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		96FF901E1F9348A3006CC411 /* plugin_configurations.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = plugin_configurations.json; sourceTree = "<group>"; };
 		99111DD603AB839723F88364 /* Pods_JWPlayer_Plugin_iOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_JWPlayer_Plugin_iOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB1B57971F82103D007692E8 /* InlineViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InlineViewController.swift; sourceTree = "<group>"; };
@@ -227,7 +227,6 @@
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-JWPlayer-Plugin-iOS/Pods-JWPlayer-Plugin-iOS-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/AFNetworking/AFNetworking.framework",
-				"${PODS_ROOT}/APSiren/APSiren.framework",
 				"${PODS_ROOT}/ApplicasterSDK/ApplicasterSDK.framework",
 				"${BUILT_PRODUCTS_DIR}/Bolts/Bolts.framework",
 				"${BUILT_PRODUCTS_DIR}/CocoaLumberjack/CocoaLumberjack.framework",
@@ -235,28 +234,18 @@
 				"${BUILT_PRODUCTS_DIR}/FBSDKCoreKit/FBSDKCoreKit.framework",
 				"${BUILT_PRODUCTS_DIR}/FBSDKLoginKit/FBSDKLoginKit.framework",
 				"${BUILT_PRODUCTS_DIR}/FBSDKShareKit/FBSDKShareKit.framework",
-				"${BUILT_PRODUCTS_DIR}/FLAnimatedImage_Applicaster/FLAnimatedImage_Applicaster.framework",
-				"${BUILT_PRODUCTS_DIR}/FormatterKit/FormatterKit.framework",
 				"${PODS_ROOT}/GoogleAds-IMA-iOS-SDK/GoogleInteractiveMediaAds.framework",
 				"${BUILT_PRODUCTS_DIR}/JWPlayer-Plugin-iOS/JWPlayer_Plugin_iOS.framework",
 				"${BUILT_PRODUCTS_DIR}/JWPlayerSDKWrapper/JWPlayerSDKWrapper.framework",
-				"${BUILT_PRODUCTS_DIR}/MPNotificationView_Applicaster/MPNotificationView_Applicaster.framework",
-				"${BUILT_PRODUCTS_DIR}/NKJWT/NKJWT.framework",
-				"${BUILT_PRODUCTS_DIR}/SHMKit_Applicaster/SHMKit_Applicaster.framework",
 				"${BUILT_PRODUCTS_DIR}/SSZipArchive/SSZipArchive.framework",
 				"${BUILT_PRODUCTS_DIR}/TTTAttributedLabel/TTTAttributedLabel.framework",
-				"${BUILT_PRODUCTS_DIR}/Toaster/Toaster.framework",
 				"${PODS_ROOT}/TwitterCore/iOS/TwitterCore.framework",
 				"${PODS_ROOT}/TwitterKit/iOS/TwitterKit.framework",
-				"${PODS_ROOT}/ZappAppConnector/ZappAppConnector.framework",
-				"${PODS_ROOT}/ZappHelpers/ZappHelpers.framework",
 				"${PODS_ROOT}/ZappPlugins/ZappPlugins.framework",
-				"${PODS_ROOT}/e-planning/e_planning.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AFNetworking.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/APSiren.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ApplicasterSDK.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Bolts.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CocoaLumberjack.framework",
@@ -264,23 +253,14 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBSDKCoreKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBSDKLoginKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBSDKShareKit.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FLAnimatedImage_Applicaster.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FormatterKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleInteractiveMediaAds.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/JWPlayer_Plugin_iOS.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/JWPlayerSDKWrapper.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MPNotificationView_Applicaster.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NKJWT.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SHMKit_Applicaster.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SSZipArchive.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/TTTAttributedLabel.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Toaster.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/TwitterCore.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/TwitterKit.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ZappAppConnector.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ZappHelpers.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ZappPlugins.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/e_planning.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -443,7 +423,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.applicaster.JWPlayer-Plugin-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 4.0;
 			};
 			name = Debug;
 		};
@@ -458,7 +438,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.applicaster.JWPlayer-Plugin-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 4.0;
 			};
 			name = Release;
 		};

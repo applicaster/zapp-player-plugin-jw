@@ -17,7 +17,7 @@ end
 target 'JWPlayer-Plugin-iOS' do
     #shared_pods
     #pod 'JWPlayer-SDK'
-    pod 'JWPlayer-Plugin-iOS'
+    pod 'JWPlayer-Plugin-iOS', :path => 'JWPlayer-Plugin-iOS.podspec'
 end
 
 pre_install do |installer|
