@@ -48,9 +48,16 @@ configurations.all {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    // Applicaster
-    implementation 'com.applicaster:applicaster-android-sdk:2.29.25'
+    // Applicaster SDK
+    def applicasterSDKPath = 'com.applicaster:applicaster-android-sdk:2.29.25'
 
+    //Check if an open SDK is defined - if not use the closed one.
+    def devSDK = findProject(':applicaster-android-sdk')
+    if (devSDK != null) {
+        implementation project(':applicaster-android-sdk')
+    } else {
+        implementation(applicasterSDKPath)
+    }
     // JWPlayer
     implementation 'com.longtailvideo.jwplayer:jwplayer-core:2.8.2+44'
     implementation 'com.longtailvideo.jwplayer:jwplayer-common:2.8.2+44'
