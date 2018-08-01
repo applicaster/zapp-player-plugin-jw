@@ -52,7 +52,7 @@ PODS:
   - HockeySDK/DefaultLib (5.1.2)
   - JWPlayer-Plugin-iOS (1.0.4):
     - ApplicasterSDK
-    - JWPlayerSDKWrapper (~> 0.1)
+    - JWPlayerSDKWrapper (~> 0.1.4)
     - ZappPlugins
   - JWPlayerSDKWrapper (0.1.4)
   - SSZipArchive (2.1.0)
@@ -103,7 +103,7 @@ SPEC CHECKSUMS:
   Google-Mobile-Ads-SDK: 6e529e748b45507a2ca904e0b5a52669ba3920c4
   GoogleAds-IMA-iOS-SDK: 58693326633b35aa7e95c45693ec0bb8e88086de
   HockeySDK: 38b7e2726af1ea86ae97ce4b5de33ab0817e3500
-  JWPlayer-Plugin-iOS: 893a97e97963eee57da02f934b210afb46255d5d
+  JWPlayer-Plugin-iOS: c966e4bd6b67a8b475d14e1422384938e35e4ea9
   JWPlayerSDKWrapper: 4585b8bce646c04e02442e01eef0b1dff5e6a922
   SSZipArchive: 1e8e53dcb11bca3ded4738958dc49fc467320a14
   TTTAttributedLabel: f8c7f1dbc7b8f7168e23e8b4764dda2e3b74aae8

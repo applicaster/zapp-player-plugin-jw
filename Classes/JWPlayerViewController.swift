@@ -60,8 +60,12 @@ final class JWPlayerViewController: UIViewController, JWPlayerDelegate {
         if isPresentedFullScreen {
             DispatchQueue.main.async {
                 self.player?.stop()
-                self.dismiss(animated: true, completion: nil)
-                UIViewController.attemptRotationToDeviceOrientation()
+                if let vc = self.presentingViewController {
+                    vc.view.window?.makeKeyAndVisible()
+                    vc.dismiss(animated: true, completion: nil)
+                    vc.setNeedsStatusBarAppearanceUpdate()
+                    UIViewController.attemptRotationToDeviceOrientation()
+                }
             }
         }
     }
@@ -79,8 +83,12 @@ final class JWPlayerViewController: UIViewController, JWPlayerDelegate {
     @objc private func dismissMe(_ sender: Any?) {
         if Thread.isMainThread {
             self.player?.stop()
-            dismiss(animated: true, completion: nil)
-            UIViewController.attemptRotationToDeviceOrientation()
+            if let vc = self.presentingViewController {
+                vc.view.window?.makeKeyAndVisible()
+                vc.dismiss(animated: true, completion: nil)
+                vc.setNeedsStatusBarAppearanceUpdate()
+                UIViewController.attemptRotationToDeviceOrientation()
+            }
         } else {
             DispatchQueue.main.async {
                 self.dismissMe(sender)
