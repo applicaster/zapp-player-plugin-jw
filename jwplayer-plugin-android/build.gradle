@@ -15,14 +15,14 @@ android {
 
     defaultConfig {
         minSdkVersion 17
-        targetSdkVersion 25
+        targetSdkVersion 27
         consumerProguardFiles 'proguard-rules.pro'
     }
 
     buildTypes {
         debug {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            //proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         release {
             minifyEnabled true
@@ -48,7 +48,7 @@ configurations.all {
 dependencies {
 
     // Applicaster SDK
-    def applicasterSDKPath = 'com.applicaster:applicaster-android-sdk:2.29.25'
+    def applicasterSDKPath = 'com.applicaster:applicaster-android-sdk:2.32.6'
 
     //Check if an open SDK is defined - if not use the closed one.
     def devSDK = findProject(':applicaster-android-sdk')
@@ -58,9 +58,10 @@ dependencies {
         implementation(applicasterSDKPath)
     }
 
-    api fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
     
     // JWPlayer
-    api 'com.longtailvideo.jwplayer:jwplayer-core:3.0.0+53'
-    api 'com.longtailvideo.jwplayer:jwplayer-common:3.0.0+53'
+    api 'com.longtailvideo.jwplayer:jwplayer-core:+'
+    api 'com.longtailvideo.jwplayer:jwplayer-common:+'
+    
 }

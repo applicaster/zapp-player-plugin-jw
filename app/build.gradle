@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 ext {
-    supportLibraryVersion = '27.0.1'
+    supportLibraryVersion = '27.0.3'
 }
 
 android {
@@ -50,6 +50,6 @@ dependencies {
         exclude group:'com.applicaster', module: 'applicaster-android-sdk'
     }
 
-    implementation 'com.android.support:appcompat-v7'
+    implementation 'com.android.support:appcompat-v7:27.0.3'
     implementation 'com.android.support.constraint:constraint-layout:1.1.0'
 }
