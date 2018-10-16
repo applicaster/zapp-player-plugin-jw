@@ -19,7 +19,7 @@
   "screen": false,
   "identifier": "JWPlayer-Plugin-iOS",
   "ui_builder_support": true,
-  "dependency_name": "JWPlayer-Plugin-iOS",
+  "dependency_name": "JWPlayerPlugin",
   "dependency_version": "2.0.0",
   "whitelisted_account_ids": [],
   "min_zapp_sdk": "9.0.0",
