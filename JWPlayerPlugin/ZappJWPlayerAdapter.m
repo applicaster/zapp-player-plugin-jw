@@ -27,6 +27,7 @@
     instance.currentPlayableItem = items.firstObject;
     instance.configurationJSON = configurationJSON;
     instance.currentPlayableItems = items;
+    [instance.playerViewController setupPlayerWithPlayableItem:instance.currentPlayableItem];
     
     return instance;
 }
@@ -79,11 +80,6 @@
 }
 
 - (UIViewController * _Nullable)pluggablePlayerViewController {
-    if (self.currentPlayableItem == nil) {
-        return nil;
-    }
-    
-    [self.playerViewController setupPlayerWithPlayableItem:self.currentPlayableItem];
     return self.playerViewController;
 }
 
@@ -100,10 +96,6 @@
                                                                         completion();
                                                                     }
                                                                 }];
-}
-
-- (NSObject<ZPPlayable> *)currentPlayableItem {
-    return self.currentPlayableItem;
 }
 
 - (enum ZPPlayerType)pluggablePlayerType {

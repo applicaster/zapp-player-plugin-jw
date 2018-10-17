@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name             = "JWPlayerPlugin"
-  s.version          = '2.0.0'
+  s.version          = '2.0.1'
   s.summary          = 'JWPlayer Player plugin implementation.'
   s.description      = 'An implementation for JWPlayer as a Zapp Player Plugin in Objective C.'
   s.homepage         = "https://github.com/applicaster/JWPlayer-Plugin-iOS"

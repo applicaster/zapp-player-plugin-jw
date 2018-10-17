@@ -30,10 +30,6 @@
     // Do any additional setup after loading the view.
 }
 
-- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
-    return UIInterfaceOrientationLandscapeRight;
-}
-
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
     return UIInterfaceOrientationMaskAll;
 }
@@ -50,26 +46,9 @@
         return _closeButton;
     }
     
-    CGFloat inset = 8.0;
-    CGSize size = CGSizeMake(32.0, 32.0);
-    UIBezierPath *path = [UIBezierPath new];
-    [path moveToPoint:CGPointMake(inset, inset)];
-    [path addLineToPoint:CGPointMake(size.width - inset, size.height - inset)];
-    [path moveToPoint:CGPointMake(size.width - inset, size.height - inset)];
-    [path addLineToPoint:CGPointMake(inset, size.height - inset)];
-    path.lineCapStyle = kCGLineCapRound;
-    path.lineJoinStyle = kCGLineJoinRound;
-    path.lineWidth = 3.0;
-    
-    UIGraphicsBeginImageContext(size);
-//    CGContextRef context = UIGraphicsGetCurrentContext();
-    [UIColor.whiteColor setStroke];
-    [path stroke];
-    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    
     UIButton *button = [UIButton new];
-    [button setImage:image forState:UIControlStateNormal];
+    button.titleLabel.font = [UIFont systemFontOfSize:25];
+    [button setTitle:@"X" forState:UIControlStateNormal];
     [button setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
     
     _closeButton = button;
@@ -118,12 +97,6 @@
 - (void)setPlayer:(JWPlayerController *)player {
     player.delegate = self;
     player.view.frame = self.view.bounds;
-    player.view.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin |
-                                    UIViewAutoresizingFlexibleTopMargin |
-                                    UIViewAutoresizingFlexibleLeftMargin |
-                                    UIViewAutoresizingFlexibleRightMargin |
-                                    UIViewAutoresizingFlexibleWidth |
-                                    UIViewAutoresizingFlexibleHeight;
     
     if (self.closeButton.allTargets.count == 0) {
         [self.closeButton addTarget:self
@@ -135,9 +108,12 @@
     self.closeButton.alpha = 1.0;
     self.closeButton.hidden = !self.isPresentedFullScreen;
     [player.view addSubview:self.closeButton];
-    self.closeButton.frame = CGRectMake(16.0, 16.0, 32.0 , 32.0);
+    self.closeButton.frame = CGRectMake(16.0, 36.0, 32.0 , 32.0);
     self.closeButton.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleRightMargin;
     [self.view addSubview:player.view];
+    [player.view matchParent];
+    self.player.forceLandscapeOnFullScreen = NO;
+    self.player.forceLandscapeOnFullScreen = NO;
     
     _player = player;
 }
