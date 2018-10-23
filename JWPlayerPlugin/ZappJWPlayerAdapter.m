@@ -6,10 +6,14 @@
 //  Copyright © 2018 Applicaster. All rights reserved.
 //
 
+@import ZappLoginPluginsSDK;
+@import ZappPlugins;
 #import "ZappJWPlayerAdapter.h"
 #import "JWPlayer_iOS_SDK/JWPlayerController.h"
 
 @implementation ZappJWPlayerAdapter
+
+static NSString *const kPlayableItemsKey = @"playable_items";
 
 #pragma mark - ZPPlayerProtocol
 
@@ -33,9 +37,48 @@
 }
 
 - (void)pluggablePlayerAddInline:(UIViewController * _Nonnull)rootViewController container:(UIView * _Nonnull)container {
-    self.playerViewController.isPresentedFullScreen = NO;
-    [rootViewController addChildViewController:self.playerViewController toView:container];
-    [self.playerViewController.view matchParent];
+    [self pluggablePlayerAddInline:rootViewController
+                         container:container
+                     configuration:nil];
+}
+
+- (void)pluggablePlayerAddInline:(UIViewController *)rootViewController container:(UIView *)container configuration:(ZPPlayerConfiguration *)configuration {
+    if ([self.currentPlayableItem isFree] == NO) {
+        NSObject<ZPLoginProviderUserDataProtocol> *loginPlugin = [[ZPLoginManager sharedInstance] createWithUserData];
+        NSDictionary *extensions = [NSDictionary dictionaryWithObject:self.currentPlayableItems
+                                                               forKey:kPlayableItemsKey];
+        if ([loginPlugin respondsToSelector:@selector(isUserComplyWithPolicies:)]) {
+            [self handleUserComply:[loginPlugin isUserComplyWithPolicies:extensions]
+                       loginPlugin:loginPlugin
+                rootViewController:rootViewController
+                         container:container
+                     configuration:configuration
+                        completion:nil];
+        } else if ([loginPlugin respondsToSelector:@selector(isUserComplyWithPolicies:completion:)]) {
+            __weak typeof(self) weakSelf = self;
+            [loginPlugin isUserComplyWithPolicies:extensions
+                                       completion:^(BOOL isUserComply) {
+                                           [weakSelf handleUserComply:isUserComply
+                                                      loginPlugin:loginPlugin
+                                               rootViewController:rootViewController
+                                                        container:container
+                                                    configuration:configuration
+                                                       completion:nil];
+                                       }];
+        } else {
+            // login protocol doesn't handle the checks - let the player go
+            [self playInline:rootViewController
+                   container:container
+               configuration:configuration
+                  completion:nil];
+        }
+    } else {
+        // item is free
+        [self playInline:rootViewController
+               container:container
+           configuration:configuration
+              completion:nil];
+    }
 }
 
 - (void)pluggablePlayerRemoveInline {
@@ -88,14 +131,40 @@
 }
 
 - (void)presentPlayerFullScreen:(UIViewController *)rootViewController configuration:(ZPPlayerConfiguration *)configuration completion:(void (^)(void))completion {
-    self.playerViewController.isPresentedFullScreen = YES;
-    [[rootViewController topmostModalViewController] presentViewController:self.playerViewController
-                                                                  animated:configuration.animated
-                                                                completion:^{
-                                                                    if (completion) {
-                                                                        completion();
-                                                                    }
-                                                                }];
+    if ([self.currentPlayableItem isFree] == NO) {
+        NSObject<ZPLoginProviderUserDataProtocol> *loginPlugin = [[ZPLoginManager sharedInstance] createWithUserData];
+        NSDictionary *extensions = [NSDictionary dictionaryWithObject:self.currentPlayableItems
+                                                               forKey:kPlayableItemsKey];
+        if ([loginPlugin respondsToSelector:@selector(isUserComplyWithPolicies:)]) {
+            [self handleUserComply:[loginPlugin isUserComplyWithPolicies:extensions]
+                       loginPlugin:loginPlugin
+                rootViewController:rootViewController
+                         container:nil
+                     configuration:configuration
+                        completion:completion];
+        } else if ([loginPlugin respondsToSelector:@selector(isUserComplyWithPolicies:completion:)]) {
+            __weak typeof(self) weakSelf = self;
+            [loginPlugin isUserComplyWithPolicies:extensions
+                                       completion:^(BOOL isUserComply) {
+                                           [weakSelf handleUserComply:isUserComply
+                                                      loginPlugin:loginPlugin
+                                               rootViewController:rootViewController
+                                                        container:nil
+                                                    configuration:configuration
+                                                       completion:completion];
+                                       }];
+        } else {
+            // login protocol doesn't handle the checks - let the player go
+            [self playFullScreen:rootViewController
+                   configuration:configuration
+                      completion:completion];
+        }
+    } else {
+        // item is free
+        [self playFullScreen:rootViewController
+               configuration:configuration
+                  completion:completion];
+    }
 }
 
 - (enum ZPPlayerType)pluggablePlayerType {
@@ -131,6 +200,55 @@
 
 - (enum ZPPlayerState)playerState {
     return self.currentPlayerState;
+}
+
+- (void)handleUserComply:(BOOL)isUserComply
+             loginPlugin:(NSObject<ZPLoginProviderUserDataProtocol> *)plugin
+      rootViewController:(UIViewController *)rootViewController
+               container:(UIView *)container
+           configuration:(ZPPlayerConfiguration *)configuration
+              completion:(void (^)(void))completion
+{
+    if (isUserComply) {
+        if (container) {
+            [self playInline:rootViewController
+                   container:container
+               configuration:configuration
+                  completion:completion];
+        } else {
+            [self playFullScreen:rootViewController
+                   configuration:configuration
+                      completion:completion];
+        }
+    } else {
+        
+    }
+}
+
+- (void)playFullScreen:(UIViewController *)rootViewController
+         configuration:(ZPPlayerConfiguration *)configuration
+            completion:(void (^)(void))completion {
+    self.playerViewController.isPresentedFullScreen = YES;
+    [[rootViewController topmostModalViewController] presentViewController:self.playerViewController
+                                                                  animated:configuration.animated
+                                                                completion:^{
+                                                                    if (completion) {
+                                                                        completion();
+                                                                    }
+                                                                }];
+}
+
+- (void)playInline:(UIViewController *)rootViewController
+         container:(UIView *)container
+     configuration:(ZPPlayerConfiguration *)configuration
+        completion:(void (^)(void))completion {
+    self.playerViewController.isPresentedFullScreen = NO;
+    [rootViewController addChildViewController:self.playerViewController toView:container];
+    [self.playerViewController.view matchParent];
+    
+    if (completion) {
+        completion();
+    }
 }
 
 @end
