@@ -1,3 +1,9 @@
+# JWPlayer
+-keepattributes *longtailvideo*
+-keep class com.longtailvideo.**{ *; }
+-dontwarn com.longtailvideo.*
+-keepclasseswithmembernames class * {native <methods>;}
+
 -keep public class com.applicaster.jwplayerplugin.JWPlayerAdapter {
    public <fields>;
    public <methods>;
