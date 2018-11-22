@@ -14,14 +14,13 @@ PODS:
   - AFNetworking/Serialization (3.2.1)
   - AFNetworking/UIKit (3.2.1):
     - AFNetworking/NSURLSession
-  - ApplicasterSDK (8.0.0):
+  - ApplicasterSDK (8.2.9):
     - AFNetworking (= 3.2.1)
     - CocoaLumberjack/Swift (= 3.4.2)
     - FBNotifications (= 1.0.1)
-    - FBSDKCoreKit (= 4.33.0)
-    - FBSDKLoginKit (= 4.33.0)
-    - FBSDKShareKit (= 4.33.0)
-    - Google-Mobile-Ads-SDK (= 7.31.0)
+    - FBSDKCoreKit (= 4.38.0)
+    - FBSDKLoginKit (= 4.38.0)
+    - FBSDKShareKit (= 4.38.0)
     - GoogleAds-IMA-iOS-SDK (= 3.7.2)
     - SSZipArchive (= 2.1.0)
     - TTTAttributedLabel (= 2.1.0)
@@ -30,7 +29,7 @@ PODS:
     - ZappAnalyticsPluginsSDK (~> 6.0.0)
     - ZappGeneralPluginsSDK (~> 6.0.0)
     - ZappLoginPluginsSDK (~> 6.0.0)
-    - ZappPlugins (~> 7.0.0)
+    - ZappPlugins (~> 7.1.0)
     - ZappPushPluginsSDK (~> 6.0.0)
   - Bolts (1.9.0):
     - Bolts/AppLinks (= 1.9.0)
@@ -42,16 +41,15 @@ PODS:
   - CocoaLumberjack/Swift (3.4.2):
     - CocoaLumberjack/Default
   - FBNotifications (1.0.1)
-  - FBSDKCoreKit (4.33.0):
-    - Bolts (~> 1.7)
-  - FBSDKLoginKit (4.33.0):
+  - FBSDKCoreKit (4.38.0):
+    - Bolts (~> 1.9)
+  - FBSDKLoginKit (4.38.0):
     - FBSDKCoreKit
-  - FBSDKShareKit (4.33.0):
-    - FBSDKCoreKit (~> 4.33.0)
-  - Google-Mobile-Ads-SDK (7.31.0)
+  - FBSDKShareKit (4.38.0):
+    - FBSDKCoreKit
   - GoogleAds-IMA-iOS-SDK (3.7.2)
-  - JWPlayer-SDK (3.1.2)
-  - JWPlayerPlugin (1.1.0):
+  - JWPlayer-SDK (3.1.3)
+  - JWPlayerPlugin (2.2.0):
     - ApplicasterSDK
     - JWPlayer-SDK (~> 3.0)
     - ZappPlugins
@@ -61,16 +59,16 @@ PODS:
   - TwitterCore (3.1.0)
   - TwitterKit (3.3.0):
     - TwitterCore (>= 3.1.0)
-  - ZappAnalyticsPluginsSDK (6.0.0):
+  - ZappAnalyticsPluginsSDK (6.0.2):
     - Toaster
     - ZappPlugins
-  - ZappGeneralPluginsSDK (6.0.0):
+  - ZappGeneralPluginsSDK (6.0.1):
     - ZappPlugins
   - ZappLoginPluginsSDK (6.0.0):
     - AFNetworking
     - ZappPlugins
-  - ZappPlugins (7.0.0)
-  - ZappPushPluginsSDK (6.0.0):
+  - ZappPlugins (7.1.11)
+  - ZappPushPluginsSDK (6.0.2):
     - Toaster
     - ZappPlugins
 
@@ -98,7 +96,6 @@ SPEC REPOS:
     - FBSDKCoreKit
     - FBSDKLoginKit
     - FBSDKShareKit
-    - Google-Mobile-Ads-SDK
     - GoogleAds-IMA-iOS-SDK
     - JWPlayer-SDK
     - SSZipArchive
@@ -111,27 +108,26 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
-  ApplicasterSDK: 0f17dd12ca1064ee895c2a14ee73bd4fbf56602e
+  ApplicasterSDK: fe8a34b53661fd4c6776e09514b508903a14cb6b
   Bolts: ac6567323eac61e203f6a9763667d0f711be34c8
   CocoaLumberjack: db7cc9e464771f12054c22ff6947c5a58d43a0fd
   FBNotifications: 3f1a9e43ffa2979a685eec29c960ca6a15c70be9
-  FBSDKCoreKit: 572b047a7e029bc44542bcf8a59414e7ff2b543e
-  FBSDKLoginKit: 88cb456349cfb3b554427ce4f8b43729d85dfb40
-  FBSDKShareKit: 1869cb24db2cea90666a50cb9d568deb38e2d16e
-  Google-Mobile-Ads-SDK: 6e529e748b45507a2ca904e0b5a52669ba3920c4
+  FBSDKCoreKit: 2ab7fdbf600dc6b628ba7a49aa29d357a7b4c74e
+  FBSDKLoginKit: 634fa27e72e33620eb6389253337342c03d4a407
+  FBSDKShareKit: 00290e3db446eed603ff80ac629dcc5e80cf8b74
   GoogleAds-IMA-iOS-SDK: 58693326633b35aa7e95c45693ec0bb8e88086de
-  JWPlayer-SDK: 395770c17813497fe9c4a2b3f0d352dd1664f2e4
-  JWPlayerPlugin: d91683b28113e1aa9b8a77ecc79f57086e3091ed
+  JWPlayer-SDK: d111085699bb9d8ba74d991b7d19961135a75425
+  JWPlayerPlugin: 0a9ac29dffb87fc7aaf99429af844954429adfa3
   SSZipArchive: 1e8e53dcb11bca3ded4738958dc49fc467320a14
-  Toaster: c06c2bb68c93d6017780220d5d76dc6ffdd14688
+  Toaster: 7464b87db5bd9453043bd3cf0fc79219cc9803f1
   TTTAttributedLabel: f8c7f1dbc7b8f7168e23e8b4764dda2e3b74aae8
   TwitterCore: 644d59e75abccb26cf0a9050d2c4dea0e5412241
   TwitterKit: a2e60ddcedbf54091eac6f27685ca7a87681e1d7
-  ZappAnalyticsPluginsSDK: 1af2db8a8c2ef2cb15d3942f2ea8aefea97b2b3f
-  ZappGeneralPluginsSDK: 150a0a23d956627507e0fa4c894d1b2ca794239f
+  ZappAnalyticsPluginsSDK: 554af27bf5cb4f92685640a0d5ec6e56519b1c3d
+  ZappGeneralPluginsSDK: bf68a3e4f1e0e69f10419ce723123f6847d0b627
   ZappLoginPluginsSDK: bf9915f6c428a2a1c01eb5d890fb6fe31e7cc5d5
-  ZappPlugins: 4583048b184d5a579cdbb382f9275178beda077b
-  ZappPushPluginsSDK: 839b6aa6183b28fe31ccabec627fafa61ecc7c7b
+  ZappPlugins: d8605cbb6a58cdbe8bb76ad3bbc096ababdf54b0
+  ZappPushPluginsSDK: aea8a6b5296f4eb329a54d6af649bf967e3ffaf3
 
 PODFILE CHECKSUM: 7ca0fb0f40d5f95bf8a73073e9ff37f657862b7c
 
