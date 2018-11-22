@@ -55,15 +55,15 @@ static NSString *const kPlayableItemsKey = @"playable_items";
                      configuration:configuration
                         completion:nil];
         } else if ([loginPlugin respondsToSelector:@selector(isUserComplyWithPolicies:completion:)]) {
-            __weak typeof(self) weakSelf = self;
+            __block typeof(self) blockSelf = self;
             [loginPlugin isUserComplyWithPolicies:extensions
                                        completion:^(BOOL isUserComply) {
-                                           [weakSelf handleUserComply:isUserComply
-                                                      loginPlugin:loginPlugin
-                                               rootViewController:rootViewController
-                                                        container:container
-                                                    configuration:configuration
-                                                       completion:nil];
+                                           [blockSelf handleUserComply:isUserComply
+                                                           loginPlugin:loginPlugin
+                                                    rootViewController:rootViewController
+                                                             container:container
+                                                         configuration:configuration
+                                                            completion:nil];
                                        }];
         } else {
             // login protocol doesn't handle the checks - let the player go
@@ -143,15 +143,15 @@ static NSString *const kPlayableItemsKey = @"playable_items";
                      configuration:configuration
                         completion:completion];
         } else if ([loginPlugin respondsToSelector:@selector(isUserComplyWithPolicies:completion:)]) {
-            __weak typeof(self) weakSelf = self;
+            __block typeof(self) blockSelf = self;
             [loginPlugin isUserComplyWithPolicies:extensions
                                        completion:^(BOOL isUserComply) {
-                                           [weakSelf handleUserComply:isUserComply
-                                                      loginPlugin:loginPlugin
-                                               rootViewController:rootViewController
-                                                        container:nil
-                                                    configuration:configuration
-                                                       completion:completion];
+                                           [blockSelf handleUserComply:isUserComply
+                                                           loginPlugin:loginPlugin
+                                                    rootViewController:rootViewController
+                                                             container:nil
+                                                         configuration:configuration
+                                                            completion:completion];
                                        }];
         } else {
             // login protocol doesn't handle the checks - let the player go
@@ -221,32 +221,68 @@ static NSString *const kPlayableItemsKey = @"playable_items";
                       completion:completion];
         }
     } else {
-        
+        __block typeof(self) blockSelf = self;
+        NSDictionary *playableItems = [NSDictionary dictionaryWithObject:[self currentPlayableItems] forKey:kPlayableItemsKey];
+        [plugin login:playableItems
+           completion:^(enum ZPLoginOperationStatus status) {
+               if (status == ZPLoginOperationStatusCompletedSuccessfully) {
+                   if (container) {
+                       [blockSelf playInline:rootViewController
+                                   container:container
+                               configuration:configuration
+                                  completion:completion];
+                   } else {
+                       [blockSelf playFullScreen:rootViewController
+                                   configuration:configuration
+                                      completion:completion];
+                   }
+               }
+           }];
     }
 }
 
 - (void)playFullScreen:(UIViewController *)rootViewController
          configuration:(ZPPlayerConfiguration *)configuration
             completion:(void (^)(void))completion {
-    self.playerViewController.isPresentedFullScreen = YES;
-    [[rootViewController topmostModalViewController] presentViewController:self.playerViewController
-                                                                  animated:configuration.animated
-                                                                completion:^{
-                                                                    if (completion) {
-                                                                        completion();
-                                                                    }
-                                                                }];
+    __block typeof(self) blockSelf = self;
+    [self loadItemIfNeeded:^{
+        blockSelf.playerViewController.isPresentedFullScreen = YES;
+        [[rootViewController topmostModalViewController] presentViewController:blockSelf.playerViewController
+                                                                      animated:configuration.animated
+                                                                    completion:^{
+                                                                        if (completion) {
+                                                                            completion();
+                                                                        }
+                                                                    }];
+    }];
 }
 
 - (void)playInline:(UIViewController *)rootViewController
          container:(UIView *)container
      configuration:(ZPPlayerConfiguration *)configuration
         completion:(void (^)(void))completion {
-    self.playerViewController.isPresentedFullScreen = NO;
-    [rootViewController addChildViewController:self.playerViewController toView:container];
-    [self.playerViewController.view matchParent];
-    
-    if (completion) {
+    __block typeof(self) blockSelf = self;
+    [self loadItemIfNeeded:^{
+        blockSelf.playerViewController.isPresentedFullScreen = NO;
+        [rootViewController addChildViewController:blockSelf.playerViewController toView:container];
+        [blockSelf.playerViewController.view matchParent];
+        
+        if (completion) {
+            completion();
+        }
+    }];
+}
+
+- (void)loadItemIfNeeded:(void (^)(void))completion {
+    if (([[self currentPlayableItem] isKindOfClass:[APVodItem class]] || [[self currentPlayableItem] isKindOfClass:[APChannel class]]) &&
+        ![(APModel *)[self currentPlayableItem] isLoaded]) {
+        __block typeof(self) blockSelf = self;
+        APModel *model = (APModel *)[self currentPlayableItem];
+        [model loadWithCompletionHandler:^(BOOL success, APModel *model) {
+            [blockSelf.playerViewController setupPlayerWithPlayableItem:(NSObject<ZPPlayable> *)model];
+            completion();
+        }];
+    } else {
         completion();
     }
 }
