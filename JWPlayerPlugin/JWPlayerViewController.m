@@ -95,6 +95,14 @@
 #pragma mark - private
 
 - (void)setPlayer:(JWPlayerController *)player {
+    
+    if (_player) {
+        // If we already have a player - first dismiss it
+        _player.delegate = nil;
+        [_player.view removeFromSuperview];
+        _player = nil;
+    }
+    
     player.delegate = self;
     player.view.frame = self.view.bounds;
     
