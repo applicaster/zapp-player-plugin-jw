@@ -31,7 +31,6 @@ static NSString *const kPlayableItemsKey = @"playable_items";
     instance.currentPlayableItem = items.firstObject;
     instance.configurationJSON = configurationJSON;
     instance.currentPlayableItems = items;
-    [instance.playerViewController setupPlayerWithPlayableItem:instance.currentPlayableItem];
     
     return instance;
 }
@@ -82,9 +81,7 @@ static NSString *const kPlayableItemsKey = @"playable_items";
 }
 
 - (void)pluggablePlayerRemoveInline {
-    UIView *container = self.playerViewController.view.superview;
     [self.playerViewController removeViewFromParentViewController];
-    [container removeFromSuperview];
 }
 
 - (BOOL)pluggablePlayerIsPlaying {
@@ -246,6 +243,7 @@ static NSString *const kPlayableItemsKey = @"playable_items";
             completion:(void (^)(void))completion {
     __block typeof(self) blockSelf = self;
     [self loadItemIfNeeded:^{
+        [blockSelf.playerViewController setupPlayerWithPlayableItem:blockSelf.currentPlayableItem];
         blockSelf.playerViewController.isPresentedFullScreen = YES;
         [[rootViewController topmostModalViewController] presentViewController:blockSelf.playerViewController
                                                                       animated:configuration.animated
@@ -263,6 +261,7 @@ static NSString *const kPlayableItemsKey = @"playable_items";
         completion:(void (^)(void))completion {
     __block typeof(self) blockSelf = self;
     [self loadItemIfNeeded:^{
+        [blockSelf.playerViewController setupPlayerWithPlayableItem:blockSelf.currentPlayableItem];
         blockSelf.playerViewController.isPresentedFullScreen = NO;
         [rootViewController addChildViewController:blockSelf.playerViewController toView:container];
         [blockSelf.playerViewController.view matchParent];
@@ -275,16 +274,15 @@ static NSString *const kPlayableItemsKey = @"playable_items";
 
 - (void)loadItemIfNeeded:(void (^)(void))completion {
     if (([[self currentPlayableItem] isKindOfClass:[APVodItem class]] || [[self currentPlayableItem] isKindOfClass:[APChannel class]]) &&
-        ![(APModel *)[self currentPlayableItem] isLoaded]) {
+        (![(APModel *)[self currentPlayableItem] isLoaded] || ![self.currentPlayableItem.contentVideoURLPath isNotEmptyOrWhiteSpaces])) {
         __block typeof(self) blockSelf = self;
         APModel *model = (APModel *)[self currentPlayableItem];
         [model loadWithCompletionHandler:^(BOOL success, APModel *model) {
-            [blockSelf.playerViewController setupPlayerWithPlayableItem:(NSObject<ZPPlayable> *)model];
+            blockSelf.currentPlayableItem = model;
             completion();
         }];
     } else {
         completion();
     }
 }
-
 @end
