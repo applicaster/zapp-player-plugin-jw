@@ -35,16 +35,10 @@ public class JWPlayerActivity extends AppCompatActivity {
 //        mEventHandler = new JWEventHandler(mPlayerView, outputTextView);
 
         Playable playable = (Playable) getIntent().getSerializableExtra(PLAYABLE_KEY);
-        if (playable !=null) {
-            // Load a media source
-            PlaylistItem pi = new PlaylistItem.Builder()
-                    .file(playable.getContentVideoURL())
-                    .title(playable.getPlayableName())
-                    .description(playable.getPlayableDescription())
-                    .build();
-            mPlayerView.load(pi);
-            mPlayerView.play();
-        }
+
+        // Load a media source
+        mPlayerView.load( JWPlayerUtil.getPlaylistItem(playable) );
+        mPlayerView.play();
 
         // Get a reference to the CastManager
 //        mCastManager = CastManager.getInstance();

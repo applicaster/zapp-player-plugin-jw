@@ -10,6 +10,7 @@ import com.applicaster.plugin_manager.playersmanager.PlayableConfiguration;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.configuration.PlayerConfig;
 import com.longtailvideo.jwplayer.core.PlayerState;
+import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 import java.util.List;
 import java.util.Map;
@@ -42,11 +43,6 @@ public class JWPlayerAdapter extends BasePlayer {
 
         JWPlayerView.setLicenseKey(context, licenseKey);
         jwPlayerView = new JWPlayerView(context, new PlayerConfig.Builder().build());
-
-//        jwPlayerContainer = new JWPlayerContainer(context);
-//        jwPlayerView = jwPlayerContainer.getJWPlayerView();
-//        PlaylistItem playlistItem = new PlaylistItem(getFirstPlayable().getContentVideoURL());
-//        jwPlayerView.load(playlistItem);
     }
 
     /**
@@ -103,11 +99,6 @@ public class JWPlayerAdapter extends BasePlayer {
     @Override
     public void playInFullscreen(PlayableConfiguration configuration, int requestCode, @NonNull Context context) {
         JWPlayerActivity.startPlayerActivity(context, getFirstPlayable(), configuration.getCustomConfiguration());
-//        WindowManager.LayoutParams mParams = new WindowManager.LayoutParams();
-//        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-//        windowManager.addView(jwPlayerContainer, mParams);
-//        jwPlayerView.play();
-//        jwPlayerView.setFullscreen(true, false);
     }
 
 
@@ -123,6 +114,7 @@ public class JWPlayerAdapter extends BasePlayer {
                 = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT
                 , ViewGroup.LayoutParams.MATCH_PARENT);
         videoContainerView.addView(jwPlayerView, playerContainerLayoutParams);
+        jwPlayerView.load( JWPlayerUtil.getPlaylistItem(getFirstPlayable()));
     }
 
     /**
