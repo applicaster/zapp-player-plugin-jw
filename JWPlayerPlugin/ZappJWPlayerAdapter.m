@@ -176,6 +176,10 @@ static NSString *const kPlayableItemsKey = @"playable_items";
     return self.currentPlayableItem;
 }
 
+- (BOOL)pluggablePlayerCanHandleSubscription {
+    return YES;
+}
+
 #pragma mark - public
 
 - (NSURL * _Nullable)pluggablePlayerCurrentUrl {
