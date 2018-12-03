@@ -47,14 +47,7 @@ dependencies {
     }
 
     // JWPlayer
-    api ('com.longtailvideo.jwplayer:jwplayer-core:3.2.2') {
-        exclude group:    'com.google.android.exoplayer'
-    }
-
-    api ('com.longtailvideo.jwplayer:jwplayer-common:3.2.2') {
-        exclude group:    'com.google.android.exoplayer'
-    }
-
-    implementation ("com.google.android.exoplayer:exoplayer:2.6.0")
+    api ('com.longtailvideo.jwplayer:jwplayer-core:3.2.2')
+    api ('com.longtailvideo.jwplayer:jwplayer-common:3.2.2')
 
 }
