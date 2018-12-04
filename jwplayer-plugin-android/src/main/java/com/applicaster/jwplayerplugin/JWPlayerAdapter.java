@@ -12,7 +12,6 @@ import com.applicaster.plugin_manager.login.LoginContract;
 import com.applicaster.plugin_manager.login.LoginManager;
 import com.applicaster.plugin_manager.playersmanager.Playable;
 import com.applicaster.plugin_manager.playersmanager.PlayableConfiguration;
-import com.applicaster.util.StringUtil;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.core.PlayerState;
 
@@ -175,12 +174,23 @@ public class JWPlayerAdapter extends BasePlayer{
         /**
          * if item is not locked continue to play, otherwise call login with playable item.
          */
-        LoginContract loginPlugin = LoginManager.getLoginPlugin();
-        if (loginPlugin != null && loginPlugin.isItemLocked(getFirstPlayable()) && !loginPlugin.isTokenValid()) {
-            loginPlugin.login(getContext(), getFirstPlayable(), null, new LoginContract.Callback() {
+        final LoginContract loginPlugin = LoginManager.getLoginPlugin();
+        if (loginPlugin != null ){
+
+            loginPlugin.isItemLocked(getContext(), getFirstPlayable(), new LoginContract.Callback() {
                 @Override
                 public void onResult(boolean result) {
                     if (result) {
+                        loginPlugin.login(getContext(), getFirstPlayable(), null, new LoginContract.Callback() {
+                            @Override
+                            public void onResult(boolean result) {
+                                if (result) {
+                                    PlayerLoader applicasterPlayerLoader = new PlayerLoader(new ApplicaterPlayerLoaderListener(isInline));
+                                    applicasterPlayerLoader.loadItem();
+                                }
+                            }
+                        });
+                    } else {
                         PlayerLoader applicasterPlayerLoader = new PlayerLoader(new ApplicaterPlayerLoaderListener(isInline));
                         applicasterPlayerLoader.loadItem();
                     }
@@ -190,6 +200,7 @@ public class JWPlayerAdapter extends BasePlayer{
             PlayerLoader applicasterPlayerLoader = new PlayerLoader(new ApplicaterPlayerLoaderListener(isInline));
             applicasterPlayerLoader.loadItem();
         }
+
     }
 
     private void displayVideo(boolean isInline){
