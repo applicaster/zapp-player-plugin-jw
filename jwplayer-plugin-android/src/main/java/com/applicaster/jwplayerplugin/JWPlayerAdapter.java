@@ -206,7 +206,6 @@ public class JWPlayerAdapter extends BasePlayer{
     private void displayVideo(boolean isInline){
         if (isInline){
             jwPlayerView.load( JWPlayerUtil.getPlaylistItem(getFirstPlayable()) );
-            jwPlayerView.play();
         }else {
             JWPlayerActivity.startPlayerActivity(getContext(), getFirstPlayable(), getPluginConfigurationParams());
         }
