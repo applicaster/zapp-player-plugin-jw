@@ -78,17 +78,17 @@ public class JWPlayerActivity extends AppCompatActivity{
     }
 
 
-//    @Override
-//    public boolean onKeyDown(int keyCode, KeyEvent event) {
-//        // Exit fullscreen when the user pressed the Back button
-//        if (keyCode == KeyEvent.KEYCODE_BACK) {
-//            if (mPlayerView.getFullscreen()) {
-//                mPlayerView.setFullscreen(false, true);
-//                return false;
-//            }
-//        }
-//        return super.onKeyDown(keyCode, event);
-//    }
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        // Exit fullscreen when the user pressed the Back button
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (mPlayerView.getFullscreen()) {
+                mPlayerView.setFullscreen(false, true);
+                return false;
+            }
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 
     public static void startPlayerActivity(Context context, Playable playable, Map<String,String> params) {
         Intent intent = new Intent(context, JWPlayerActivity.class);

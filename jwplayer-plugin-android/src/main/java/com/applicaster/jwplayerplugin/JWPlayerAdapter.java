@@ -18,6 +18,7 @@ import com.longtailvideo.jwplayer.configuration.PlayerConfig;
 import com.longtailvideo.jwplayer.core.PlayerState;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
+import com.longtailvideo.jwplayer.fullscreen.DefaultFullscreenHandler;
 import com.longtailvideo.jwplayer.fullscreen.FullscreenHandler;
 import com.longtailvideo.jwplayer.media.ads.AdSource;
 import com.longtailvideo.jwplayer.media.ads.VMAPAdvertising;
@@ -230,6 +231,7 @@ public class JWPlayerAdapter extends BasePlayer implements FullscreenHandler, Vi
 
     @Override
     public void onFullscreenRequested() {
+        jwPlayerView.setFullscreen(false, false);
         displayVideo(false);
         Log.d(JWPlayerAdapter.TAG, "onFullscreenRequested");
     }
