@@ -14,21 +14,14 @@ import com.applicaster.plugin_manager.login.LoginManager;
 import com.applicaster.plugin_manager.playersmanager.Playable;
 import com.applicaster.plugin_manager.playersmanager.PlayableConfiguration;
 import com.longtailvideo.jwplayer.JWPlayerView;
-import com.longtailvideo.jwplayer.configuration.PlayerConfig;
 import com.longtailvideo.jwplayer.core.PlayerState;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
-import com.longtailvideo.jwplayer.fullscreen.DefaultFullscreenHandler;
 import com.longtailvideo.jwplayer.fullscreen.FullscreenHandler;
-import com.longtailvideo.jwplayer.media.ads.AdSource;
-import com.longtailvideo.jwplayer.media.ads.VMAPAdvertising;
-import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class JWPlayerAdapter extends BasePlayer implements FullscreenHandler, VideoPlayerEvents.OnFullscreenListener{
+public class JWPlayerAdapter extends BasePlayer implements FullscreenHandler, VideoPlayerEvents.OnFullscreenListener {
 
     public static final String TAG = "JWPLAYER_DEBUG_KEY";
     private static final String LICENSE_KEY = "LICENSE_KEY";
@@ -127,6 +120,7 @@ public class JWPlayerAdapter extends BasePlayer implements FullscreenHandler, Vi
         jwPlayerContainer =new JWPlayerContainer(videoContainerView.getContext());
         jwPlayerView = jwPlayerContainer.getJWPlayerView();
         jwPlayerView.setFullscreenHandler(this);
+        jwPlayerView.addOnFullscreenListener(this);
 
         ViewGroup.LayoutParams playerContainerLayoutParams
                 = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT
@@ -272,9 +266,11 @@ public class JWPlayerAdapter extends BasePlayer implements FullscreenHandler, Vi
 
     @Override
     public void onFullscreen(FullscreenEvent fullscreenEvent) {
-        Log.d(JWPlayerAdapter.TAG, "fullscreenEvent= "+fullscreenEvent.toString());
+        if (jwPlayerView.getFullscreen()) {
+            jwPlayerView.setFullscreen(false, false);
+            displayVideo(false);
+        }
     }
-
 
     /************************** PlayerLoaderI ********************/
     private class ApplicaterPlayerLoaderListener implements PlayerLoaderI {
