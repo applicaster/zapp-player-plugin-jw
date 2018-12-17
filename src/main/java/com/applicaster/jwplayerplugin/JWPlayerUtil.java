@@ -4,7 +4,6 @@ import com.applicaster.player.VideoAdsUtil;
 import com.applicaster.plugin_manager.playersmanager.Playable;
 import com.longtailvideo.jwplayer.media.ads.AdBreak;
 import com.longtailvideo.jwplayer.media.ads.AdSource;
-import com.longtailvideo.jwplayer.media.ads.ImaAdvertising;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 import java.util.ArrayList;
@@ -18,6 +17,22 @@ public class JWPlayerUtil {
     public static PlaylistItem getPlaylistItem(Playable playable){
         PlaylistItem result=null;
 
+
+        if (playable !=null) {
+            // Load a media source
+            result = new PlaylistItem.Builder()
+                    .file(playable.getContentVideoURL())
+                    .title(playable.getPlayableName())
+                    .description(playable.getPlayableDescription())
+                    .adSchedule(getAdSchedule(playable))
+                    .build();
+        }
+
+        return result;
+
+    }
+
+    private static List<AdBreak> getAdSchedule(Playable playable){
         // Create your ad schedule
         List<AdBreak> adSchedule = new ArrayList<>();
 
@@ -26,17 +41,6 @@ public class JWPlayerUtil {
 
         adSchedule.add(adBreak);
 
-        if (playable !=null) {
-            // Load a media source
-            result = new PlaylistItem.Builder()
-                    .file(playable.getContentVideoURL())
-                    .title(playable.getPlayableName())
-                    .description(playable.getPlayableDescription())
-                    .adSchedule(adSchedule)
-                    .build();
-        }
-
-        return result;
-
+        return adSchedule;
     }
 }
