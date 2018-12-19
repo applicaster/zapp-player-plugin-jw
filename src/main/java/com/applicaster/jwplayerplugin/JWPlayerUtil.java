@@ -62,14 +62,11 @@ public class JWPlayerUtil {
 
     private static int getMidrollInterval(){
         int interval  = 0;
-        String extensionValue = (String) AppData.getAPExtension(EXTERNAL_PLAYER_MIDROLL_INTERVAL);
-        if(extensionValue != null) {
             try {
-                interval = (Integer.parseInt((String) AppData.getAPExtension(MIDROLL_INTERVAL)));
+                interval = (Integer.parseInt((String) AppData.getAPExtension(EXTERNAL_PLAYER_MIDROLL_INTERVAL)));
             } catch (NumberFormatException e) {
                 e.printStackTrace();
             }
-        }
         return interval;
     }
 }
