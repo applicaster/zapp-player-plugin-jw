@@ -3,12 +3,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.longtailvideo.jwplayer.JWPlayerView
-        xmlns:jwp="http://schemas.android.com/apk/lib/com.longtailvideo.jwplayer"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/playerView"
-        android:background="@color/red"
-        jwp:jw_autostart="true"/>
+        <com.applicaster.jwplayerplugin.JWPlayerContainer
+            xmlns:jwp="http://schemas.android.com/apk/lib/com.longtailvideo.jwplayer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/playerView"
+            jwp:jw_autostart="true"/>
 
 </FrameLayout>

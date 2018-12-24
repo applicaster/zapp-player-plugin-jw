@@ -1,37 +1,49 @@
 package com.applicaster.jwplayerplugin;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.LinearLayout;
 
 import com.applicaster.player.Player;
 import com.applicaster.player.PlayerLoaderI;
 import com.applicaster.plugin_manager.playersmanager.Playable;
 import com.longtailvideo.jwplayer.JWPlayerView;
+import com.longtailvideo.jwplayer.events.FullscreenEvent;
+import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 import java.util.Map;
 
-public class JWPlayerActivity extends AppCompatActivity{
+public class JWPlayerActivity extends AppCompatActivity implements VideoPlayerEvents.OnFullscreenListener{
 
     private static final String PLAYABLE_KEY = "playable_key";
     /**
      * Reference to the {@link JWPlayerView}
      */
     private JWPlayerView mPlayerView;
+    JWPlayerContainer jwPlayerContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_jwplayer);
-        mPlayerView = findViewById(R.id.playerView);
+
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+
+        jwPlayerContainer =  findViewById(R.id.playerView);
+        mPlayerView = jwPlayerContainer.getJWPlayerView();
+        mPlayerView.addOnFullscreenListener(this);
 
 //        // Keep the screen on during playback
 //        new KeepScreenOnHandler(mPlayerView, getWindow());
@@ -88,6 +100,29 @@ public class JWPlayerActivity extends AppCompatActivity{
             }
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    /**
+     * Handles JW Player going to and returning from fullscreen by hiding the ActionBar
+     *
+     * @param fullscreenEvent true if the player is fullscreen
+     */
+    @Override
+    public void onFullscreen(FullscreenEvent fullscreenEvent) {
+
+
+        if (fullscreenEvent.getFullscreen()) {
+//                LinearLayout.LayoutParams toFullscreen = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.MATCH_PARENT);
+//                mPlayerView.setLayoutParams(toFullscreen);
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        } else {
+//                LinearLayout.LayoutParams toMinimize = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,0,1);
+//                mPlayerView.setLayoutParams(toMinimize);
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
+
+        // When going to Fullscreen we want to set fitsSystemWindows="false"
+        jwPlayerContainer.setFitsSystemWindows(!fullscreenEvent.getFullscreen());
     }
 
     public static void startPlayerActivity(Context context, Playable playable, Map<String,String> params) {
