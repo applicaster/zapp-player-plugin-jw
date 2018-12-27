@@ -1,5 +1,6 @@
 package com.applicaster.jwplayerplugin;
 
+import com.applicaster.atom.model.APAtomEntry;
 import com.applicaster.player.VideoAdsUtil;
 import com.applicaster.plugin_manager.playersmanager.Playable;
 import com.applicaster.util.AppData;
@@ -8,11 +9,10 @@ import com.longtailvideo.jwplayer.media.ads.AdSource;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import javax.annotation.CheckReturnValue;
-
-import static com.applicaster.player.VideoAdsUtil.MIDROLL_INTERVAL;
 
 @CheckReturnValue
 public class JWPlayerUtil {
@@ -37,6 +37,38 @@ public class JWPlayerUtil {
     }
 
     private static List<AdBreak> getAdSchedule(Playable playable){
+        List<AdBreak> adSchedule = new ArrayList<>();
+
+        if (playable instanceof APAtomEntry.APAtomEntryPlayable) {
+            List<LinkedHashMap<String,String>> advertisingList = ((APAtomEntry.APAtomEntryPlayable) playable).getEntry().getExtension("videoAds", ArrayList.class);
+            adSchedule = getJWAdScheduler(advertisingList);
+        }
+
+        if (adSchedule.size()==0){
+            adSchedule=getApplicasterAdScheduler(playable);
+        }
+
+        return adSchedule;
+    }
+
+
+    private static List<AdBreak> getJWAdScheduler(List<LinkedHashMap<String, String>> advertisingList){
+        List<AdBreak> result = new ArrayList<>();
+
+        if (advertisingList!=null) {
+            for (int i = 0; i < advertisingList.size(); i++) {
+                LinkedHashMap<String,String> advertisingModel = advertisingList.get(i);
+                AdBreak adBreak = new AdBreak(advertisingModel.get("offset"), AdSource.valueByName(advertisingModel.get("type")), advertisingModel.get("ad_url"));
+                result.add(adBreak);
+            }
+        }
+
+        return result;
+
+    }
+
+    private static List<AdBreak> getApplicasterAdScheduler(Playable playable){
+
         // Create your ad schedule
         List<AdBreak> adSchedule = new ArrayList<>();
 
@@ -59,7 +91,7 @@ public class JWPlayerUtil {
 
         return adSchedule;
     }
-
+    
     private static int getMidrollInterval(){
         int interval  = 0;
             try {
