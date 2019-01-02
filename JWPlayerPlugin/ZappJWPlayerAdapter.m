@@ -27,9 +27,10 @@ static NSString *const kPlayableItemsKey = @"playable_items";
     [JWPlayerController setPlayerKey:playerKey];
     
     ZappJWPlayerAdapter *instance = [ZappJWPlayerAdapter new];
-    instance.playerViewController = [JWPlayerViewController new];
-    instance.currentPlayableItem = items.firstObject;
     instance.configurationJSON = configurationJSON;
+    instance.playerViewController = [JWPlayerViewController new];
+    instance.playerViewController.configurationJSON = configurationJSON;
+    instance.currentPlayableItem = items.firstObject;
     instance.currentPlayableItems = items;
     
     return instance;
@@ -203,6 +204,15 @@ static NSString *const kPlayableItemsKey = @"playable_items";
     return self.currentPlayerState;
 }
 
+- (void)setupPlayerWithCurrentPlayableItem {
+    [self.playerViewController setupPlayerWithPlayableItem:self.currentPlayableItem];
+    self.playerViewController.isLive = [self.currentPlayableItem isKindOfClass:[APChannel class]];
+    
+    // Setup Ads
+    NSArray *adsArray = self.currentPlayableItem.extensionsDictionary[@"video_ads"];
+    [self.playerViewController setupPlayerAdvertisingWithConfiguration:adsArray];
+}
+
 - (void)handleUserComply:(BOOL)isUserComply
              loginPlugin:(NSObject<ZPLoginProviderUserDataProtocol> *)plugin
       rootViewController:(UIViewController *)rootViewController
@@ -247,8 +257,9 @@ static NSString *const kPlayableItemsKey = @"playable_items";
             completion:(void (^)(void))completion {
     __block typeof(self) blockSelf = self;
     [self loadItemIfNeeded:^{
-        [blockSelf.playerViewController setupPlayerWithPlayableItem:blockSelf.currentPlayableItem];
+        [blockSelf setupPlayerWithCurrentPlayableItem];
         blockSelf.playerViewController.isPresentedFullScreen = YES;
+        
         [[rootViewController topmostModalViewController] presentViewController:blockSelf.playerViewController
                                                                       animated:configuration.animated
                                                                     completion:^{
@@ -265,7 +276,7 @@ static NSString *const kPlayableItemsKey = @"playable_items";
         completion:(void (^)(void))completion {
     __block typeof(self) blockSelf = self;
     [self loadItemIfNeeded:^{
-        [blockSelf.playerViewController setupPlayerWithPlayableItem:blockSelf.currentPlayableItem];
+        [blockSelf setupPlayerWithCurrentPlayableItem];
         blockSelf.playerViewController.isPresentedFullScreen = NO;
         [rootViewController addChildViewController:blockSelf.playerViewController toView:container];
         [blockSelf.playerViewController.view matchParent];
@@ -282,7 +293,7 @@ static NSString *const kPlayableItemsKey = @"playable_items";
         __block typeof(self) blockSelf = self;
         APModel *model = (APModel *)[self currentPlayableItem];
         [model loadWithCompletionHandler:^(BOOL success, APModel *model) {
-            blockSelf.currentPlayableItem = model;
+            blockSelf.currentPlayableItem = (NSObject <ZPPlayable>*)model;
             completion();
         }];
     } else {

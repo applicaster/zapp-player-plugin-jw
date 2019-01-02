@@ -15,6 +15,7 @@
 }
 
 @property (nonatomic, strong) JWPlayerController *player;
+@property (nonatomic, strong) JWAdConfig *adConfig;
 
 @end
 
@@ -67,7 +68,98 @@
     config.repeat = NO;
     config.autostart = YES;
     
+    if (self.adConfig) {
+        config.advertising = self.adConfig;
+        self.adConfig = nil;
+    }
+    
     self.player = [[JWPlayerController alloc] initWithConfig:config];
+}
+
+- (void)setupPlayerAdvertisingWithConfiguration:(NSArray *)ads {
+    JWAdConfig *adConfig = [self createBaseAdConfiguration];
+    NSMutableArray *scheduleArray = [NSMutableArray new];
+    
+    if (ads != nil) {
+        // ad configuration dictionary scheduling
+        for (NSDictionary *adConfiguration in ads)
+        {
+            NSString *type = adConfiguration[@"type"];
+            
+            if ([type  isEqual: @"vmap"]) {
+                // we are using a vmap configuration that includes scheduling inside one url
+                adConfig.adVmap = adConfiguration[@"ad_url"];
+                break;
+            } else {
+                // We need to schedule the ads
+                JWAdBreak *adBreak = [self createAdBreakWithTag:adConfiguration[@"ad_url"] offset:adConfiguration[@"offset"]];
+                
+                if (adBreak) {
+                    [scheduleArray addObject:adBreak];
+                    
+                    if ([type  isEqual: @"googleima"]) {
+                        adConfig.client = JWAdClientGoogima;
+                    } else {
+                        adConfig.client = JWAdClientVast;
+                    }
+                }
+            }
+        }
+    } else {
+        // configure fallback ads according to configuration json
+        if (self.isLive) {
+            // Grab live ad fallbackconfiguration
+            JWAdBreak *preroll = [self createAdBreakWithTag:self.configurationJSON[@"live_preroll_ad_url"]
+                                                     offset:@"pre"];
+            JWAdBreak *midRoll = [self createAdBreakWithTag:self.configurationJSON[@"live_midroll_ad_url"]
+                                                     offset:self.configurationJSON[@"live_midroll_offset"]];
+            
+            if ([self.configurationJSON[@"live_ad_type"]  isEqual: @"googleima"]) {
+                adConfig.client = JWAdClientGoogima;
+            } else {
+                adConfig.client = JWAdClientVast;
+            }
+            
+            if (preroll != nil) {
+                [scheduleArray addObject:preroll];
+            }
+            
+            if (midRoll != nil) {
+                [scheduleArray addObject:midRoll];
+            }
+        } else {
+            // Grab live ad fallbackconfiguration
+            JWAdBreak *preroll = [self createAdBreakWithTag:self.configurationJSON[@"vod_preroll_ad_url"]
+                                                     offset:@"pre"];
+            JWAdBreak *midRoll = [self createAdBreakWithTag:self.configurationJSON[@"vod_midroll_ad_url"]
+                                                     offset:self.configurationJSON[@"vod_midroll_offset"]];
+            
+            if ([self.configurationJSON[@"vod_ad_type"]  isEqual: @"googleima"]) {
+                adConfig.client = JWAdClientGoogima;
+            } else {
+                adConfig.client = JWAdClientVast;
+            }
+            
+            if (preroll != nil) {
+                [scheduleArray addObject:preroll];
+            }
+            
+            if (midRoll != nil) {
+                [scheduleArray addObject:midRoll];
+            }
+        }
+    }
+    
+    // Set up the schedule if needed
+    if ([scheduleArray count] > 0) {
+        adConfig.schedule = scheduleArray;
+    }
+    
+    if (self.player) {
+        self.player.config.advertising = adConfig;
+    } else {
+        self.adConfig = adConfig;
+    }
 }
 
 - (void)play
@@ -93,6 +185,26 @@
 }
 
 #pragma mark - private
+
+- (JWAdConfig *)createBaseAdConfiguration {
+    JWAdConfig *adConfig = [JWAdConfig new];
+    adConfig.adMessage = (self.configurationJSON[@"ad_message"] ? self.configurationJSON[@"ad_message"] : @"Ad duration countdown xx");
+    adConfig.skipMessage = (self.configurationJSON[@"skip_message"] ? self.configurationJSON[@"skip_message"] : @"Skip in xx");
+    adConfig.skipText = (self.configurationJSON[@"skip_text"] ? self.configurationJSON[@"skip_text"] : @"Move on");
+    adConfig.skipOffset = (self.configurationJSON[@"skip_offset"] ? [self.configurationJSON[@"skip_offset"] intValue] : 3);
+    
+    return adConfig;
+}
+
+- (JWAdBreak *)createAdBreakWithTag:(NSString *)tag
+                             offset:(NSString *)offset
+{
+    if ([tag isNotEmptyOrWhiteSpaces] && [offset isNotEmptyOrWhiteSpaces]) {
+        return [JWAdBreak adBreakWithTag:tag offset:offset];
+    } else {
+        return nil;
+    }
+}
 
 - (void)setPlayer:(JWPlayerController *)player {
     

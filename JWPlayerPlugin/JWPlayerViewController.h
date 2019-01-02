@@ -15,8 +15,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign) BOOL isPresentedFullScreen;
 @property (nonatomic, strong) UIButton *closeButton;
+@property (nonatomic, strong) NSDictionary *configurationJSON;
+@property (nonatomic, assign) BOOL isLive;
 
 - (void)setupPlayerWithPlayableItem:(NSObject <ZPPlayable> *)playableItem;
+- (void)setupPlayerAdvertisingWithConfiguration:(NSArray *)ads;
 - (void)play;
 - (void)pause;
 - (void)stop;
