@@ -12,7 +12,7 @@
   "platform": "ios",
   "author_name": "Liviu Romascanu",
   "author_email": "l.romasca@applicaster.com",
-  "manifest_version": "2.2.2",
+  "manifest_version": "2.3.0",
   "name": "JWPlayer",
   "description": "JW Player Plugin for Applicaster Zapp Platform",
   "type": "player",
@@ -20,7 +20,7 @@
   "identifier": "JWPlayer-Plugin-iOS",
   "ui_builder_support": true,
   "dependency_name": "JWPlayerPlugin",
-  "dependency_version": "2.2.2",
+  "dependency_version": "2.3.0",
   "whitelisted_account_ids": [],
   "min_zapp_sdk": "9.0.0",
   "deprecated_since_zapp_sdk": "",
@@ -31,6 +31,46 @@
       "type": "text",
       "key": "playerKey",
       "tooltip_text": "License key for JWPlayer"
+    },
+    {
+      "type": "text",
+      "key": "live_preroll_ad_url",
+      "tooltip_text": "Live prerol ad URL"
+    },
+    {
+      "type": "text",
+      "key": "live_midroll_ad_url",
+      "tooltip_text": "Live midroll ad URL"
+    },
+    {
+      "type": "text",
+      "key": "live_midroll_offset",
+      "tooltip_text": "Live midroll ad offset"
+    },
+    {
+      "type": "text",
+      "key": "live_ad_type",
+      "tooltip_text": "Live ad type"
+    },
+    {
+      "type": "text",
+      "key": "vod_preroll_ad_url",
+      "tooltip_text": "VOD prerol ad URL"
+    },
+    {
+      "type": "text",
+      "key": "vod_midroll_ad_url",
+      "tooltip_text": "VOD midroll ad URL"
+    },
+    {
+      "type": "text",
+      "key": "vod_midroll_offset",
+      "tooltip_text": "VOD midroll ad offset"
+    },
+    {
+      "type": "text",
+      "key": "vod_ad_type",
+      "tooltip_text": "VOD ad type"
     }
   ]
 }

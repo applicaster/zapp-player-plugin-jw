@@ -14,7 +14,7 @@ PODS:
   - AFNetworking/Serialization (3.2.1)
   - AFNetworking/UIKit (3.2.1):
     - AFNetworking/NSURLSession
-  - ApplicasterSDK (8.2.9):
+  - ApplicasterSDK (8.2.11):
     - AFNetworking (= 3.2.1)
     - CocoaLumberjack/Swift (= 3.4.2)
     - FBNotifications (= 1.0.1)
@@ -48,8 +48,8 @@ PODS:
   - FBSDKShareKit (4.38.0):
     - FBSDKCoreKit
   - GoogleAds-IMA-iOS-SDK (3.7.2)
-  - JWPlayer-SDK (3.1.3)
-  - JWPlayerPlugin (2.2.0):
+  - JWPlayer-SDK (3.1.4)
+  - JWPlayerPlugin (2.2.2):
     - ApplicasterSDK
     - JWPlayer-SDK (~> 3.0)
     - ZappPlugins
@@ -64,10 +64,10 @@ PODS:
     - ZappPlugins
   - ZappGeneralPluginsSDK (6.0.1):
     - ZappPlugins
-  - ZappLoginPluginsSDK (6.0.0):
+  - ZappLoginPluginsSDK (6.0.1):
     - AFNetworking
     - ZappPlugins
-  - ZappPlugins (7.1.11)
+  - ZappPlugins (7.1.16)
   - ZappPushPluginsSDK (6.0.2):
     - Toaster
     - ZappPlugins
@@ -75,6 +75,7 @@ PODS:
 DEPENDENCIES:
   - ApplicasterSDK
   - JWPlayerPlugin (from `JWPlayerPlugin.podspec`)
+  - ZappLoginPluginsSDK
   - ZappPlugins
 
 SPEC REPOS:
@@ -108,7 +109,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
-  ApplicasterSDK: fe8a34b53661fd4c6776e09514b508903a14cb6b
+  ApplicasterSDK: b6dbd3462fe99c87a41e23a9251bcf568b8bb8a2
   Bolts: ac6567323eac61e203f6a9763667d0f711be34c8
   CocoaLumberjack: db7cc9e464771f12054c22ff6947c5a58d43a0fd
   FBNotifications: 3f1a9e43ffa2979a685eec29c960ca6a15c70be9
@@ -116,8 +117,8 @@ SPEC CHECKSUMS:
   FBSDKLoginKit: 634fa27e72e33620eb6389253337342c03d4a407
   FBSDKShareKit: 00290e3db446eed603ff80ac629dcc5e80cf8b74
   GoogleAds-IMA-iOS-SDK: 58693326633b35aa7e95c45693ec0bb8e88086de
-  JWPlayer-SDK: d111085699bb9d8ba74d991b7d19961135a75425
-  JWPlayerPlugin: 0a9ac29dffb87fc7aaf99429af844954429adfa3
+  JWPlayer-SDK: 423ea90a4136a6f48142fbf5faee8d8dce3a4fb7
+  JWPlayerPlugin: 2c48542c6f53e64a17664070cdab8be937398126
   SSZipArchive: 1e8e53dcb11bca3ded4738958dc49fc467320a14
   Toaster: 7464b87db5bd9453043bd3cf0fc79219cc9803f1
   TTTAttributedLabel: f8c7f1dbc7b8f7168e23e8b4764dda2e3b74aae8
@@ -125,10 +126,10 @@ SPEC CHECKSUMS:
   TwitterKit: a2e60ddcedbf54091eac6f27685ca7a87681e1d7
   ZappAnalyticsPluginsSDK: 554af27bf5cb4f92685640a0d5ec6e56519b1c3d
   ZappGeneralPluginsSDK: bf68a3e4f1e0e69f10419ce723123f6847d0b627
-  ZappLoginPluginsSDK: bf9915f6c428a2a1c01eb5d890fb6fe31e7cc5d5
-  ZappPlugins: d8605cbb6a58cdbe8bb76ad3bbc096ababdf54b0
+  ZappLoginPluginsSDK: bc6efc8a4bee76c85bddf78c3d8476027477081c
+  ZappPlugins: 147eab8d1a0c897d0b57b6de57e0a89ee849e267
   ZappPushPluginsSDK: aea8a6b5296f4eb329a54d6af649bf967e3ffaf3
 
-PODFILE CHECKSUM: 7ca0fb0f40d5f95bf8a73073e9ff37f657862b7c
+PODFILE CHECKSUM: 106fb407daedb3b5f0d48413984435647abfe39a
 
 COCOAPODS: 1.5.3

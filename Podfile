@@ -10,6 +10,7 @@ target 'JWPlayerPlugin' do
   platform :ios, '9.0'
   pod 'ZappPlugins'
   pod 'ApplicasterSDK'
+  pod 'ZappLoginPluginsSDK'
   pod 'JWPlayerPlugin', :path => 'JWPlayerPlugin.podspec'
 
 end
