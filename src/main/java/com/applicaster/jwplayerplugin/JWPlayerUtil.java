@@ -4,6 +4,7 @@ import com.applicaster.atom.model.APAtomEntry;
 import com.applicaster.player.VideoAdsUtil;
 import com.applicaster.plugin_manager.playersmanager.Playable;
 import com.applicaster.util.AppData;
+import com.applicaster.util.StringUtil;
 import com.longtailvideo.jwplayer.media.ads.AdBreak;
 import com.longtailvideo.jwplayer.media.ads.AdSource;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
@@ -11,6 +12,7 @@ import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.CheckReturnValue;
 
@@ -19,8 +21,11 @@ public class JWPlayerUtil {
     final static String EXTERNAL_PLAYER_MIDROLL_INTERVAL="midroll_interval_external_player";
 
     public static PlaylistItem getPlaylistItem(Playable playable){
-        PlaylistItem result=null;
+        return getPlaylistItem(playable, null);
+    }
 
+    public static PlaylistItem getPlaylistItem(Playable playable, Map pluginConfiguration){
+        PlaylistItem result=null;
 
         if (playable !=null) {
             // Load a media source
@@ -28,7 +33,7 @@ public class JWPlayerUtil {
                     .file(playable.getContentVideoURL())
                     .title(playable.getPlayableName())
                     .description(playable.getPlayableDescription())
-                    .adSchedule(getAdSchedule(playable))
+                    .adSchedule(getAdSchedule(playable, pluginConfiguration))
                     .build();
         }
 
@@ -36,7 +41,7 @@ public class JWPlayerUtil {
 
     }
 
-    private static List<AdBreak> getAdSchedule(Playable playable){
+    private static List<AdBreak> getAdSchedule(Playable playable, Map pluginConfiguration){
         List<AdBreak> adSchedule = new ArrayList<>();
 
         if (playable instanceof APAtomEntry.APAtomEntryPlayable) {
@@ -45,7 +50,11 @@ public class JWPlayerUtil {
         }
 
         if (adSchedule.size()==0){
-            adSchedule=getApplicasterAdScheduler(playable);
+            adSchedule = getPluginConfigurationAdScheduler(playable,pluginConfiguration);
+        }
+
+        if (adSchedule.size()==0){
+            adSchedule = getApplicasterAdScheduler(playable);
         }
 
         return adSchedule;
@@ -65,6 +74,45 @@ public class JWPlayerUtil {
 
         return result;
 
+    }
+
+    private static List<AdBreak> getPluginConfigurationAdScheduler(Playable playable, Map pluginConfiguration){
+
+        // Create your ad schedule
+        List<AdBreak> adSchedule = new ArrayList<>();
+
+        if (pluginConfiguration!=null) {
+            if (playable.isLive()) {
+                String liveAdUrl = (String) pluginConfiguration.get("live_ad_url");
+                String liveAdOffset = (String) pluginConfiguration.get("live_ad_offset");
+                String liveAdType = (String) pluginConfiguration.get("live_ad_type");
+                AdSource liveAdSource = AdSource.valueByName(liveAdType);
+
+                if (liveAdSource != null && StringUtil.isNotEmpty(liveAdUrl) && StringUtil.isNotEmpty(liveAdOffset)) {
+                    AdBreak adBreak = new AdBreak(liveAdOffset, liveAdSource, liveAdUrl); // "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator=");
+                    adSchedule.add(adBreak);
+                }
+
+            } else {
+                String vodPreAdUrl = (String) pluginConfiguration.get("vod_preroll_ad_url");
+                String vodAdType = (String) pluginConfiguration.get("vod_ad_type");
+                AdSource vodAdSource = AdSource.valueByName(vodAdType);
+
+                if (vodAdSource != null && StringUtil.isNotEmpty(vodPreAdUrl)) {
+                    AdBreak adBreak = new AdBreak("pre", AdSource.valueByName(vodAdType), vodPreAdUrl); // "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator=");
+                    adSchedule.add(adBreak);
+                }
+
+                String vodMidAdUrl = (String) pluginConfiguration.get("vod_midroll_ad_url");
+                String vodMidAdOffset = (String) pluginConfiguration.get("vod_midroll_offset");
+                if (vodAdSource != null && StringUtil.isNotEmpty(vodMidAdUrl) && StringUtil.isNotEmpty(vodMidAdOffset)) {
+                    AdBreak postrollAdBreak = new AdBreak(vodMidAdOffset, AdSource.valueByName(vodAdType), vodMidAdUrl);
+                    adSchedule.add(postrollAdBreak);
+                }
+            }
+        }
+
+        return adSchedule;
     }
 
     private static List<AdBreak> getApplicasterAdScheduler(Playable playable){

@@ -214,7 +214,7 @@ public class JWPlayerAdapter extends BasePlayer implements FullscreenHandler, Vi
     private void displayVideo(boolean isInline){
 
         if (isInline){
-            jwPlayerView.load( JWPlayerUtil.getPlaylistItem(getFirstPlayable()) );
+            jwPlayerView.load( JWPlayerUtil.getPlaylistItem(getFirstPlayable(), getPluginConfigurationParams()));
             jwPlayerView.play();
         }else {
             JWPlayerActivity.startPlayerActivity(getContext(), getFirstPlayable(), getPluginConfigurationParams());

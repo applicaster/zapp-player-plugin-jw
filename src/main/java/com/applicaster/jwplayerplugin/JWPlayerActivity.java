@@ -17,17 +17,22 @@ import android.widget.LinearLayout;
 
 import com.applicaster.player.Player;
 import com.applicaster.player.PlayerLoaderI;
+import com.applicaster.player.defaultplayer.gmf.layeredvideo.VideoPlayer;
 import com.applicaster.plugin_manager.playersmanager.Playable;
+import com.applicaster.plugin_manager.playersmanager.internal.PlayersManager;
+import com.google.android.exoplayer2.PlayerMessage;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
+import java.io.Serializable;
 import java.util.Map;
 
 public class JWPlayerActivity extends AppCompatActivity implements VideoPlayerEvents.OnFullscreenListener{
 
     private static final String PLAYABLE_KEY = "playable_key";
+    private static final String PLUGIN_CONFIGURATION_KEY = "plugin_configuration_key";
     /**
      * Reference to the {@link JWPlayerView}
      */
@@ -54,7 +59,7 @@ public class JWPlayerActivity extends AppCompatActivity implements VideoPlayerEv
         Playable playable = (Playable) getIntent().getSerializableExtra(PLAYABLE_KEY);
 
         // Load a media source
-        mPlayerView.load( JWPlayerUtil.getPlaylistItem(playable) );
+        mPlayerView.load( JWPlayerUtil.getPlaylistItem(playable, PlayersManager.getCurrentPlayer().getPluginConfigurationParams()) );
         mPlayerView.play();
 
         // Get a reference to the CastManager
