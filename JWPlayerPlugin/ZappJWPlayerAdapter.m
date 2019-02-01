@@ -209,7 +209,7 @@ static NSString *const kPlayableItemsKey = @"playable_items";
     self.playerViewController.isLive = [self.currentPlayableItem isKindOfClass:[APChannel class]];
     
     // Setup Ads
-    NSArray *adsArray = self.currentPlayableItem.extensionsDictionary[@"video_ads"];
+    NSArray *adsArray = self.currentPlayableItem.extensionsDictionary[@"videoAds"];
     [self.playerViewController setupPlayerAdvertisingWithConfiguration:adsArray];
 }
 
