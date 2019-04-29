@@ -11,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -29,7 +30,7 @@ import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 import java.io.Serializable;
 import java.util.Map;
 
-public class JWPlayerActivity extends AppCompatActivity implements VideoPlayerEvents.OnFullscreenListener{
+public class JWPlayerActivity extends AppCompatActivity implements VideoPlayerEvents.OnFullscreenListener {
 
     private static final String PLAYABLE_KEY = "playable_key";
     private static final String PLUGIN_CONFIGURATION_KEY = "plugin_configuration_key";
@@ -46,7 +47,7 @@ public class JWPlayerActivity extends AppCompatActivity implements VideoPlayerEv
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
 
-        jwPlayerContainer =  findViewById(R.id.playerView);
+        jwPlayerContainer = findViewById(R.id.playerView);
         mPlayerView = jwPlayerContainer.getJWPlayerView();
         mPlayerView.addOnFullscreenListener(this);
 
@@ -59,7 +60,7 @@ public class JWPlayerActivity extends AppCompatActivity implements VideoPlayerEv
         Playable playable = (Playable) getIntent().getSerializableExtra(PLAYABLE_KEY);
 
         // Load a media source
-        mPlayerView.load( JWPlayerUtil.getPlaylistItem(playable, PlayersManager.getCurrentPlayer().getPluginConfigurationParams()) );
+        mPlayerView.load(JWPlayerUtil.getPlaylistItem(playable, PlayersManager.getCurrentPlayer().getPluginConfigurationParams()));
         mPlayerView.play();
 
         // Get a reference to the CastManager
@@ -77,7 +78,13 @@ public class JWPlayerActivity extends AppCompatActivity implements VideoPlayerEv
     protected void onResume() {
         // Let JW Player know that the app has returned from the background
         super.onResume();
-        mPlayerView.onResume();
+
+        //If the video was paused, resume & play.
+        if (mPlayerView.getState().name().equals("PAUSED")) {
+            mPlayerView.onResume();
+            mPlayerView.play();
+        }
+
     }
 
     @Override
@@ -107,6 +114,7 @@ public class JWPlayerActivity extends AppCompatActivity implements VideoPlayerEv
         return super.onKeyDown(keyCode, event);
     }
 
+
     /**
      * Handles JW Player going to and returning from fullscreen by hiding the ActionBar
      *
@@ -130,7 +138,7 @@ public class JWPlayerActivity extends AppCompatActivity implements VideoPlayerEv
         jwPlayerContainer.setFitsSystemWindows(!fullscreenEvent.getFullscreen());
     }
 
-    public static void startPlayerActivity(Context context, Playable playable, Map<String,String> params) {
+    public static void startPlayerActivity(Context context, Playable playable, Map<String, String> params) {
         Intent intent = new Intent(context, JWPlayerActivity.class);
 
         Bundle bundle = new Bundle();
