@@ -162,6 +162,30 @@
     }
 }
 
+- (void)setupPlayerSubtitleTracksWithConfiguration:(NSArray *)subtitleTracks {
+    if (self.player) {
+        NSMutableArray *subtitleTracksArray = [NSMutableArray array];
+
+        for (NSDictionary* currentSubtitleTrack in subtitleTracks)
+        {
+            NSDictionary *currentTrack;
+            currentTrack = currentSubtitleTrack;
+            NSString *subtitleTrackSource = currentTrack[@"src"];
+            NSString *subtitleTrackLabel = currentTrack[@"label"];
+
+            if (subtitleTrackSource.isNotEmpty && subtitleTrackLabel.isNotEmpty) {
+                JWTrack *validSubtitleTrack = [JWTrack trackWithFile:subtitleTrackSource label:subtitleTrackLabel];
+
+                [subtitleTracksArray addObject:validSubtitleTrack];
+            }
+        }
+
+        if ([subtitleTracksArray count] > 0) {
+            self.player.config.tracks = subtitleTracksArray;
+        }
+    }
+}
+
 - (void)play
 {
     [self.player play];
