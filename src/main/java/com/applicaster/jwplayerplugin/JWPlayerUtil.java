@@ -1,5 +1,7 @@
 package com.applicaster.jwplayerplugin;
 
+import android.util.Log;
+
 import com.applicaster.atom.model.APAtomEntry;
 import com.applicaster.player.VideoAdsUtil;
 import com.applicaster.plugin_manager.playersmanager.Playable;
@@ -36,11 +38,15 @@ public class JWPlayerUtil {
                     .description(playable.getPlayableDescription())
                     .adSchedule(getAdSchedule(playable, pluginConfiguration))
                     .build();
-
-            List<Caption> captions = getCaptions(playable);
-            if (captions.size() != 0) {
-                result.setCaptions(captions);
+            try {
+                List<Caption> captions = getCaptions(playable);
+                if (captions.size() != 0) {
+                    result.setCaptions(captions);
+                }
+            } catch (Exception e) {
+                Log.e("JWPlayerUtil", e.toString());
             }
+
         }
 
         return result;
@@ -48,17 +54,20 @@ public class JWPlayerUtil {
     }
 
     private static List<Caption> getCaptions(Playable playable) {
-        List<LinkedHashMap<String, String>> sideCarCaptions =
-                ((APAtomEntry.APAtomEntryPlayable) playable).getEntry()
-                        .getExtension("sideCarCaptions", ArrayList.class);
         List<Caption> captionList = new ArrayList<>();
 
-        if(sideCarCaptions != null) {
-            for (int i = 0; i < sideCarCaptions.size(); i++) {
-                LinkedHashMap<String, String> sideCarCaption = sideCarCaptions.get(i);
-                Caption caption = new Caption.Builder().file(sideCarCaption.get("src"))
-                        .label(sideCarCaption.get("label")).build();
-                captionList.add(caption);
+        if(playable instanceof APAtomEntry.APAtomEntryPlayable) {
+            List<LinkedHashMap<String, String>> sideCarCaptions =
+                    ((APAtomEntry.APAtomEntryPlayable) playable).getEntry()
+                            .getExtension("sideCarCaptions", ArrayList.class);
+
+            if(sideCarCaptions != null) {
+                for (int i = 0; i < sideCarCaptions.size(); i++) {
+                    LinkedHashMap<String, String> sideCarCaption = sideCarCaptions.get(i);
+                    Caption caption = new Caption.Builder().file(sideCarCaption.get("src"))
+                            .label(sideCarCaption.get("label")).build();
+                    captionList.add(caption);
+                }
             }
         }
 
