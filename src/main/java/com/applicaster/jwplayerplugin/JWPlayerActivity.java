@@ -1,39 +1,26 @@
 package com.applicaster.jwplayerplugin;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.os.PersistableBundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.util.AttributeSet;
-import android.util.Log;
 import android.view.KeyEvent;
-import android.view.View;
-import android.widget.LinearLayout;
+import android.view.WindowManager;
 
-import com.applicaster.player.Player;
-import com.applicaster.player.PlayerLoaderI;
-import com.applicaster.player.defaultplayer.gmf.layeredvideo.VideoPlayer;
 import com.applicaster.plugin_manager.playersmanager.Playable;
 import com.applicaster.plugin_manager.playersmanager.internal.PlayersManager;
-import com.google.android.exoplayer2.PlayerMessage;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
-import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
-import java.io.Serializable;
 import java.util.Map;
 
 public class JWPlayerActivity extends AppCompatActivity implements VideoPlayerEvents.OnFullscreenListener {
 
     private static final String PLAYABLE_KEY = "playable_key";
-    private static final String PLUGIN_CONFIGURATION_KEY = "plugin_configuration_key";
+
     /**
      * Reference to the {@link JWPlayerView}
      */
@@ -50,12 +37,7 @@ public class JWPlayerActivity extends AppCompatActivity implements VideoPlayerEv
         jwPlayerContainer = findViewById(R.id.playerView);
         mPlayerView = jwPlayerContainer.getJWPlayerView();
         mPlayerView.addOnFullscreenListener(this);
-
-//        // Keep the screen on during playback
-//        new KeepScreenOnHandler(mPlayerView, getWindow());
-//
-//        // Instantiate the JW Player event handler class
-//        mEventHandler = new JWEventHandler(mPlayerView, outputTextView);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         Playable playable = (Playable) getIntent().getSerializableExtra(PLAYABLE_KEY);
 
@@ -63,8 +45,6 @@ public class JWPlayerActivity extends AppCompatActivity implements VideoPlayerEv
         mPlayerView.load(JWPlayerUtil.getPlaylistItem(playable, PlayersManager.getCurrentPlayer().getPluginConfigurationParams()));
         mPlayerView.play();
 
-        // Get a reference to the CastManager
-//        mCastManager = CastManager.getInstance();
     }
 
     @Override
@@ -98,6 +78,7 @@ public class JWPlayerActivity extends AppCompatActivity implements VideoPlayerEv
     protected void onDestroy() {
         // Let JW Player know that the app is being destroyed
         mPlayerView.onDestroy();
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         super.onDestroy();
     }
 
@@ -125,12 +106,8 @@ public class JWPlayerActivity extends AppCompatActivity implements VideoPlayerEv
 
 
         if (fullscreenEvent.getFullscreen()) {
-//                LinearLayout.LayoutParams toFullscreen = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.MATCH_PARENT);
-//                mPlayerView.setLayoutParams(toFullscreen);
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         } else {
-//                LinearLayout.LayoutParams toMinimize = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,0,1);
-//                mPlayerView.setLayoutParams(toMinimize);
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
 
