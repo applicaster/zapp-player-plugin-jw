@@ -9,6 +9,7 @@
 #import "JWPlayerViewController.h"
 #import "JWPlayer_iOS_SDK/JWPlayerController.h"
 @import UIKit;
+@import ApplicasterSDK;
 
 @interface JWPlayerViewController () <JWPlayerDelegate> {
     
@@ -17,12 +18,17 @@
 @property (nonatomic, strong) JWPlayerController *player;
 @property (nonatomic, strong) JWAdConfig *adConfig;
 
+@property (nonatomic) CGFloat trackedPercentage;
+@property (nonatomic, strong) NSDictionary *extensionsDictionary;
+
 @end
 
 @implementation JWPlayerViewController
 @synthesize isPresentedFullScreen = _isPresentedFullScreen;
 @synthesize player = _player;
 @synthesize closeButton = _closeButton;
+@synthesize trackedPercentage = _trackedPercentage;
+@synthesize extensionsDictionary = _extensionsDictionary;
 
 #pragma mark - UIViewController
 
@@ -67,6 +73,12 @@
     config.controls = YES;
     config.repeat = NO;
     config.autostart = YES;
+    
+    NSLog(@"[!]: VOD.extensions: %@", [playableItem extensionsDictionary]);
+    self.extensionsDictionary = playableItem.extensionsDictionary;
+    
+    [APAnalyticsManager trackEvent:@"VOD Item: Start Player with video"
+                    withParameters:self.extensionsDictionary];
     
     if (self.adConfig) {
         config.advertising = self.adConfig;
@@ -301,6 +313,63 @@
             [self adjustButtonAlpha:event.controls];
         });
     }
+}
+
+-(void)onTime:(JWEvent<JWTimeEvent> *)event {
+    //TODO: opt-in to track this event? Could allow custom percentages as well...
+    CGFloat pos = [event position];
+    CGFloat dur = [event duration];
+    CGFloat per = (pos/dur)*100;
+    
+    if (per >= 25.0 && per < 26.0 && self.trackedPercentage < 25) {
+        NSLog(@"[!]: 25%% watched, per: %f", per);
+        self.trackedPercentage = 25;
+    } else if (per >= 50.0 && per < 51.0 && self.trackedPercentage < 50) {
+        NSLog(@"[!]: 50%% watched, per: %f", per);
+        self.trackedPercentage = 50;
+    } else if (per >= 75.0 && per < 76.0 && self.trackedPercentage < 75) {
+        NSLog(@"[!]: 75%% watched, per: %f", per);
+        self.trackedPercentage = 75;
+    } else if (per >= 95.0 && per < 96.0 && self.trackedPercentage < 95) {
+        NSLog(@"[!]: 95%% watched, per: %f", per);
+        self.trackedPercentage = 95;
+    } else {
+        return;
+    }
+    NSMutableDictionary *extensions = self.extensionsDictionary.mutableCopy;
+    [extensions setObject:[NSNumber numberWithDouble:self.trackedPercentage]
+                   forKey:@"percentage"];
+    [APAnalyticsManager trackEvent:@"VOD Item: Percentage watched"
+                    withParameters:extensions];
+}
+
+-(void)onSeek:(JWEvent<JWSeekEvent> *)event {
+    self.trackedPercentage = 0;
+}
+
+-(void)onAdPlay:(JWAdEvent<JWAdStateChangeEvent> *)event {
+    [APAnalyticsManager trackEvent:@"VOD Item: Start advert"
+                    withParameters:self.extensionsDictionary];
+}
+
+-(void)onAdPause:(JWAdEvent<JWAdStateChangeEvent> *)event {
+    [APAnalyticsManager trackEvent:@"VOD Item: Pause advert"
+                    withParameters:self.extensionsDictionary];
+}
+
+-(void)onAdComplete:(JWAdEvent<JWAdDetailEvent> *)event {
+    [APAnalyticsManager trackEvent:@"VOD Item: End advert"
+                    withParameters:self.extensionsDictionary];
+}
+
+-(void)onPlay:(JWEvent<JWStateChangeEvent> *)event {
+    [APAnalyticsManager trackEvent:@"VOD Item: Start video"
+                    withParameters:self.extensionsDictionary];
+}
+
+-(void)onPause:(JWEvent<JWStateChangeEvent> *)event {
+    [APAnalyticsManager trackEvent:@"VOD Item: Pause video"
+                    withParameters:self.extensionsDictionary];
 }
 
 @end
