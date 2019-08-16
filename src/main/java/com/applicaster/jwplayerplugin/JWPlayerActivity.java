@@ -9,23 +9,36 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.WindowManager;
 
+import com.applicaster.analytics.AnalyticsAgentUtil;
 import com.applicaster.plugin_manager.playersmanager.Playable;
 import com.applicaster.plugin_manager.playersmanager.internal.PlayersManager;
 import com.longtailvideo.jwplayer.JWPlayerView;
+import com.longtailvideo.jwplayer.events.AdCompleteEvent;
+import com.longtailvideo.jwplayer.events.AdPauseEvent;
+import com.longtailvideo.jwplayer.events.AdPlayEvent;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
+import com.longtailvideo.jwplayer.events.PauseEvent;
+import com.longtailvideo.jwplayer.events.PlayEvent;
+import com.longtailvideo.jwplayer.events.SeekEvent;
+import com.longtailvideo.jwplayer.events.TimeEvent;
+import com.longtailvideo.jwplayer.events.listeners.AdvertisingEvents;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 
+import java.util.HashMap;
 import java.util.Map;
 
-public class JWPlayerActivity extends AppCompatActivity implements VideoPlayerEvents.OnFullscreenListener {
+public class JWPlayerActivity extends AppCompatActivity implements VideoPlayerEvents.OnFullscreenListener, VideoPlayerEvents.OnTimeListener, VideoPlayerEvents.OnSeekListener, AdvertisingEvents.OnAdPlayListener, AdvertisingEvents.OnAdPauseListener, AdvertisingEvents.OnAdCompleteListener, VideoPlayerEvents.OnPlayListener, VideoPlayerEvents.OnPauseListener {
 
     private static final String PLAYABLE_KEY = "playable_key";
+    private static final String PERCENTAGE_KEY = "percentage";
 
     /**
      * Reference to the {@link JWPlayerView}
      */
     private JWPlayerView mPlayerView;
     JWPlayerContainer jwPlayerContainer;
+    private double trackedPercentage;
+    private Map<String, String> analyticsParams;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,14 +50,22 @@ public class JWPlayerActivity extends AppCompatActivity implements VideoPlayerEv
         jwPlayerContainer = findViewById(R.id.playerView);
         mPlayerView = jwPlayerContainer.getJWPlayerView();
         mPlayerView.addOnFullscreenListener(this);
+        mPlayerView.addOnTimeListener(this);
+        mPlayerView.addOnSeekListener(this);
+        mPlayerView.addOnAdPlayListener(this);
+        mPlayerView.addOnAdPauseListener(this);
+        mPlayerView.addOnAdCompleteListener(this);
+        mPlayerView.addOnPlayListener(this);
+        mPlayerView.addOnPauseListener(this);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         Playable playable = (Playable) getIntent().getSerializableExtra(PLAYABLE_KEY);
+        analyticsParams = new HashMap<>(playable.getAnalyticsParams());
+        AnalyticsAgentUtil.logEvent("VOD Item: Start Player with video", analyticsParams);
 
         // Load a media source
         mPlayerView.load(JWPlayerUtil.getPlaylistItem(playable, PlayersManager.getCurrentPlayer().getPluginConfigurationParams()));
         mPlayerView.play();
-
     }
 
     @Override
@@ -123,5 +144,56 @@ public class JWPlayerActivity extends AppCompatActivity implements VideoPlayerEv
         intent.putExtras(bundle);
 
         context.startActivity(intent);
+    }
+
+    @Override
+    public void onTime(TimeEvent timeEvent) {
+        double position = timeEvent.getPosition();
+        double duration = timeEvent.getDuration();
+        double percent = (position / duration) * 100;
+
+        if (percent >= 25f && percent < 26f && trackedPercentage < 25) {
+            trackedPercentage = 25;
+        } else if (percent >= 50f && percent < 51f && trackedPercentage < 50) {
+            trackedPercentage = 50;
+        } else if (percent >= 75f && percent < 76f && trackedPercentage < 75) {
+            trackedPercentage = 75;
+        } else if (percent >= 95f && percent < 96 && trackedPercentage < 95) {
+            trackedPercentage = 95;
+        } else return;
+
+        Map<String, String> params = new HashMap<>(analyticsParams);
+        params.put(PERCENTAGE_KEY, String.valueOf(trackedPercentage));
+        AnalyticsAgentUtil.logEvent("VOD Item: Percentage watched", params);
+    }
+
+    @Override
+    public void onSeek(SeekEvent seekEvent) {
+        trackedPercentage = 0;
+    }
+
+    @Override
+    public void onAdPlay(AdPlayEvent adPlayEvent) {
+        AnalyticsAgentUtil.logEvent("VOD Item: Start advert", analyticsParams);
+    }
+
+    @Override
+    public void onAdPause(AdPauseEvent adPauseEvent) {
+        AnalyticsAgentUtil.logEvent("VOD Item: Pause advert", analyticsParams);
+    }
+
+    @Override
+    public void onAdComplete(AdCompleteEvent adCompleteEvent) {
+        AnalyticsAgentUtil.logEvent("VOD Item: End advert", analyticsParams);
+    }
+
+    @Override
+    public void onPlay(PlayEvent playEvent) {
+        AnalyticsAgentUtil.logEvent("VOD Item: Start video", analyticsParams);
+    }
+
+    @Override
+    public void onPause(PauseEvent pauseEvent) {
+        AnalyticsAgentUtil.logEvent("VOD Item: Pause video", analyticsParams);
     }
 }
