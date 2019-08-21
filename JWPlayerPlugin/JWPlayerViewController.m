@@ -36,10 +36,12 @@
     
 }
 
-- (void)viewDidDisappear:(BOOL)animated {
-    [[NSNotificationCenter defaultCenter] removeObserver:self]; // Fix for JP-5 task
-    
-    [super viewDidDisappear:animated];
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:UIApplicationDidEnterBackgroundNotification
+                                                  object:nil]; // Fix for JP-5 task
 }
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
