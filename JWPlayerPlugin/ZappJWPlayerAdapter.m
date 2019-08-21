@@ -266,8 +266,7 @@ static NSString *const kPlayableItemsKey = @"playable_items";
     __block typeof(self) blockSelf = self;
     [self loadItemIfNeeded:^{
         [blockSelf setupPlayerWithCurrentPlayableItem];
-        blockSelf.playerViewController.isPresentedFullScreen = YES;
-        
+
         [[rootViewController topmostModalViewController] presentViewController:blockSelf.playerViewController
                                                                       animated:configuration.animated
                                                                     completion:^{
@@ -285,7 +284,7 @@ static NSString *const kPlayableItemsKey = @"playable_items";
     __block typeof(self) blockSelf = self;
     [self loadItemIfNeeded:^{
         [blockSelf setupPlayerWithCurrentPlayableItem];
-        blockSelf.playerViewController.isPresentedFullScreen = NO;
+
         [rootViewController addChildViewController:blockSelf.playerViewController toView:container];
         [blockSelf.playerViewController.view matchParent];
         
