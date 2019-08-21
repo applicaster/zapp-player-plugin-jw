@@ -74,7 +74,6 @@
     config.repeat = NO;
     config.autostart = YES;
     
-    NSLog(@"[!]: VOD.extensions: %@", [playableItem extensionsDictionary]);
     self.extensionsDictionary = playableItem.extensionsDictionary;
     
     [APAnalyticsManager trackEvent:@"VOD Item: Start Player with video"
@@ -316,22 +315,17 @@
 }
 
 -(void)onTime:(JWEvent<JWTimeEvent> *)event {
-    //TODO: opt-in to track this event? Could allow custom percentages as well...
     CGFloat pos = [event position];
     CGFloat dur = [event duration];
     CGFloat per = (pos/dur)*100;
     
     if (per >= 25.0 && per < 26.0 && self.trackedPercentage < 25) {
-        NSLog(@"[!]: 25%% watched, per: %f", per);
         self.trackedPercentage = 25;
     } else if (per >= 50.0 && per < 51.0 && self.trackedPercentage < 50) {
-        NSLog(@"[!]: 50%% watched, per: %f", per);
         self.trackedPercentage = 50;
     } else if (per >= 75.0 && per < 76.0 && self.trackedPercentage < 75) {
-        NSLog(@"[!]: 75%% watched, per: %f", per);
         self.trackedPercentage = 75;
     } else if (per >= 95.0 && per < 96.0 && self.trackedPercentage < 95) {
-        NSLog(@"[!]: 95%% watched, per: %f", per);
         self.trackedPercentage = 95;
     } else {
         return;
