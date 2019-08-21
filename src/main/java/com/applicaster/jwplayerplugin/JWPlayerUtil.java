@@ -82,7 +82,7 @@ public class JWPlayerUtil {
             adSchedule = getJWAdScheduler(advertisingList);
         }
 
-        if (adSchedule.size()==0){
+        if (adSchedule.size()==0 && pluginConfiguration != null){
             adSchedule = getPluginConfigurationAdScheduler(playable,pluginConfiguration);
         }
 

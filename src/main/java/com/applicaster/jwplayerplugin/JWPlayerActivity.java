@@ -58,9 +58,12 @@ public class JWPlayerActivity extends AppCompatActivity implements VideoPlayerEv
 //        mEventHandler = new JWEventHandler(mPlayerView, outputTextView);
 
         Playable playable = (Playable) getIntent().getSerializableExtra(PLAYABLE_KEY);
-
+        Map configuration =  null;
+        if (PlayersManager.getCurrentPlayer() != null ){
+            configuration =  PlayersManager.getCurrentPlayer().getPluginConfigurationParams();
+        }
         // Load a media source
-        mPlayerView.load(JWPlayerUtil.getPlaylistItem(playable, PlayersManager.getCurrentPlayer().getPluginConfigurationParams()));
+        mPlayerView.load(JWPlayerUtil.getPlaylistItem(playable, configuration));
         mPlayerView.play();
 
         // Get a reference to the CastManager
