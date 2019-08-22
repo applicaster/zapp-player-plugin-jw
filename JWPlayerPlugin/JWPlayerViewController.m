@@ -27,13 +27,16 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
+    // Do any additional setup after loading the view. 
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(pause)
                                                  name:UIApplicationDidEnterBackgroundNotification
                                                object:nil];     // Fix for JP-5 task
-    
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
