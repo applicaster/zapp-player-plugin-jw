@@ -332,7 +332,7 @@
     NSMutableDictionary *extensions = self.extensionsDictionary.mutableCopy;
     [extensions setObject:[NSNumber numberWithDouble:self.trackedPercentage]
                    forKey:@"percentage"];
-    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"VOD Item: Percentage watched"
+    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"Percentage Watched Of VOD"
                                                                  parameters:extensions];
 }
 
@@ -341,27 +341,27 @@
 }
 
 -(void)onAdPlay:(JWAdEvent<JWAdStateChangeEvent> *)event {
-    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"VOD Item: Start advert"
+    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"Start Advert"
                                                                  parameters:self.extensionsDictionary];
 }
 
 -(void)onAdPause:(JWAdEvent<JWAdStateChangeEvent> *)event {
-    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"VOD Item: Pause advert"
+    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"Pause Advert"
                                                                  parameters:self.extensionsDictionary];
 }
 
 -(void)onAdComplete:(JWAdEvent<JWAdDetailEvent> *)event {
-    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"VOD Item: End advert"
+    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"End Advert"
                                                                  parameters:self.extensionsDictionary];
 }
 
 -(void)onPlay:(JWEvent<JWStateChangeEvent> *)event {
-    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"VOD Item: Start video"
+    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"Start Video"
                                                                  parameters:self.extensionsDictionary];
 }
 
 -(void)onPause:(JWEvent<JWStateChangeEvent> *)event {
-    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"VOD Item: Pause video"
+    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"Pause Video"
                                                                  parameters:self.extensionsDictionary];
 }
 
