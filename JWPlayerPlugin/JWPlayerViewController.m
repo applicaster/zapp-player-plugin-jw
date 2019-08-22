@@ -9,7 +9,6 @@
 #import "JWPlayerViewController.h"
 #import "JWPlayer_iOS_SDK/JWPlayerController.h"
 @import UIKit;
-@import ApplicasterSDK;
 
 @interface JWPlayerViewController () <JWPlayerDelegate> {
     
@@ -76,8 +75,8 @@
     
     self.extensionsDictionary = playableItem.extensionsDictionary;
     
-    [APAnalyticsManager trackEvent:@"VOD Item: Start Player with video"
-                    withParameters:self.extensionsDictionary];
+    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"VOD Item: Start Player with video"
+                                                                 parameters:self.extensionsDictionary];
     
     if (self.adConfig) {
         config.advertising = self.adConfig;
@@ -333,8 +332,8 @@
     NSMutableDictionary *extensions = self.extensionsDictionary.mutableCopy;
     [extensions setObject:[NSNumber numberWithDouble:self.trackedPercentage]
                    forKey:@"percentage"];
-    [APAnalyticsManager trackEvent:@"VOD Item: Percentage watched"
-                    withParameters:extensions];
+    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"VOD Item: Percentage watched"
+                                                                 parameters:extensions];
 }
 
 -(void)onSeek:(JWEvent<JWSeekEvent> *)event {
@@ -342,28 +341,28 @@
 }
 
 -(void)onAdPlay:(JWAdEvent<JWAdStateChangeEvent> *)event {
-    [APAnalyticsManager trackEvent:@"VOD Item: Start advert"
-                    withParameters:self.extensionsDictionary];
+    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"VOD Item: Start advert"
+                                                                 parameters:self.extensionsDictionary];
 }
 
 -(void)onAdPause:(JWAdEvent<JWAdStateChangeEvent> *)event {
-    [APAnalyticsManager trackEvent:@"VOD Item: Pause advert"
-                    withParameters:self.extensionsDictionary];
+    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"VOD Item: Pause advert"
+                                                                 parameters:self.extensionsDictionary];
 }
 
 -(void)onAdComplete:(JWAdEvent<JWAdDetailEvent> *)event {
-    [APAnalyticsManager trackEvent:@"VOD Item: End advert"
-                    withParameters:self.extensionsDictionary];
+    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"VOD Item: End advert"
+                                                                 parameters:self.extensionsDictionary];
 }
 
 -(void)onPlay:(JWEvent<JWStateChangeEvent> *)event {
-    [APAnalyticsManager trackEvent:@"VOD Item: Start video"
-                    withParameters:self.extensionsDictionary];
+    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"VOD Item: Start video"
+                                                                 parameters:self.extensionsDictionary];
 }
 
 -(void)onPause:(JWEvent<JWStateChangeEvent> *)event {
-    [APAnalyticsManager trackEvent:@"VOD Item: Pause video"
-                    withParameters:self.extensionsDictionary];
+    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"VOD Item: Pause video"
+                                                                 parameters:self.extensionsDictionary];
 }
 
 @end
