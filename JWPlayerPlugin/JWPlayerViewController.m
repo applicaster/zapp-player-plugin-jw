@@ -20,7 +20,6 @@
 @end
 
 @implementation JWPlayerViewController
-@synthesize isPresentedFullScreen = _isPresentedFullScreen;
 @synthesize player = _player;
 @synthesize closeButton = _closeButton;
 
@@ -28,7 +27,24 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
+    // Do any additional setup after loading the view. 
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(pause)
+                                                 name:UIApplicationDidEnterBackgroundNotification
+                                               object:nil];     // Fix for JP-5 task
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:UIApplicationDidEnterBackgroundNotification
+                                                  object:nil]; // Fix for JP-5 task
 }
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
@@ -36,11 +52,6 @@
 }
 
 #pragma mark - public
-
-- (void)setIsPresentedFullScreen:(BOOL)isPresentedFullScreen {
-    _isPresentedFullScreen = isPresentedFullScreen;
-    self.closeButton.hidden = !_isPresentedFullScreen;
-}
 
 - (UIButton *)closeButton {
     if (_closeButton) {
@@ -165,21 +176,21 @@
 - (void)setupPlayerSubtitleTracksWithConfiguration:(NSArray *)subtitleTracks {
     if (self.player) {
         NSMutableArray *subtitleTracksArray = [NSMutableArray array];
-
+        
         for (NSDictionary* currentSubtitleTrack in subtitleTracks)
         {
             NSDictionary *currentTrack;
             currentTrack = currentSubtitleTrack;
             NSString *subtitleTrackSource = currentTrack[@"src"];
             NSString *subtitleTrackLabel = currentTrack[@"label"];
-
+            
             if (subtitleTrackSource.isNotEmpty && subtitleTrackLabel.isNotEmpty) {
                 JWTrack *validSubtitleTrack = [JWTrack trackWithFile:subtitleTrackSource label:subtitleTrackLabel];
-
+                
                 [subtitleTracksArray addObject:validSubtitleTrack];
             }
         }
-
+        
         if ([subtitleTracksArray count] > 0) {
             self.player.config.tracks = subtitleTracksArray;
         }
@@ -250,13 +261,24 @@
     
     [self.closeButton removeFromSuperview];
     self.closeButton.alpha = 1.0;
-    self.closeButton.hidden = !self.isPresentedFullScreen;
+    
+    // ---> Start for fix for JP-1 task <--- //
     [player.view addSubview:self.closeButton];
-    self.closeButton.frame = CGRectMake(16.0, 36.0, 32.0 , 32.0);
-    self.closeButton.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleRightMargin;
+    self.closeButton.frame = CGRectZero;
+    self.closeButton.translatesAutoresizingMaskIntoConstraints = NO;
+    NSDictionary *closeButtonValues = @{@"closeButton" : self.closeButton};
+    NSArray *horizontal = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(16)-[closeButton(32)]" options:0 metrics:nil views:closeButtonValues];
+    NSArray *vertical = [NSLayoutConstraint constraintsWithVisualFormat:@"V:|-(36)-[closeButton(32)]" options:0 metrics:nil views:closeButtonValues];
+    
+    [self.player.view addConstraints:vertical];
+    [self.player.view addConstraints:horizontal];
+    // ---> end of fix <--- //
+    
     [self.view addSubview:player.view];
     [player.view matchParent];
-    self.player.forceLandscapeOnFullScreen = NO;
+    
+    self.player.fullscreen                 = NO;        // Fix for JP-1 task - hide fullscreen control
+    self.player.forceFullScreenOnLandscape = NO;
     self.player.forceLandscapeOnFullScreen = NO;
     
     _player = player;
@@ -288,9 +310,7 @@
 #pragma mark - JWPlayerDelegate
 
 - (void)onComplete {
-    if (self.isPresentedFullScreen) {
-        [self dismiss:nil];
-    }
+    
 }
 
 - (void)onControlBarVisible:(JWEvent<JWControlsEvent> *)event {

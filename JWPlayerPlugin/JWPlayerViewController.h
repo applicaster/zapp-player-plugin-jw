@@ -13,7 +13,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface JWPlayerViewController : UIViewController
 
-@property (nonatomic, assign) BOOL isPresentedFullScreen;
 @property (nonatomic, strong) UIButton *closeButton;
 @property (nonatomic, strong) NSDictionary *configurationJSON;
 @property (nonatomic, assign) BOOL isLive;
