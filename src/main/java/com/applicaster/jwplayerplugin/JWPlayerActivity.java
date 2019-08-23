@@ -60,11 +60,15 @@ public class JWPlayerActivity extends AppCompatActivity implements VideoPlayerEv
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         Playable playable = (Playable) getIntent().getSerializableExtra(PLAYABLE_KEY);
+        Map configuration =  null;
+        if (PlayersManager.getCurrentPlayer() != null ){
+            configuration =  PlayersManager.getCurrentPlayer().getPluginConfigurationParams();
+        }
         analyticsParams = new HashMap<>(playable.getAnalyticsParams());
         AnalyticsAgentUtil.logEvent("VOD Item: Start Player with video", analyticsParams);
 
         // Load a media source
-        mPlayerView.load(JWPlayerUtil.getPlaylistItem(playable, PlayersManager.getCurrentPlayer().getPluginConfigurationParams()));
+        mPlayerView.load(JWPlayerUtil.getPlaylistItem(playable, configuration));
         mPlayerView.play();
     }
 
