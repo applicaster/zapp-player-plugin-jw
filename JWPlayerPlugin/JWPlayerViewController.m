@@ -48,7 +48,7 @@
 }
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
-    return UIInterfaceOrientationMaskAll;
+    return UIInterfaceOrientationMaskAllButUpsideDown;
 }
 
 #pragma mark - public
@@ -278,8 +278,8 @@
     [player.view matchParent];
     
     self.player.fullscreen                 = NO;        // Fix for JP-1 task - hide fullscreen control
-    self.player.forceFullScreenOnLandscape = NO;
-    self.player.forceLandscapeOnFullScreen = NO;
+    self.player.forceFullScreenOnLandscape = YES;
+    self.player.forceLandscapeOnFullScreen = YES;
     
     _player = player;
 }
