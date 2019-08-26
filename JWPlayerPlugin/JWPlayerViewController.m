@@ -79,6 +79,13 @@
     config.repeat = NO;
     config.autostart = YES;
     
+    //Skin Config - Currentlly used only to hide the full screen button.
+    //This is a bug fix - When clicking full screen, the X button dissapears.
+    //TODO - Find why the x button disapears and fix it. After that return the full screen button
+    JWSkinStyling *skin = [JWSkinStyling new];
+    skin.url = @"https://s3.amazonaws.com/qa.jwplayer.com/~hyunjoo/android/css/hide-fullscreen.css";
+    config.skin = skin;
+    
     if (self.adConfig) {
         config.advertising = self.adConfig;
         self.adConfig = nil;
