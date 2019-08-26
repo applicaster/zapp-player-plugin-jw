@@ -64,9 +64,14 @@
       "tooltip_text": "VOD midroll ad offset"
     },
     {
-      "type": "text",
-      "key": "vod_ad_type",
-      "tooltip_text": "VOD ad type"
+        "type": "text",
+        "key": "vod_ad_type",
+        "tooltip_text": "VOD ad type"
+    },
+    {
+        "type": "text",
+        "key": "jw_skin_url",
+        "tooltip_text": "JW Player skin URL"
     }
   ],
   "hooks": {
