@@ -289,8 +289,8 @@
     [player.view matchParent];
     
     self.player.fullscreen                 = NO;        // Fix for JP-1 task - hide fullscreen control
-    self.player.forceFullScreenOnLandscape = YES;
-    self.player.forceLandscapeOnFullScreen = YES;
+    self.player.forceFullScreenOnLandscape = NO;
+    self.player.forceLandscapeOnFullScreen = NO;
     
     _player = player;
 }
