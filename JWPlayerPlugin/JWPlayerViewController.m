@@ -48,7 +48,8 @@
 }
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
-    return UIInterfaceOrientationMaskAll;
+    BOOL lockLandscape = [self.configurationJSON[@"lock_landscape"] boolValue];
+    return lockLandscape ? UIInterfaceOrientationMaskLandscape : UIInterfaceOrientationMaskAll;
 }
 
 #pragma mark - public
@@ -69,6 +70,7 @@
 
 - (void)setupPlayerWithPlayableItem:(NSObject <ZPPlayable> *)playableItem
 {
+    //JW Config
     JWConfig *config = [JWConfig new];
     config.sources = [NSArray arrayWithObject:[[JWSource alloc] initWithFile:[playableItem contentVideoURLPath]
                                                                        label:@""
@@ -78,6 +80,16 @@
     config.controls = YES;
     config.repeat = NO;
     config.autostart = YES;
+    
+    //Skin Config - Currentlly used only to hide the full screen button.
+    //This is a bug fix - When clicking full screen, the X button dissapears.
+    //TODO - Find why the x button disapears and fix it. After that return the full screen button
+    NSString *skinURL = self.configurationJSON[@"jw_skin_url"];
+    if (skinURL != nil && [skinURL isNotEmptyOrWhiteSpaces]) {
+        JWSkinStyling *skin = [JWSkinStyling new];
+        skin.url = skinURL;
+        config.skin = skin;
+    }
     
     if (self.adConfig) {
         config.advertising = self.adConfig;

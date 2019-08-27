@@ -8,7 +8,7 @@
   "platform": "ios",
   "author_name": "Marcos Reyes",
   "author_email": "m.reyes@applicaster.com",
-  "manifest_version": "3.1.0",
+  "manifest_version": "3.1.2",
   "name": "JWPlayer",
   "description": "JW Player Plugin for Applicaster Zapp Platform",
   "type": "player",
@@ -16,7 +16,7 @@
   "identifier": "JWPlayer-Plugin-iOS",
   "ui_builder_support": true,
   "dependency_name": "JWPlayerPlugin",
-  "dependency_version": "3.1.0",
+  "dependency_version": "3.1.2",
   "whitelisted_account_ids": [],
   "min_zapp_sdk": "11.0.0-Dev",
   "deprecated_since_zapp_sdk": "",
@@ -64,9 +64,20 @@
       "tooltip_text": "VOD midroll ad offset"
     },
     {
-      "type": "text",
-      "key": "vod_ad_type",
-      "tooltip_text": "VOD ad type"
+        "type": "text",
+        "key": "vod_ad_type",
+        "tooltip_text": "VOD ad type"
+    },
+    {
+        "type": "text",
+        "key": "jw_skin_url",
+        "tooltip_text": "JW Player skin URL"
+    },
+    {
+        "type": "checkbox",
+        "key": "lock_landscape",
+        "tooltip_text": "Setting this to true, will cause the player to be opened in landscape mode",
+        "default": 0
     }
   ],
   "hooks": {
