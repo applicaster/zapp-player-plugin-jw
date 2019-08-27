@@ -183,7 +183,7 @@ public class JWPlayerAdapter extends BasePlayer implements FullscreenHandler, Vi
         jwPlayerView.play();
     }
 
-    private void openLoginPluginIfNeeded(final boolean isInline){
+    protected void openLoginPluginIfNeeded(final boolean isInline){
         /**
          * if item is not locked continue to play, otherwise call login with playable item.
          */
@@ -216,7 +216,7 @@ public class JWPlayerAdapter extends BasePlayer implements FullscreenHandler, Vi
 
     }
 
-    private void displayVideo(boolean isInline){
+    protected void displayVideo(boolean isInline){
 
         if (isInline){
             jwPlayerView.load( JWPlayerUtil.getPlaylistItem(getFirstPlayable(), getPluginConfigurationParams()));
