@@ -36,7 +36,7 @@ public class JWPlayerActivity extends AppCompatActivity implements VideoPlayerEv
      * Reference to the {@link JWPlayerView}
      */
     private JWPlayerView mPlayerView;
-    JWPlayerContainer jwPlayerContainer;
+    protected JWPlayerContainer jwPlayerContainer;
     private double trackedPercentage;
     private Map<String, String> analyticsParams;
 
