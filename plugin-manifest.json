@@ -72,6 +72,12 @@
         "type": "text",
         "key": "jw_skin_url",
         "tooltip_text": "JW Player skin URL"
+    },
+    {
+        "type": "checkbox",
+        "key": "lock_landscape",
+        "tooltip_text": "Setting this to true, will cause the player to be opened in landscape mode",
+        "default": 0
     }
   ],
   "hooks": {

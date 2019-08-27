@@ -48,7 +48,8 @@
 }
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
-    return UIInterfaceOrientationMaskLandscape;
+    BOOL lockLandscape = [self.configurationJSON[@"lock_landscape"] boolValue];
+    return lockLandscape ? UIInterfaceOrientationMaskLandscape : UIInterfaceOrientationMaskAll;
 }
 
 #pragma mark - public
