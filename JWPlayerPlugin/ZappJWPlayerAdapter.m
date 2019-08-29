@@ -216,6 +216,9 @@ static NSString *const kPlayableItemsKey = @"playable_items";
 
     // Setup Subtitle Tracks if provided
     NSArray *subtitleTracksArray = self.currentPlayableItem.extensionsDictionary[@"sideCarCaptions"];
+    if (subtitleTracksArray == nil) {
+        subtitleTracksArray = self.currentPlayableItem.extensionsDictionary[@"text_tracks"][@"tracks"];
+    }
     if (subtitleTracksArray != nil) {
         [self.playerViewController setupPlayerSubtitleTracksWithConfiguration:subtitleTracksArray];
     }
@@ -266,8 +269,7 @@ static NSString *const kPlayableItemsKey = @"playable_items";
     __block typeof(self) blockSelf = self;
     [self loadItemIfNeeded:^{
         [blockSelf setupPlayerWithCurrentPlayableItem];
-        blockSelf.playerViewController.isPresentedFullScreen = YES;
-        
+
         [[rootViewController topmostModalViewController] presentViewController:blockSelf.playerViewController
                                                                       animated:configuration.animated
                                                                     completion:^{
@@ -285,7 +287,7 @@ static NSString *const kPlayableItemsKey = @"playable_items";
     __block typeof(self) blockSelf = self;
     [self loadItemIfNeeded:^{
         [blockSelf setupPlayerWithCurrentPlayableItem];
-        blockSelf.playerViewController.isPresentedFullScreen = NO;
+
         [rootViewController addChildViewController:blockSelf.playerViewController toView:container];
         [blockSelf.playerViewController.view matchParent];
         
