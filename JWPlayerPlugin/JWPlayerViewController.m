@@ -98,7 +98,7 @@
     
     self.extensionsDictionary = playableItem.extensionsDictionary;
     
-    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"VOD Item: Start Player with video"
+    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"Play VOD Item"
                                                                  parameters:self.extensionsDictionary];
     
     if (self.adConfig) {
@@ -373,17 +373,23 @@
 }
 
 -(void)onAdPlay:(JWAdEvent<JWAdStateChangeEvent> *)event {
-    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"Start Advert"
-                                                                 parameters:self.extensionsDictionary];
+    [extensions setObject:@"start"
+                   forKey:@"advertisement_position"];
+    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"Watch Video Advertisement"
+                                                                 parameters:extentions];
 }
 
 -(void)onAdPause:(JWAdEvent<JWAdStateChangeEvent> *)event {
-    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"Pause Advert"
+    [extensions setObject:@"pause"
+                   forKey:@"advertisement_position"];
+    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"Watch Video Advertisement"
                                                                  parameters:self.extensionsDictionary];
 }
 
 -(void)onAdComplete:(JWAdEvent<JWAdDetailEvent> *)event {
-    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"End Advert"
+    [extensions setObject:@"end"
+                   forKey:@"advertisement_position"];
+    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"Watch Video Advertisement"
                                                                  parameters:self.extensionsDictionary];
 }
 
