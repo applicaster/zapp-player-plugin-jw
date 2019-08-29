@@ -216,6 +216,9 @@ static NSString *const kPlayableItemsKey = @"playable_items";
 
     // Setup Subtitle Tracks if provided
     NSArray *subtitleTracksArray = self.currentPlayableItem.extensionsDictionary[@"sideCarCaptions"];
+    if (subtitleTracksArray == nil) {
+        subtitleTracksArray = self.currentPlayableItem.extensionsDictionary[@"text_tracks"][@"tracks"];
+    }
     if (subtitleTracksArray != nil) {
         [self.playerViewController setupPlayerSubtitleTracksWithConfiguration:subtitleTracksArray];
     }
