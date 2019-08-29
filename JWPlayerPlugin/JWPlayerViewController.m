@@ -193,7 +193,7 @@
         {
             NSDictionary *currentTrack;
             currentTrack = currentSubtitleTrack;
-            NSString *subtitleTrackSource = currentTrack[@"src"];
+            NSString *subtitleTrackSource = currentTrack[@"source"];
             NSString *subtitleTrackLabel = currentTrack[@"label"];
             
             if (subtitleTrackSource.isNotEmpty && subtitleTrackLabel.isNotEmpty) {
