@@ -209,10 +209,14 @@ static NSString *const kPlayableItemsKey = @"playable_items";
 - (void)setupPlayerWithCurrentPlayableItem {
     [self.playerViewController setupPlayerWithPlayableItem:self.currentPlayableItem];
     self.playerViewController.isLive = [self.currentPlayableItem isKindOfClass:[APChannel class]];
+
+    NSArray *ads = self.currentPlayableItem.extensionsDictionary[@"videoAds"];
+    if (ads == nil) {
+        ads = self.currentPlayableItem.extensionsDictionary[@"video_ads"];
+    }
     
     // Setup Ads
-    NSArray *adsArray = self.currentPlayableItem.extensionsDictionary[@"videoAds"];
-    [self.playerViewController setupPlayerAdvertisingWithConfiguration:adsArray];
+    [self.playerViewController setupPlayerAdvertisingWithConfiguration:ads];
 
     // Setup Subtitle Tracks if provided
     NSArray *subtitleTracksArray = self.currentPlayableItem.extensionsDictionary[@"sideCarCaptions"];
