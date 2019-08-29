@@ -7,6 +7,7 @@
 -keep public class com.applicaster.jwplayerplugin.JWPlayerAdapter {
    public <fields>;
    public <methods>;
+   protected <methods>;
 }
 -keep public class com.applicaster.jwplayerplugin.JWPlayerContainer {
    public <fields>;
