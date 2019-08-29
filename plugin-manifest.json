@@ -14,7 +14,7 @@
   "platform": "android",
   "author_name": "Pablo Rueda",
   "author_email": "p.rueda@applicaster.com",
-  "manifest_version": "1.5.1",
+  "manifest_version": "1.5.5",
   "dependency_version": "1.5.+",
   "name": "JW Player",
   "description": "Android plugin for JWPlayer",
