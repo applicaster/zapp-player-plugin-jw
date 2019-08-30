@@ -66,7 +66,7 @@ public class JWPlayerActivity extends AppCompatActivity implements VideoPlayerEv
             configuration =  PlayersManager.getCurrentPlayer().getPluginConfigurationParams();
         }
         analyticsParams = new HashMap<>(playable.getAnalyticsParams());
-        AnalyticsAgentUtil.logEvent("Play VOD Item", analyticsParams);
+        AnalyticsAgentUtil.logEvent("Play Video Item", analyticsParams);
 
         // Load a media source
         mPlayerView.load(JWPlayerUtil.getPlaylistItem(playable, configuration));
@@ -200,11 +200,11 @@ public class JWPlayerActivity extends AppCompatActivity implements VideoPlayerEv
 
     @Override
     public void onPlay(PlayEvent playEvent) {
-        AnalyticsAgentUtil.logEvent("Start VOD", analyticsParams);
+        AnalyticsAgentUtil.logEvent("Start Video", analyticsParams);
     }
 
     @Override
     public void onPause(PauseEvent pauseEvent) {
-        AnalyticsAgentUtil.logEvent("Pause VOD", analyticsParams);
+        AnalyticsAgentUtil.logEvent("Pause Video", analyticsParams);
     }
 }
