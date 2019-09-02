@@ -55,22 +55,35 @@ public class JWPlayerUtil {
 
     private static List<Caption> getCaptions(Playable playable) {
         List<Caption> captionList = new ArrayList<>();
+        ArrayList tracks = null;
 
-        if(playable instanceof APAtomEntry.APAtomEntryPlayable) {
-            List<LinkedHashMap<String, String>> sideCarCaptions =
-                    ((APAtomEntry.APAtomEntryPlayable) playable).getEntry()
-                            .getExtension("sideCarCaptions", ArrayList.class);
+        if (playable instanceof APAtomEntry.APAtomEntryPlayable) {
 
-            if(sideCarCaptions != null) {
-                for (int i = 0; i < sideCarCaptions.size(); i++) {
-                    LinkedHashMap<String, String> sideCarCaption = sideCarCaptions.get(i);
-                    Caption caption = new Caption.Builder().file(sideCarCaption.get("src"))
-                            .label(sideCarCaption.get("label")).build();
-                    captionList.add(caption);
+            LinkedHashMap textTracks = (LinkedHashMap) ((APAtomEntry.APAtomEntryPlayable) playable).getEntry().getExtensions().get("text_tracks");
+
+            if (textTracks != null) {
+                tracks = (ArrayList) textTracks.get("tracks");
+            }
+
+            if (tracks != null) {
+                for (int i = 0; i < tracks.size(); i++) {
+                    LinkedHashMap<String, String> sideCarCaption = (LinkedHashMap<String, String>) tracks.get(i);
+
+                    String src = sideCarCaption.get("source");
+                    String label = sideCarCaption.get("label");
+
+
+                    if (src != null) {
+                        Caption caption = new Caption();
+                        caption.setFile(src);
+                        if (label != null) {
+                            caption.setLabel(label);
+                        }
+                        captionList.add(caption);
+                    }
                 }
             }
         }
-
         return captionList;
     }
 
