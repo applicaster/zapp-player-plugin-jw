@@ -31,7 +31,7 @@ public class JWPlayerActivity extends AppCompatActivity implements VideoPlayerEv
 
     private static final String PLAYABLE_KEY = "playable_key";
     private static final String PERCENTAGE_KEY = "percentage";
-    private static final String ADVERTISEMENT_POSITION_KEY = "advertisement_position_key";
+    private static final String ADVERTISEMENT_POSITION_KEY = "advertisement_position";
 
     /**
      * Reference to the {@link JWPlayerView}
