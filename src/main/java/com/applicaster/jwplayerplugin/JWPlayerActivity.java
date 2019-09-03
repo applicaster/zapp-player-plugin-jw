@@ -169,7 +169,7 @@ public class JWPlayerActivity extends AppCompatActivity implements VideoPlayerEv
 
         Map<String, String> params = new HashMap<>(analyticsParams);
         params.put(PERCENTAGE_KEY, String.valueOf(trackedPercentage));
-        AnalyticsAgentUtil.logEvent("Watch VOD percentage", params);
+        AnalyticsAgentUtil.logEvent("Watch VOD Percentage", params);
     }
 
     @Override
