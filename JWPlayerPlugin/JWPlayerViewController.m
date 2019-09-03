@@ -379,7 +379,7 @@
     NSMutableDictionary *extensions = self.extensionsDictionary.mutableCopy;
     [extensions setObject:[NSNumber numberWithDouble:self.trackedPercentage]
                    forKey:@"percentage"];
-    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"Percentage Watched Of VOD"
+    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"Watch VOD Percentage"
                                                                  parameters:extensions];
 }
 
@@ -388,24 +388,27 @@
 }
 
 -(void)onAdPlay:(JWAdEvent<JWAdStateChangeEvent> *)event {
-    [extensions setObject:@"start"
+    NSMutableDictionary *extensions = self.extensionsDictionary.mutableCopy;
+    [extensions setObject:@"Start"
                    forKey:@"advertisement_position"];
     [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"Watch Video Advertisement"
-                                                                 parameters:extentions];
+                                                                 parameters:extensions];
 }
 
 -(void)onAdPause:(JWAdEvent<JWAdStateChangeEvent> *)event {
-    [extensions setObject:@"pause"
+    NSMutableDictionary *extensions = self.extensionsDictionary.mutableCopy;
+    [extensions setObject:@"Pause"
                    forKey:@"advertisement_position"];
     [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"Watch Video Advertisement"
-                                                                 parameters:self.extensionsDictionary];
+                                                                 parameters:extensions];
 }
 
 -(void)onAdComplete:(JWAdEvent<JWAdDetailEvent> *)event {
-    [extensions setObject:@"end"
+    NSMutableDictionary *extensions = self.extensionsDictionary.mutableCopy;
+    [extensions setObject:@"End"
                    forKey:@"advertisement_position"];
     [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"Watch Video Advertisement"
-                                                                 parameters:self.extensionsDictionary];
+                                                                 parameters:extensions];
 }
 
 -(void)onPlay:(JWEvent<JWStateChangeEvent> *)event {
