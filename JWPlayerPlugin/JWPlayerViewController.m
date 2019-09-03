@@ -17,11 +17,16 @@
 @property (nonatomic, strong) JWPlayerController *player;
 @property (nonatomic, strong) JWAdConfig *adConfig;
 
+@property (nonatomic) CGFloat trackedPercentage;
+@property (nonatomic, strong) NSDictionary *extensionsDictionary;
+
 @end
 
 @implementation JWPlayerViewController
 @synthesize player = _player;
 @synthesize closeButton = _closeButton;
+@synthesize trackedPercentage = _trackedPercentage;
+@synthesize extensionsDictionary = _extensionsDictionary;
 
 #pragma mark - UIViewController
 
@@ -90,6 +95,11 @@
         skin.url = skinURL;
         config.skin = skin;
     }
+    
+    self.extensionsDictionary = playableItem.extensionsDictionary;
+    
+    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"Play VOD Item"
+                                                                 parameters:self.extensionsDictionary];
     
     if (self.adConfig) {
         config.advertising = self.adConfig;
@@ -348,6 +358,67 @@
             [self adjustButtonAlpha:event.controls];
         });
     }
+}
+
+-(void)onTime:(JWEvent<JWTimeEvent> *)event {
+    CGFloat pos = [event position];
+    CGFloat dur = [event duration];
+    CGFloat per = (pos/dur)*100;
+    
+    if (per >= 25.0 && per < 26.0 && self.trackedPercentage < 25) {
+        self.trackedPercentage = 25;
+    } else if (per >= 50.0 && per < 51.0 && self.trackedPercentage < 50) {
+        self.trackedPercentage = 50;
+    } else if (per >= 75.0 && per < 76.0 && self.trackedPercentage < 75) {
+        self.trackedPercentage = 75;
+    } else if (per >= 95.0 && per < 96.0 && self.trackedPercentage < 95) {
+        self.trackedPercentage = 95;
+    } else {
+        return;
+    }
+    NSMutableDictionary *extensions = self.extensionsDictionary.mutableCopy;
+    [extensions setObject:[NSNumber numberWithDouble:self.trackedPercentage]
+                   forKey:@"percentage"];
+    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"Watch VOD Percentage"
+                                                                 parameters:extensions];
+}
+
+-(void)onSeek:(JWEvent<JWSeekEvent> *)event {
+    self.trackedPercentage = 0;
+}
+
+-(void)onAdPlay:(JWAdEvent<JWAdStateChangeEvent> *)event {
+    NSMutableDictionary *extensions = self.extensionsDictionary.mutableCopy;
+    [extensions setObject:@"Start"
+                   forKey:@"advertisement_position"];
+    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"Watch Video Advertisement"
+                                                                 parameters:extensions];
+}
+
+-(void)onAdPause:(JWAdEvent<JWAdStateChangeEvent> *)event {
+    NSMutableDictionary *extensions = self.extensionsDictionary.mutableCopy;
+    [extensions setObject:@"Pause"
+                   forKey:@"advertisement_position"];
+    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"Watch Video Advertisement"
+                                                                 parameters:extensions];
+}
+
+-(void)onAdComplete:(JWAdEvent<JWAdDetailEvent> *)event {
+    NSMutableDictionary *extensions = self.extensionsDictionary.mutableCopy;
+    [extensions setObject:@"End"
+                   forKey:@"advertisement_position"];
+    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"Watch Video Advertisement"
+                                                                 parameters:extensions];
+}
+
+-(void)onPlay:(JWEvent<JWStateChangeEvent> *)event {
+    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"Start Video"
+                                                                 parameters:self.extensionsDictionary];
+}
+
+-(void)onPause:(JWEvent<JWStateChangeEvent> *)event {
+    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"Pause Video"
+                                                                 parameters:self.extensionsDictionary];
 }
 
 @end
