@@ -67,19 +67,20 @@ public class JWPlayerUtil {
 
             if (tracks != null) {
                 for (int i = 0; i < tracks.size(); i++) {
-                    LinkedHashMap<String, String> sideCarCaption = (LinkedHashMap<String, String>) tracks.get(i);
+                    LinkedHashMap<String, String> textTrack = (LinkedHashMap<String, String>) tracks.get(i);
 
-                    String src = sideCarCaption.get("source");
-                    String label = sideCarCaption.get("label");
-
+                    String src = textTrack.get("source");
+                    String label = textTrack.get("label");
 
                     if (src != null) {
-                        Caption caption = new Caption();
-                        caption.setFile(src);
+                        Caption.Builder caption = new Caption.Builder();
+                        caption.file(src);
+
                         if (label != null) {
-                            caption.setLabel(label);
+                            caption.label(label);
                         }
-                        captionList.add(caption);
+
+                        captionList.add(caption.build());
                     }
                 }
             }
