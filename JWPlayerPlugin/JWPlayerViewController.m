@@ -124,8 +124,23 @@
                 adConfig.adVmap = adConfiguration[@"ad_url"];
                 break;
             } else {
-                // We need to schedule the ads
-                JWAdBreak *adBreak = [self createAdBreakWithTag:adConfiguration[@"ad_url"] offset:adConfiguration[@"offset"]];
+                NSObject *rawOffset = adConfiguration[@"offset"];
+                NSString *convertedOffset = nil;
+                
+                if ([rawOffset isKindOfClass:NSString.class]) {
+                    NSString *offset = (NSString *)rawOffset;
+                    if ([offset isEqualToString:@"preroll"]) {
+                        convertedOffset = @"pre";
+                    }
+                    else if ([offset isEqualToString:@"postroll"]) {
+                        convertedOffset = @"post";
+                    }
+                }
+                else if ([rawOffset isKindOfClass:NSNumber.class]) {
+                    convertedOffset = [(NSNumber *)rawOffset stringValue];
+                }
+                
+                JWAdBreak *adBreak = [self createAdBreakWithTag:adConfiguration[@"ad_url"] offset:convertedOffset];
                 
                 if (adBreak) {
                     [scheduleArray addObject:adBreak];
