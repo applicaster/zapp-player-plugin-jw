@@ -29,7 +29,7 @@ import java.util.Map;
 
 public class JWPlayerActivity extends AppCompatActivity implements VideoPlayerEvents.OnFullscreenListener, VideoPlayerEvents.OnTimeListener, VideoPlayerEvents.OnSeekListener, AdvertisingEvents.OnAdPlayListener, AdvertisingEvents.OnAdPauseListener, AdvertisingEvents.OnAdCompleteListener, VideoPlayerEvents.OnPlayListener, VideoPlayerEvents.OnPauseListener {
 
-    private static final String PLAYABLE_KEY = "playable_key";
+    private static final String PLAYABLE_KEY = "playable";
     private static final String PERCENTAGE_KEY = "percentage";
     private static final String ADVERTISEMENT_POSITION_KEY = "advertisement_position";
 
