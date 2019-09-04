@@ -17,17 +17,22 @@
 @property (nonatomic, strong) JWPlayerController *player;
 @property (nonatomic, strong) JWAdConfig *adConfig;
 
+@property (nonatomic) CGFloat trackedPercentage;
+@property (nonatomic, strong) NSDictionary *extensionsDictionary;
+
 @end
 
 @implementation JWPlayerViewController
 @synthesize player = _player;
 @synthesize closeButton = _closeButton;
+@synthesize trackedPercentage = _trackedPercentage;
+@synthesize extensionsDictionary = _extensionsDictionary;
 
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
+    // Do any additional setup after loading the view. 
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -79,7 +84,12 @@
     config.controls = YES;
     config.repeat = NO;
     config.autostart = YES;
-    
+
+    self.extensionsDictionary = playableItem.extensionsDictionary;
+
+    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"Play VOD Item"
+                                                                 parameters:self.extensionsDictionary];
+
     if (self.adConfig) {
         config.advertising = self.adConfig;
         self.adConfig = nil;
@@ -103,8 +113,23 @@
                 adConfig.adVmap = adConfiguration[@"ad_url"];
                 break;
             } else {
-                // We need to schedule the ads
-                JWAdBreak *adBreak = [self createAdBreakWithTag:adConfiguration[@"ad_url"] offset:adConfiguration[@"offset"]];
+                NSObject *rawOffset = adConfiguration[@"offset"];
+                NSString *convertedOffset = nil;
+
+                if ([rawOffset isKindOfClass:NSString.class]) {
+                    NSString *offset = (NSString *)rawOffset;
+                    if ([offset isEqualToString:@"preroll"]) {
+                        convertedOffset = @"pre";
+                    }
+                    else if ([offset isEqualToString:@"postroll"]) {
+                        convertedOffset = @"post";
+                    }
+                }
+                else if ([rawOffset isKindOfClass:NSNumber.class]) {
+                    convertedOffset = [(NSNumber *)rawOffset stringValue];
+                }
+
+                JWAdBreak *adBreak = [self createAdBreakWithTag:adConfiguration[@"ad_url"] offset:convertedOffset];
                 
                 if (adBreak) {
                     [scheduleArray addObject:adBreak];
@@ -182,7 +207,7 @@
         {
             NSDictionary *currentTrack;
             currentTrack = currentSubtitleTrack;
-            NSString *subtitleTrackSource = currentTrack[@"src"];
+            NSString *subtitleTrackSource = currentTrack[@"source"];
             NSString *subtitleTrackLabel = currentTrack[@"label"];
             
             if (subtitleTrackSource.isNotEmpty && subtitleTrackLabel.isNotEmpty) {
@@ -264,7 +289,6 @@
     self.closeButton.alpha = 1.0;
     
     // ---> Start for fix for JP-1 task <--- //
-    
     [player.view addSubview:self.closeButton];
     self.closeButton.frame = CGRectZero;
     self.closeButton.translatesAutoresizingMaskIntoConstraints = NO;
@@ -294,7 +318,7 @@
         
         if (vc) {
             [vc.view.window makeKeyAndVisible];
-            [vc dismissViewControllerAnimated:YES completion:^{
+            [vc dismissViewControllerAnimated:YES completion:^ {
                 [self.closeButton removeFromSuperview];
             }];
             [vc setNeedsStatusBarAppearanceUpdate];
@@ -329,12 +353,73 @@
     }
 }
 
+-(void)onTime:(JWEvent<JWTimeEvent> *)event {
+    CGFloat pos = [event position];
+    CGFloat dur = [event duration];
+    CGFloat per = (pos/dur)*100;
+
+    if (per >= 25.0 && per < 26.0 && self.trackedPercentage < 25) {
+        self.trackedPercentage = 25;
+    } else if (per >= 50.0 && per < 51.0 && self.trackedPercentage < 50) {
+        self.trackedPercentage = 50;
+    } else if (per >= 75.0 && per < 76.0 && self.trackedPercentage < 75) {
+        self.trackedPercentage = 75;
+    } else if (per >= 95.0 && per < 96.0 && self.trackedPercentage < 95) {
+        self.trackedPercentage = 95;
+    } else {
+        return;
+    }
+    NSMutableDictionary *extensions = self.extensionsDictionary.mutableCopy;
+    [extensions setObject:[NSNumber numberWithDouble:self.trackedPercentage]
+                   forKey:@"percentage"];
+    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"Watch VOD Percentage"
+                                                                 parameters:extensions];
+}
+
+-(void)onSeek:(JWEvent<JWSeekEvent> *)event {
+    self.trackedPercentage = 0;
+}
+
+-(void)onAdPlay:(JWAdEvent<JWAdStateChangeEvent> *)event {
+    NSMutableDictionary *extensions = self.extensionsDictionary.mutableCopy;
+    [extensions setObject:@"Start"
+                   forKey:@"advertisement_position"];
+    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"Watch Video Advertisement"
+                                                                 parameters:extensions];
+}
+
+-(void)onAdPause:(JWAdEvent<JWAdStateChangeEvent> *)event {
+    NSMutableDictionary *extensions = self.extensionsDictionary.mutableCopy;
+    [extensions setObject:@"Pause"
+                   forKey:@"advertisement_position"];
+    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"Watch Video Advertisement"
+                                                                 parameters:extensions];
+}
+
+-(void)onAdComplete:(JWAdEvent<JWAdDetailEvent> *)event {
+    NSMutableDictionary *extensions = self.extensionsDictionary.mutableCopy;
+    [extensions setObject:@"End"
+                   forKey:@"advertisement_position"];
+    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"Watch Video Advertisement"
+                                                                 parameters:extensions];
+}
+
+-(void)onPlay:(JWEvent<JWStateChangeEvent> *)event {
+    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"Start Video"
+                                                                 parameters:self.extensionsDictionary];
+}
+
+-(void)onPause:(JWEvent<JWStateChangeEvent> *)event {
+    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"Pause Video"
+                                                                 parameters:self.extensionsDictionary];
+}
+
 - (void)onFullscreen:(JWEvent<JWFullscreenEvent> *)event {
     [self.closeButton removeFromSuperview];
-    
+
     if (event.fullscreen) {
         self.player.forceFullScreenOnLandscape = YES;
-        
+
         if ([[UIDevice currentDevice]orientation] == UIInterfaceOrientationPortrait){
             NSNumber *value = [NSNumber numberWithInt:UIInterfaceOrientationLandscapeLeft];
             [[UIDevice currentDevice] setValue:value forKey:@"orientation"];
@@ -359,4 +444,3 @@
 }
 
 @end
-
