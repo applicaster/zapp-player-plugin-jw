@@ -27,7 +27,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view. 
+    // Do any additional setup after loading the view.
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -48,8 +48,7 @@
 }
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
-    BOOL lockLandscape = [self.configurationJSON[@"lock_landscape"] boolValue];
-    return lockLandscape ? UIInterfaceOrientationMaskLandscape : UIInterfaceOrientationMaskAll;
+    return UIInterfaceOrientationMaskAll;
 }
 
 #pragma mark - public
@@ -80,16 +79,6 @@
     config.controls = YES;
     config.repeat = NO;
     config.autostart = YES;
-    
-    //Skin Config - Currentlly used only to hide the full screen button.
-    //This is a bug fix - When clicking full screen, the X button dissapears.
-    //TODO - Find why the x button disapears and fix it. After that return the full screen button
-    NSString *skinURL = self.configurationJSON[@"jw_skin_url"];
-    if (skinURL != nil && [skinURL isNotEmptyOrWhiteSpaces]) {
-        JWSkinStyling *skin = [JWSkinStyling new];
-        skin.url = skinURL;
-        config.skin = skin;
-    }
     
     if (self.adConfig) {
         config.advertising = self.adConfig;
@@ -275,6 +264,7 @@
     self.closeButton.alpha = 1.0;
     
     // ---> Start for fix for JP-1 task <--- //
+    
     [player.view addSubview:self.closeButton];
     self.closeButton.frame = CGRectZero;
     self.closeButton.translatesAutoresizingMaskIntoConstraints = NO;
@@ -298,18 +288,22 @@
 
 - (void)dismiss:(NSObject *)sender {
     if ([NSThread isMainThread]) {
+        self.player.fullscreen = NO;
         [self.player stop];
         UIViewController *vc = self.presentingViewController;
         
         if (vc) {
             [vc.view.window makeKeyAndVisible];
-            [vc dismissViewControllerAnimated:YES completion:nil];
+            [vc dismissViewControllerAnimated:YES completion:^{
+                [self.closeButton removeFromSuperview];
+            }];
             [vc setNeedsStatusBarAppearanceUpdate];
             [UIViewController attemptRotationToDeviceOrientation];
         }
         
     } else {
         dispatch_async(dispatch_get_main_queue(), ^{
+            [self.closeButton removeFromSuperview];
             [self dismiss:sender];
         });
     }
@@ -335,4 +329,34 @@
     }
 }
 
+- (void)onFullscreen:(JWEvent<JWFullscreenEvent> *)event {
+    [self.closeButton removeFromSuperview];
+    
+    if (event.fullscreen) {
+        self.player.forceFullScreenOnLandscape = YES;
+        
+        if ([[UIDevice currentDevice]orientation] == UIInterfaceOrientationPortrait){
+            NSNumber *value = [NSNumber numberWithInt:UIInterfaceOrientationLandscapeLeft];
+            [[UIDevice currentDevice] setValue:value forKey:@"orientation"];
+        }
+        // A delay is needed since the video player in full screen mode deletes all subviews.
+        double delay = 0.1;
+        dispatch_time_t dispatchelay = dispatch_time(DISPATCH_TIME_NOW, delay * NSEC_PER_SEC);
+        dispatch_after(dispatchelay, dispatch_get_main_queue(), ^(void){
+            UIWindow *topWindow = [[[UIApplication sharedApplication].windows sortedArrayUsingComparator:^NSComparisonResult(UIWindow *win1, UIWindow *win2) {
+                return win1.windowLevel - win2.windowLevel;
+            }] lastObject];
+            UIView *topView = [[topWindow subviews] lastObject];
+            [topView addSubview:self.closeButton];
+        });
+    }
+    else {
+        self.player.forceFullScreenOnLandscape = NO;
+        [[UIDevice currentDevice] setValue:[NSNumber numberWithInt:UIInterfaceOrientationPortrait] forKey:@"orientation"];
+        [self.player.view addSubview:self.closeButton];
+        [self.player.view bringSubviewToFront:self.closeButton];
+    }
+}
+
 @end
+
