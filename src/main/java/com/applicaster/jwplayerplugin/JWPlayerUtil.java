@@ -6,10 +6,12 @@ import com.applicaster.atom.model.APAtomEntry;
 import com.applicaster.player.VideoAdsUtil;
 import com.applicaster.plugin_manager.playersmanager.Playable;
 import com.applicaster.util.AppData;
+import com.applicaster.util.OSUtil;
 import com.applicaster.util.StringUtil;
 import com.longtailvideo.jwplayer.media.ads.AdBreak;
 import com.longtailvideo.jwplayer.media.ads.AdSource;
 import com.longtailvideo.jwplayer.media.captions.Caption;
+import com.longtailvideo.jwplayer.media.captions.CaptionType;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 import java.util.ArrayList;
@@ -71,13 +73,18 @@ public class JWPlayerUtil {
 
                     String src = textTrack.get("source");
                     String label = textTrack.get("label");
+                    String kind = textTrack.get("kind");
 
-                    if (src != null) {
+                    if (StringUtil.isNotEmpty(src)) {
                         Caption.Builder caption = new Caption.Builder();
                         caption.file(src);
 
-                        if (label != null) {
+                        if (StringUtil.isNotEmpty(label)) {
                             caption.label(label);
+                        }
+
+                        if(StringUtil.isNotEmpty(kind)){
+                            caption.kind(getCaptionType(kind));
                         }
 
                         captionList.add(caption.build());
@@ -86,6 +93,19 @@ public class JWPlayerUtil {
             }
         }
         return captionList;
+    }
+
+    private static CaptionType getCaptionType(String kind){
+
+
+        switch (kind){
+            case "subtitles":
+            case "captions":
+
+            return CaptionType.CAPTIONS;
+            default: return CaptionType.CAPTIONS;
+        }
+
     }
 
     private static List<AdBreak> getAdSchedule(Playable playable, Map pluginConfiguration) {
@@ -190,7 +210,7 @@ public class JWPlayerUtil {
 
         return adSchedule;
     }
-    
+
     private static int getMidrollInterval(){
         int interval  = 0;
             try {
