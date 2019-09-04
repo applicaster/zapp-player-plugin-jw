@@ -6,7 +6,6 @@ import com.applicaster.atom.model.APAtomEntry;
 import com.applicaster.player.VideoAdsUtil;
 import com.applicaster.plugin_manager.playersmanager.Playable;
 import com.applicaster.util.AppData;
-import com.applicaster.util.OSUtil;
 import com.applicaster.util.StringUtil;
 import com.longtailvideo.jwplayer.media.ads.AdBreak;
 import com.longtailvideo.jwplayer.media.ads.AdSource;
@@ -84,7 +83,7 @@ public class JWPlayerUtil {
                         }
 
                         if(StringUtil.isNotEmpty(kind)){
-                            caption.kind(getCaptionType(kind));
+                            caption.kind(CaptionType.CAPTIONS);
                         }
 
                         captionList.add(caption.build());
@@ -94,19 +93,7 @@ public class JWPlayerUtil {
         }
         return captionList;
     }
-
-    private static CaptionType getCaptionType(String kind){
-
-
-        switch (kind){
-            case "subtitles":
-            case "captions":
-
-            return CaptionType.CAPTIONS;
-            default: return CaptionType.CAPTIONS;
-        }
-
-    }
+    
 
     private static List<AdBreak> getAdSchedule(Playable playable, Map pluginConfiguration) {
         List<AdBreak> adSchedule = new ArrayList<>();
