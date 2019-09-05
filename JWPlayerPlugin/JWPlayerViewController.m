@@ -288,7 +288,6 @@
     [self.closeButton removeFromSuperview];
     self.closeButton.alpha = 1.0;
     
-    // ---> Start for fix for JP-1 task <--- //
     [player.view addSubview:self.closeButton];
     self.closeButton.frame = CGRectZero;
     self.closeButton.translatesAutoresizingMaskIntoConstraints = NO;
@@ -296,14 +295,12 @@
     NSArray *horizontal = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(16)-[closeButton(32)]" options:0 metrics:nil views:closeButtonValues];
     NSArray *vertical = [NSLayoutConstraint constraintsWithVisualFormat:@"V:|-(36)-[closeButton(32)]" options:0 metrics:nil views:closeButtonValues];
     
-    [self.player.view addConstraints:vertical];
-    [self.player.view addConstraints:horizontal];
-    // ---> end of fix <--- //
+    [NSLayoutConstraint activateConstraints:[horizontal arrayByAddingObjectsFromArray:vertical]];
     
     [self.view addSubview:player.view];
     [player.view matchParent];
     
-    self.player.fullscreen                 = NO;        // Fix for JP-1 task - hide fullscreen control
+    self.player.fullscreen                 = NO;
     self.player.forceFullScreenOnLandscape = NO;
     self.player.forceLandscapeOnFullScreen = NO;
     
@@ -424,15 +421,11 @@
             NSNumber *value = [NSNumber numberWithInt:UIInterfaceOrientationLandscapeLeft];
             [[UIDevice currentDevice] setValue:value forKey:@"orientation"];
         }
-        // A delay is needed since the video player in full screen mode deletes all subviews.
+        // delay is needed since the video player in full screen mode deletes all subviews.
         double delay = 0.1;
         dispatch_time_t dispatchelay = dispatch_time(DISPATCH_TIME_NOW, delay * NSEC_PER_SEC);
         dispatch_after(dispatchelay, dispatch_get_main_queue(), ^(void){
-            UIWindow *topWindow = [[[UIApplication sharedApplication].windows sortedArrayUsingComparator:^NSComparisonResult(UIWindow *win1, UIWindow *win2) {
-                return win1.windowLevel - win2.windowLevel;
-            }] lastObject];
-            UIView *topView = [[topWindow subviews] lastObject];
-            [topView addSubview:self.closeButton];
+            [[UIApplication sharedApplication].keyWindow addSubview:self.closeButton];            
         });
     }
     else {
