@@ -10,6 +10,7 @@ import com.applicaster.util.StringUtil;
 import com.longtailvideo.jwplayer.media.ads.AdBreak;
 import com.longtailvideo.jwplayer.media.ads.AdSource;
 import com.longtailvideo.jwplayer.media.captions.Caption;
+import com.longtailvideo.jwplayer.media.captions.CaptionType;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 import java.util.ArrayList;
@@ -55,24 +56,44 @@ public class JWPlayerUtil {
 
     private static List<Caption> getCaptions(Playable playable) {
         List<Caption> captionList = new ArrayList<>();
+        ArrayList tracks = null;
 
-        if(playable instanceof APAtomEntry.APAtomEntryPlayable) {
-            List<LinkedHashMap<String, String>> sideCarCaptions =
-                    ((APAtomEntry.APAtomEntryPlayable) playable).getEntry()
-                            .getExtension("sideCarCaptions", ArrayList.class);
+        if (playable instanceof APAtomEntry.APAtomEntryPlayable) {
 
-            if(sideCarCaptions != null) {
-                for (int i = 0; i < sideCarCaptions.size(); i++) {
-                    LinkedHashMap<String, String> sideCarCaption = sideCarCaptions.get(i);
-                    Caption caption = new Caption.Builder().file(sideCarCaption.get("src"))
-                            .label(sideCarCaption.get("label")).build();
-                    captionList.add(caption);
+            LinkedHashMap textTracks = (LinkedHashMap) ((APAtomEntry.APAtomEntryPlayable) playable).getEntry().getExtensions().get("text_tracks");
+
+            if (textTracks != null) {
+                tracks = (ArrayList) textTracks.get("tracks");
+            }
+
+            if (tracks != null) {
+                for (int i = 0; i < tracks.size(); i++) {
+                    LinkedHashMap<String, String> textTrack = (LinkedHashMap<String, String>) tracks.get(i);
+
+                    String src = textTrack.get("source");
+                    String label = textTrack.get("label");
+                    String kind = textTrack.get("kind");
+
+                    if (StringUtil.isNotEmpty(src)) {
+                        Caption.Builder caption = new Caption.Builder();
+                        caption.file(src);
+
+                        if (StringUtil.isNotEmpty(label)) {
+                            caption.label(label);
+                        }
+
+                        if(StringUtil.isNotEmpty(kind)){
+                            caption.kind(CaptionType.CAPTIONS);
+                        }
+
+                        captionList.add(caption.build());
+                    }
                 }
             }
         }
-
         return captionList;
     }
+    
 
     private static List<AdBreak> getAdSchedule(Playable playable, Map pluginConfiguration) {
         List<AdBreak> adSchedule = new ArrayList<>();
@@ -176,7 +197,7 @@ public class JWPlayerUtil {
 
         return adSchedule;
     }
-    
+
     private static int getMidrollInterval(){
         int interval  = 0;
             try {
