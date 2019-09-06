@@ -267,6 +267,13 @@
     }
 }
 
+- (NSArray*) getCloseButtonConstraints {
+    NSDictionary *closeButtonValues = @{@"closeButton" : self.closeButton};
+    NSArray *horizontal = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(16)-[closeButton(32)]" options:0 metrics:nil views:closeButtonValues];
+    NSArray *vertical = [NSLayoutConstraint constraintsWithVisualFormat:@"V:|-(36)-[closeButton(32)]" options:0 metrics:nil views:closeButtonValues];
+    return [horizontal arrayByAddingObjectsFromArray:vertical];
+}
+
 - (void)setPlayer:(JWPlayerController *)player {
     
     if (_player) {
@@ -291,11 +298,7 @@
     [player.view addSubview:self.closeButton];
     self.closeButton.frame = CGRectZero;
     self.closeButton.translatesAutoresizingMaskIntoConstraints = NO;
-    NSDictionary *closeButtonValues = @{@"closeButton" : self.closeButton};
-    NSArray *horizontal = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(16)-[closeButton(32)]" options:0 metrics:nil views:closeButtonValues];
-    NSArray *vertical = [NSLayoutConstraint constraintsWithVisualFormat:@"V:|-(36)-[closeButton(32)]" options:0 metrics:nil views:closeButtonValues];
-    
-    [NSLayoutConstraint activateConstraints:[horizontal arrayByAddingObjectsFromArray:vertical]];
+    [NSLayoutConstraint activateConstraints:[self getCloseButtonConstraints]];
     
     [self.view addSubview:player.view];
     [player.view matchParent];
@@ -416,24 +419,18 @@
 
     if (event.fullscreen) {
         self.player.forceFullScreenOnLandscape = YES;
-
         if ([[UIDevice currentDevice]orientation] == UIInterfaceOrientationPortrait){
-            NSNumber *value = [NSNumber numberWithInt:UIInterfaceOrientationLandscapeLeft];
+            NSNumber *value = [NSNumber numberWithInt:UIInterfaceOrientationLandscapeRight];
             [[UIDevice currentDevice] setValue:value forKey:@"orientation"];
         }
-        // delay is needed since the video player in full screen mode deletes all subviews.
-        double delay = 0.1;
-        dispatch_time_t dispatchelay = dispatch_time(DISPATCH_TIME_NOW, delay * NSEC_PER_SEC);
-        dispatch_after(dispatchelay, dispatch_get_main_queue(), ^(void){
-            [[UIApplication sharedApplication].keyWindow addSubview:self.closeButton];            
-        });
-    }
-    else {
+        [[UIApplication sharedApplication].keyWindow addSubview:self.closeButton];
+    } else {
         self.player.forceFullScreenOnLandscape = NO;
         [[UIDevice currentDevice] setValue:[NSNumber numberWithInt:UIInterfaceOrientationPortrait] forKey:@"orientation"];
         [self.player.view addSubview:self.closeButton];
-        [self.player.view bringSubviewToFront:self.closeButton];
     }
+    [NSLayoutConstraint deactivateConstraints:self.closeButton.constraints];
+    [NSLayoutConstraint activateConstraints:[self getCloseButtonConstraints]];
 }
 
 @end
