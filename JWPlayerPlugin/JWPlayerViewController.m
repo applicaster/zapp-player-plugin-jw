@@ -53,8 +53,7 @@
 }
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
-    BOOL lockLandscape = [self.configurationJSON[@"lock_landscape"] boolValue];
-    return lockLandscape ? UIInterfaceOrientationMaskLandscape : UIInterfaceOrientationMaskAll;
+    return UIInterfaceOrientationMaskAll;
 }
 
 #pragma mark - public
@@ -85,22 +84,12 @@
     config.controls = YES;
     config.repeat = NO;
     config.autostart = YES;
-    
-    //Skin Config - Currentlly used only to hide the full screen button.
-    //This is a bug fix - When clicking full screen, the X button dissapears.
-    //TODO - Find why the x button disapears and fix it. After that return the full screen button
-    NSString *skinURL = self.configurationJSON[@"jw_skin_url"];
-    if (skinURL != nil && [skinURL isNotEmptyOrWhiteSpaces]) {
-        JWSkinStyling *skin = [JWSkinStyling new];
-        skin.url = skinURL;
-        config.skin = skin;
-    }
-    
+
     self.extensionsDictionary = playableItem.extensionsDictionary;
-    
+
     [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"Play VOD Item"
                                                                  parameters:self.extensionsDictionary];
-    
+
     if (self.adConfig) {
         config.advertising = self.adConfig;
         self.adConfig = nil;
@@ -126,7 +115,7 @@
             } else {
                 NSObject *rawOffset = adConfiguration[@"offset"];
                 NSString *convertedOffset = nil;
-                
+
                 if ([rawOffset isKindOfClass:NSString.class]) {
                     NSString *offset = (NSString *)rawOffset;
                     if ([offset isEqualToString:@"preroll"]) {
@@ -139,7 +128,7 @@
                 else if ([rawOffset isKindOfClass:NSNumber.class]) {
                     convertedOffset = [(NSNumber *)rawOffset stringValue];
                 }
-                
+
                 JWAdBreak *adBreak = [self createAdBreakWithTag:adConfiguration[@"ad_url"] offset:convertedOffset];
                 
                 if (adBreak) {
@@ -278,6 +267,13 @@
     }
 }
 
+- (void) setCloseButtonConstraints:(UIView *) parentView {
+    [self.closeButton.topAnchor constraintEqualToAnchor: parentView.topAnchor constant:36].active = YES;
+    [self.closeButton.leadingAnchor constraintEqualToAnchor: parentView.leadingAnchor constant:16].active = YES;
+    [self.closeButton.heightAnchor constraintEqualToConstant: 32].active = YES;
+    [self.closeButton.widthAnchor constraintEqualToConstant:  32].active = YES;
+}
+
 - (void)setPlayer:(JWPlayerController *)player {
     
     if (_player) {
@@ -299,22 +295,16 @@
     [self.closeButton removeFromSuperview];
     self.closeButton.alpha = 1.0;
     
-    // ---> Start for fix for JP-1 task <--- //
     [player.view addSubview:self.closeButton];
     self.closeButton.frame = CGRectZero;
     self.closeButton.translatesAutoresizingMaskIntoConstraints = NO;
-    NSDictionary *closeButtonValues = @{@"closeButton" : self.closeButton};
-    NSArray *horizontal = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(16)-[closeButton(32)]" options:0 metrics:nil views:closeButtonValues];
-    NSArray *vertical = [NSLayoutConstraint constraintsWithVisualFormat:@"V:|-(36)-[closeButton(32)]" options:0 metrics:nil views:closeButtonValues];
     
-    [self.player.view addConstraints:vertical];
-    [self.player.view addConstraints:horizontal];
-    // ---> end of fix <--- //
-    
+    [self setCloseButtonConstraints:player.view];
+
     [self.view addSubview:player.view];
     [player.view matchParent];
     
-    self.player.fullscreen                 = NO;        // Fix for JP-1 task - hide fullscreen control
+    self.player.fullscreen                 = NO;
     self.player.forceFullScreenOnLandscape = NO;
     self.player.forceLandscapeOnFullScreen = NO;
     
@@ -323,18 +313,22 @@
 
 - (void)dismiss:(NSObject *)sender {
     if ([NSThread isMainThread]) {
+        self.player.fullscreen = NO;
         [self.player stop];
         UIViewController *vc = self.presentingViewController;
         
         if (vc) {
             [vc.view.window makeKeyAndVisible];
-            [vc dismissViewControllerAnimated:YES completion:nil];
+            [vc dismissViewControllerAnimated:YES completion:^ {
+                [self.closeButton removeFromSuperview];
+            }];
             [vc setNeedsStatusBarAppearanceUpdate];
             [UIViewController attemptRotationToDeviceOrientation];
         }
         
     } else {
         dispatch_async(dispatch_get_main_queue(), ^{
+            [self.closeButton removeFromSuperview];
             [self dismiss:sender];
         });
     }
@@ -364,7 +358,7 @@
     CGFloat pos = [event position];
     CGFloat dur = [event duration];
     CGFloat per = (pos/dur)*100;
-    
+
     if (per >= 25.0 && per < 26.0 && self.trackedPercentage < 25) {
         self.trackedPercentage = 25;
     } else if (per >= 50.0 && per < 51.0 && self.trackedPercentage < 50) {
@@ -419,6 +413,29 @@
 -(void)onPause:(JWEvent<JWStateChangeEvent> *)event {
     [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"Pause Video"
                                                                  parameters:self.extensionsDictionary];
+}
+
+- (void)onFullscreen:(JWEvent<JWFullscreenEvent> *)event {
+    [self.closeButton removeFromSuperview];
+    [NSLayoutConstraint deactivateConstraints:self.closeButton.constraints];
+
+    if (event.fullscreen) {
+        self.player.forceFullScreenOnLandscape = YES;
+        if ([[UIDevice currentDevice]orientation] == UIInterfaceOrientationPortrait){
+            NSNumber *value = [NSNumber numberWithInt:UIInterfaceOrientationLandscapeRight];
+            [[UIDevice currentDevice] setValue:value forKey:@"orientation"];
+        }
+        
+        UIWindow *keyWindow = [UIApplication sharedApplication].keyWindow;
+        [keyWindow addSubview:self.closeButton];
+        [self setCloseButtonConstraints:keyWindow];
+   }
+    else {
+        self.player.forceFullScreenOnLandscape = NO;
+        [[UIDevice currentDevice] setValue:[NSNumber numberWithInt:UIInterfaceOrientationPortrait] forKey:@"orientation"];
+        [self.player.view addSubview:self.closeButton];
+        [self setCloseButtonConstraints:self.player.view];
+    }
 }
 
 @end
