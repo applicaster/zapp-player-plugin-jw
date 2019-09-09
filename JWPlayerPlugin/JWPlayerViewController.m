@@ -267,11 +267,11 @@
     }
 }
 
-- (NSArray*) getCloseButtonConstraints {
-    NSDictionary *closeButtonValues = @{@"closeButton" : self.closeButton};
-    NSArray *horizontal = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(16)-[closeButton(32)]" options:0 metrics:nil views:closeButtonValues];
-    NSArray *vertical = [NSLayoutConstraint constraintsWithVisualFormat:@"V:|-(36)-[closeButton(32)]" options:0 metrics:nil views:closeButtonValues];
-    return [horizontal arrayByAddingObjectsFromArray:vertical];
+- (void) setCloseButtonConstraints:(UIView *) parentView {
+    [self.closeButton.topAnchor constraintEqualToAnchor: parentView.topAnchor constant:36].active = YES;
+    [self.closeButton.leadingAnchor constraintEqualToAnchor: parentView.leadingAnchor constant:16].active = YES;
+    [self.closeButton.heightAnchor constraintEqualToConstant: 32].active = YES;
+    [self.closeButton.widthAnchor constraintEqualToConstant:  32].active = YES;
 }
 
 - (void)setPlayer:(JWPlayerController *)player {
@@ -298,8 +298,9 @@
     [player.view addSubview:self.closeButton];
     self.closeButton.frame = CGRectZero;
     self.closeButton.translatesAutoresizingMaskIntoConstraints = NO;
-    [NSLayoutConstraint activateConstraints:[self getCloseButtonConstraints]];
     
+    [self setCloseButtonConstraints:player.view];
+
     [self.view addSubview:player.view];
     [player.view matchParent];
     
@@ -416,6 +417,7 @@
 
 - (void)onFullscreen:(JWEvent<JWFullscreenEvent> *)event {
     [self.closeButton removeFromSuperview];
+    [NSLayoutConstraint deactivateConstraints:self.closeButton.constraints];
 
     if (event.fullscreen) {
         self.player.forceFullScreenOnLandscape = YES;
@@ -423,14 +425,17 @@
             NSNumber *value = [NSNumber numberWithInt:UIInterfaceOrientationLandscapeRight];
             [[UIDevice currentDevice] setValue:value forKey:@"orientation"];
         }
-        [[UIApplication sharedApplication].keyWindow addSubview:self.closeButton];
-    } else {
+        
+        UIWindow *keyWindow = [UIApplication sharedApplication].keyWindow;
+        [keyWindow addSubview:self.closeButton];
+        [self setCloseButtonConstraints:keyWindow];
+   }
+    else {
         self.player.forceFullScreenOnLandscape = NO;
         [[UIDevice currentDevice] setValue:[NSNumber numberWithInt:UIInterfaceOrientationPortrait] forKey:@"orientation"];
         [self.player.view addSubview:self.closeButton];
+        [self setCloseButtonConstraints:self.player.view];
     }
-    [NSLayoutConstraint deactivateConstraints:self.closeButton.constraints];
-    [NSLayoutConstraint activateConstraints:[self getCloseButtonConstraints]];
 }
 
 @end
