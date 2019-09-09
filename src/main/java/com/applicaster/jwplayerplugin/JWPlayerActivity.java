@@ -29,8 +29,9 @@ import java.util.Map;
 
 public class JWPlayerActivity extends AppCompatActivity implements VideoPlayerEvents.OnFullscreenListener, VideoPlayerEvents.OnTimeListener, VideoPlayerEvents.OnSeekListener, AdvertisingEvents.OnAdPlayListener, AdvertisingEvents.OnAdPauseListener, AdvertisingEvents.OnAdCompleteListener, VideoPlayerEvents.OnPlayListener, VideoPlayerEvents.OnPauseListener {
 
-    private static final String PLAYABLE_KEY = "playable_key";
+    private static final String PLAYABLE_KEY = "playable";
     private static final String PERCENTAGE_KEY = "percentage";
+    private static final String ADVERTISEMENT_POSITION_KEY = "advertisement_position";
 
     /**
      * Reference to the {@link JWPlayerView}
@@ -65,7 +66,7 @@ public class JWPlayerActivity extends AppCompatActivity implements VideoPlayerEv
             configuration =  PlayersManager.getCurrentPlayer().getPluginConfigurationParams();
         }
         analyticsParams = new HashMap<>(playable.getAnalyticsParams());
-        AnalyticsAgentUtil.logEvent("VOD Item: Start Player with video", analyticsParams);
+        AnalyticsAgentUtil.logEvent("Play Video Item", analyticsParams);
 
         // Load a media source
         mPlayerView.load(JWPlayerUtil.getPlaylistItem(playable, configuration));
@@ -168,7 +169,7 @@ public class JWPlayerActivity extends AppCompatActivity implements VideoPlayerEv
 
         Map<String, String> params = new HashMap<>(analyticsParams);
         params.put(PERCENTAGE_KEY, String.valueOf(trackedPercentage));
-        AnalyticsAgentUtil.logEvent("VOD Item: Percentage watched", params);
+        AnalyticsAgentUtil.logEvent("Watch VOD Percentage", params);
     }
 
     @Override
@@ -178,26 +179,32 @@ public class JWPlayerActivity extends AppCompatActivity implements VideoPlayerEv
 
     @Override
     public void onAdPlay(AdPlayEvent adPlayEvent) {
-        AnalyticsAgentUtil.logEvent("VOD Item: Start advert", analyticsParams);
+        Map<String, String> params = new HashMap<>(analyticsParams);
+        params.put(ADVERTISEMENT_POSITION_KEY, "Start");
+        AnalyticsAgentUtil.logEvent("Watch Video Advertisement", params);
     }
 
     @Override
     public void onAdPause(AdPauseEvent adPauseEvent) {
-        AnalyticsAgentUtil.logEvent("VOD Item: Pause advert", analyticsParams);
+        Map<String, String> params = new HashMap<>(analyticsParams);
+        params.put(ADVERTISEMENT_POSITION_KEY, "Pause");
+        AnalyticsAgentUtil.logEvent("Watch Video Advertisement", params);
     }
 
     @Override
     public void onAdComplete(AdCompleteEvent adCompleteEvent) {
-        AnalyticsAgentUtil.logEvent("VOD Item: End advert", analyticsParams);
+        Map<String, String> params = new HashMap<>(analyticsParams);
+        params.put(ADVERTISEMENT_POSITION_KEY, "End");
+        AnalyticsAgentUtil.logEvent("Watch Video Advertisement", params);
     }
 
     @Override
     public void onPlay(PlayEvent playEvent) {
-        AnalyticsAgentUtil.logEvent("VOD Item: Start video", analyticsParams);
+        AnalyticsAgentUtil.logEvent("Start Video", analyticsParams);
     }
 
     @Override
     public void onPause(PauseEvent pauseEvent) {
-        AnalyticsAgentUtil.logEvent("VOD Item: Pause video", analyticsParams);
+        AnalyticsAgentUtil.logEvent("Pause Video", analyticsParams);
     }
 }
