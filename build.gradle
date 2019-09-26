@@ -79,9 +79,13 @@ dependencies {
     }
 
     // JWPlayer
-    api ('com.longtailvideo.jwplayer:jwplayer-core:3.2.2')
-    api ('com.longtailvideo.jwplayer:jwplayer-common:3.2.2')
-    api ('com.longtailvideo.jwplayer:jwplayer-ima:3.2.2')
+    api ('com.longtailvideo.jwplayer:jwplayer-core:3.7.0')
+    api ('com.longtailvideo.jwplayer:jwplayer-common:3.7.0') {
+	exclude group: 'com.google.android.gms', module: 'play-services-ads-identifier'
+    }
+    api ('com.longtailvideo.jwplayer:jwplayer-ima:3.7.0') {
+	exclude group: 'com.google.android.gms', module: 'play-services-ads-identifier'
+    }
 }
 
 apply from: 'bintray_publisher.gradle'
