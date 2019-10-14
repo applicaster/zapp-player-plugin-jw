@@ -1,0 +1,92 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 28
+
+
+
+    defaultConfig {
+        minSdkVersion 19
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        consumerProguardFiles 'proguard-rules.pro'
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            consumerProguardFiles 'proguard-rules.pro'
+        }
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            consumerProguardFiles 'proguard-rules.pro'
+        }
+    }
+}
+
+repositories {
+    google()
+    jcenter()
+    mavenCentral()
+    maven { url 'https://maven.google.com' }
+    maven { url 'https://google.bintray.com/exoplayer/'}
+    maven { url 'https://google.bintray.com/interactivemedia/'}
+    maven { url 'https://jitpack.io' }
+    maven {
+        url 'http://dl.bintray.com/npaw/youbora'
+    }
+    maven { // Applicaster
+        credentials {
+            username System.getenv("MAVEN_USERNAME")
+            password System.getenv("MAVEN_PASSWORD")
+        }
+        url 'https://dl.bintray.com/applicaster-ltd/maven'
+    }
+    maven { // jwplayer
+        url 'https://mvn.jwplayer.com/content/repositories/releases/'
+    }
+}
+
+buildscript {
+    repositories {
+        google()
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.1.3'
+        classpath 'com.github.dcendents:android-maven-plugin:1.2'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.4'
+    }
+}
+
+dependencies {
+
+    // Applicaster SDK
+    def applicasterSDKPath = 'com.applicaster:applicaster-android-sdk:4.0.0'
+
+    //Check if an open SDK is defined - if not use the closed one.
+    def devSDK = findProject(':applicaster-android-sdk')
+    if (devSDK != null) {
+        implementation project(':applicaster-android-sdk')
+    } else {
+        implementation(applicasterSDKPath)
+    }
+
+    // JWPlayer
+    api ('com.longtailvideo.jwplayer:jwplayer-core:3.7.0')
+    api ('com.longtailvideo.jwplayer:jwplayer-common:3.7.0') {
+	exclude group: 'com.google.android.gms', module: 'play-services-ads-identifier'
+    }
+    api ('com.longtailvideo.jwplayer:jwplayer-ima:3.7.0') {
+	exclude group: 'com.google.android.gms', module: 'play-services-ads-identifier'
+    }
+}
+
+apply from: 'bintray_publisher.gradle'
+
