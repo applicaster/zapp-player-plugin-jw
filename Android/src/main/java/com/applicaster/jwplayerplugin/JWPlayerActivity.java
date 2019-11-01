@@ -97,6 +97,7 @@ public class JWPlayerActivity extends AppCompatActivity implements VideoPlayerEv
     protected void onPause() {
         // Let JW Player know that the app is going to the background
         mPlayerView.onPause();
+        mPlayerView.pause();
         super.onPause();
     }
 

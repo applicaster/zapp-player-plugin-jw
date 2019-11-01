@@ -8,11 +8,18 @@ def getVersionName = { ->
     try {
         def stdout = new ByteArrayOutputStream()
         exec {
-            commandLine 'git', 'describe', '--abbrev=0', '--tags'
+            commandLine 'git', 'describe', '--match', 'android-*', '--abbrev=0', '--tags'
             standardOutput = stdout
         }
-        return stdout.toString().trim()
-    } catch (ignored) {
+        def tag = stdout.toString().trim()
+        String[] arr = tag.split('-')
+        if (arr.length > 1) {
+            return arr[1]
+        }
+        return arr[0]
+    }
+    catch (ignored) {
+        println 'catch'
         return null
     }
 }
@@ -28,7 +35,9 @@ publishing {
                 version versionFromTag
 
                 artifactId ARTIFACT_ID
-                artifact "build/outputs/aar/" + project.name + "-release.aar"
+                artifact ("build/outputs/aar/" + project.name + "-release.aar") {
+                    builtBy assembleRelease
+                }
                 artifact androidJavadocsJar
                 artifact androidSourcesJar
                 pom.withXml {
