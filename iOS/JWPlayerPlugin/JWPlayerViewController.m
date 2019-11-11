@@ -11,7 +11,7 @@
 @import UIKit;
 
 @interface JWPlayerViewController () <JWPlayerDelegate> {
-    
+    BOOL isViewHidden;
 }
 
 @property (nonatomic, strong) JWPlayerController *player;
@@ -23,16 +23,13 @@
 @end
 
 @implementation JWPlayerViewController
-@synthesize player = _player;
-@synthesize closeButton = _closeButton;
-@synthesize trackedPercentage = _trackedPercentage;
-@synthesize extensionsDictionary = _extensionsDictionary;
 
 #pragma mark - UIViewController
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    // Do any additional setup after loading the view. 
+- (void)loadView {
+    [super loadView];
+    
+    isViewHidden = true;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -42,6 +39,8 @@
                                              selector:@selector(pause)
                                                  name:UIApplicationDidEnterBackgroundNotification
                                                object:nil];     // Fix for JP-5 task
+    
+    isViewHidden = false;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -50,6 +49,8 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:UIApplicationDidEnterBackgroundNotification
                                                   object:nil]; // Fix for JP-5 task
+    
+    isViewHidden = true;
 }
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
@@ -403,6 +404,12 @@
                    forKey:@"advertisement_position"];
     [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"Watch Video Advertisement"
                                                                  parameters:extensions];
+}
+
+- (void)onBeforePlay {
+    if (isViewHidden == true) {
+        [self.player stop];
+    }
 }
 
 -(void)onPlay:(JWEvent<JWStateChangeEvent> *)event {

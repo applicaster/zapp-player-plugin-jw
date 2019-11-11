@@ -4,11 +4,13 @@
     "class_name": "ZappJWPlayerAdapter",
     "modules": []
   },
-  "dependency_repository_url": [],
+  "dependency_repository_url": [
+    "git@github.com:applicaster/zapp-player-plugin-jw.git"
+  ],
   "platform": "ios",
-  "author_name": "s.zaycev",
-  "author_email": "sergey.zaycev@digic.tech",
-  "manifest_version": "3.2.3",
+  "author_name": "Roman Karpievich",
+  "author_email": "r.karpievich@applicaster.com",
+  "manifest_version": "3.2.4",
   "name": "JWPlayer",
   "description": "JW Player Plugin for Applicaster Zapp Platform",
   "type": "player",
@@ -16,7 +18,7 @@
   "identifier": "JWPlayer-Plugin",
   "ui_builder_support": true,
   "dependency_name": "JWPlayerPlugin",
-  "dependency_version": "3.2.3",
+  "dependency_version": "3.2.4",
   "whitelisted_account_ids": [],
   "min_zapp_sdk": "12.1.0",
   "deprecated_since_zapp_sdk": "",
