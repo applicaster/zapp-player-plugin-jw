@@ -134,12 +134,7 @@
                 
                 if (adBreak) {
                     [scheduleArray addObject:adBreak];
-                    
-                    if ([type  isEqual: @"googleima"]) {
-                        adConfig.client = JWAdClientGoogima;
-                    } else {
-                        adConfig.client = JWAdClientVast;
-                    }
+                    adConfig.client = JWAdClientGoogima;
                 }
             }
         }
