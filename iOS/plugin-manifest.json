@@ -10,7 +10,7 @@
   "platform": "ios",
   "author_name": "Roman Karpievich",
   "author_email": "r.karpievich@applicaster.com",
-  "manifest_version": "3.2.5",
+  "manifest_version": "3.2.6",
   "name": "JWPlayer",
   "description": "JW Player Plugin for Applicaster Zapp Platform",
   "type": "player",

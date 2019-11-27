@@ -310,6 +310,7 @@
 - (void)dismiss:(NSObject *)sender {
     if ([NSThread isMainThread]) {
         self.player.fullscreen = NO;
+        [self.player pauseAd:YES];
         [self.player stop];
         UIViewController *vc = self.presentingViewController;
         
