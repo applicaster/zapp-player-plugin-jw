@@ -1,7 +1,7 @@
 PODS:
-  - Alamofire (4.8.2)
-  - ApplicasterSDK (10.1.0):
-    - Alamofire (= 4.8.2)
+  - Alamofire (4.9.1)
+  - ApplicasterSDK (12.0.4):
+    - Alamofire (= 4.9.1)
     - CocoaLumberjack/Swift (= 3.5.3)
     - FBSDKCoreKit (= 5.2.3)
     - FBSDKLoginKit (= 5.2.3)
@@ -9,11 +9,7 @@ PODS:
     - SSZipArchive (= 2.1.0)
     - TTTAttributedLabel (= 2.1.0)
     - TwitterKit (= 3.4.2)
-    - ZappAnalyticsPluginsSDK (~> 8.0.4)
-    - ZappGeneralPluginsSDK (~> 8.1.0)
-    - ZappLoginPluginsSDK (~> 8.0.1)
-    - ZappPlugins (~> 9.1.8)
-    - ZappPushPluginsSDK (~> 8.0.2)
+    - ZappPlugins (~> 11.1.0)
   - CocoaLumberjack/Core (3.5.3)
   - CocoaLumberjack/Swift (3.5.3):
     - CocoaLumberjack/Core
@@ -27,27 +23,24 @@ PODS:
     - FBSDKCoreKit (~> 5.0)
   - FBSDKShareKit (5.2.3):
     - FBSDKCoreKit (~> 5.0)
-  - JWPlayer-SDK (3.6.1)
-  - JWPlayerPlugin (3.1.4):
+  - GoogleAds-IMA-iOS-SDK (3.9.2)
+  - JWPlayer-SDK (3.8.1)
+  - JWPlayerPlugin (3.2.6):
     - ApplicasterSDK
+    - GoogleAds-IMA-iOS-SDK (= 3.9.2)
     - JWPlayer-SDK (~> 3.0)
-    - ZappLoginPluginsSDK
     - ZappPlugins
   - SSZipArchive (2.1.0)
   - TTTAttributedLabel (2.1.0)
   - TwitterCore (3.2.0)
   - TwitterKit (3.4.2):
     - TwitterCore (>= 3.2.0)
-  - ZappAnalyticsPluginsSDK (8.0.4):
-    - ZappPlugins
-  - ZappGeneralPluginsSDK (8.1.0):
-    - ZappPlugins
-  - ZappLoginPluginsSDK (8.0.1):
+  - ZappCore (0.1.5)
+  - ZappLoginPluginsSDK (10.0.0):
     - Alamofire
     - ZappPlugins
-  - ZappPlugins (9.1.9)
-  - ZappPushPluginsSDK (8.0.2):
-    - ZappPlugins
+  - ZappPlugins (11.1.5):
+    - ZappCore
 
 DEPENDENCIES:
   - ApplicasterSDK
@@ -57,13 +50,11 @@ DEPENDENCIES:
 
 SPEC REPOS:
   "git@github.com:applicaster/CocoaPods-Private.git":
-    - ZappAnalyticsPluginsSDK
-    - ZappGeneralPluginsSDK
     - ZappLoginPluginsSDK
-    - ZappPushPluginsSDK
   "git@github.com:applicaster/CocoaPods.git":
     - ApplicasterSDK
     - TTTAttributedLabel
+    - ZappCore
     - ZappPlugins
   https://github.com/cocoapods/specs.git:
     - Alamofire
@@ -71,6 +62,7 @@ SPEC REPOS:
     - FBSDKCoreKit
     - FBSDKLoginKit
     - FBSDKShareKit
+    - GoogleAds-IMA-iOS-SDK
     - JWPlayer-SDK
     - SSZipArchive
     - TwitterCore
@@ -81,24 +73,23 @@ EXTERNAL SOURCES:
     :path: JWPlayerPlugin.podspec
 
 SPEC CHECKSUMS:
-  Alamofire: ae5c501addb7afdbb13687d7f2f722c78734c2d3
-  ApplicasterSDK: e147b348e84de63fece1088e2dd3a0e111ac4e62
+  Alamofire: 85e8a02c69d6020a0d734f6054870d7ecb75cf18
+  ApplicasterSDK: c1e1a437c3af1442ce53bfbeac4f67a3fc2ff729
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
   FBSDKCoreKit: 5154c35d9058fd7dfa0445ba19e194c4b172fc32
   FBSDKLoginKit: dc98b6bf12334f1a42f28d0457fffc9aa3d1eca5
   FBSDKShareKit: 6f9c622f9a5d051f43f2dab6f753d5198422b89c
-  JWPlayer-SDK: 23169dc5ebbf9e0f35ef470b4634f5fc85394596
-  JWPlayerPlugin: 75308d5a630f95b3be3bc020bcd287eac9291816
+  GoogleAds-IMA-iOS-SDK: 005e7670c266ee28ad72d730309f396ad7f440a0
+  JWPlayer-SDK: 49200b800cd16b0696a881800d3407efbb729eb1
+  JWPlayerPlugin: 7701104566fba3140f5e5facfd997566964518b0
   SSZipArchive: 1e8e53dcb11bca3ded4738958dc49fc467320a14
   TTTAttributedLabel: f8c7f1dbc7b8f7168e23e8b4764dda2e3b74aae8
   TwitterCore: 8cbc9ad34d91c63a0035ea05bfbfc0d7ca72a28c
   TwitterKit: 5e4f41d70b9abdb41df5467f52d7aa2c0fd26ebb
-  ZappAnalyticsPluginsSDK: 6f8edcddc12ae4001098a3fa6fe87e6fe1a013bd
-  ZappGeneralPluginsSDK: 7e91f6030d9f1b81b4781e823b0197bfad351bde
-  ZappLoginPluginsSDK: d3205f72e2fa2ddb24d2ba240591f41fbb8644d8
-  ZappPlugins: 2bc8f25c9e28711ed5b8754cf1082e7cbc8748bb
-  ZappPushPluginsSDK: 2062e2487f3ac877c0ab1a807d1a7f8d357bd333
+  ZappCore: 25908b99a27d3daace5d5b134ff1f911c4ed1782
+  ZappLoginPluginsSDK: c3878278931d1b3da58cf7d8afafd6aed2a9c66d
+  ZappPlugins: 917408f60bb19205bd0fad40e0d7efa3f78925f6
 
-PODFILE CHECKSUM: 305cfe89f918a38515936b470abceca3ed0eeb59
+PODFILE CHECKSUM: 6d7029bbf96057a5a36dde3b3d294ef706167614
 
-COCOAPODS: 1.5.3
+COCOAPODS: 1.7.5

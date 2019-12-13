@@ -172,17 +172,16 @@
 			buildActionMask = 2147483647;
 			files = (
 			);
-			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-JWPlayerPlugin/Pods-JWPlayerPlugin-resources.sh",
-				"${PODS_ROOT}/TwitterKit/iOS/TwitterKit.framework/TwitterKitResources.bundle",
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-JWPlayerPlugin/Pods-JWPlayerPlugin-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/TwitterKitResources.bundle",
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-JWPlayerPlugin/Pods-JWPlayerPlugin-resources-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-JWPlayerPlugin/Pods-JWPlayerPlugin-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-JWPlayerPlugin/Pods-JWPlayerPlugin-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		FD772741E9AE24106EE97110 /* [CP] Check Pods Manifest.lock */ = {
@@ -358,6 +357,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.applicaster.JWPlayerPlugin;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.1;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -384,6 +384,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.applicaster.JWPlayerPlugin;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.1;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

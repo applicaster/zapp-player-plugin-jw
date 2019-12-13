@@ -46,7 +46,7 @@ static NSString *const kPlayableItemsKey = @"playable_items";
 
 - (void)pluggablePlayerAddInline:(UIViewController *)rootViewController container:(UIView *)container configuration:(ZPPlayerConfiguration *)configuration {
     if ([self.currentPlayableItem isFree] == NO) {
-        NSObject<ZPLoginProviderUserDataProtocol> *loginPlugin = [[ZPLoginManager sharedInstance] createWithUserData];
+        NSObject<ZPLoginProviderUserDataProtocol> *loginPlugin = [[ZAAppConnector sharedInstance].pluginsDelegate.loginPluginsManager createWithUserData];
         NSDictionary *extensions = [NSDictionary dictionaryWithObject:self.currentPlayableItems
                                                                forKey:kPlayableItemsKey];
         if ([loginPlugin respondsToSelector:@selector(isUserComplyWithPolicies:)]) {
@@ -132,7 +132,7 @@ static NSString *const kPlayableItemsKey = @"playable_items";
 
 - (void)presentPlayerFullScreen:(UIViewController *)rootViewController configuration:(ZPPlayerConfiguration *)configuration completion:(void (^)(void))completion {
     if ([self.currentPlayableItem isFree] == NO) {
-        NSObject<ZPLoginProviderUserDataProtocol> *loginPlugin = [[ZPLoginManager sharedInstance] createWithUserData];
+        NSObject<ZPLoginProviderUserDataProtocol> *loginPlugin = [[ZAAppConnector sharedInstance].pluginsDelegate.loginPluginsManager createWithUserData];
         NSDictionary *extensions = [NSDictionary dictionaryWithObject:self.currentPlayableItems
                                                                forKey:kPlayableItemsKey];
         if ([loginPlugin respondsToSelector:@selector(isUserComplyWithPolicies:)]) {
