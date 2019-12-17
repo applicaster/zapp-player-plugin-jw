@@ -6,8 +6,8 @@
 //  Copyright © 2018 Applicaster. All rights reserved.
 //
 
-@import ZappLoginPluginsSDK;
-@import ZappPlugins;
+@import ZappCore;
+
 #import "ZappJWPlayerAdapter.h"
 #import "JWPlayer_iOS_SDK/JWPlayerController.h"
 
@@ -34,6 +34,9 @@ static NSString *const kPlayableItemsKey = @"playable_items";
     instance.playerViewController.configurationJSON = configurationJSON;
     instance.currentPlayableItem = items.firstObject;
     instance.currentPlayableItems = items;
+    
+    NSString *airplayKey = configurationJSON[@"airplay"];
+    instance.allowAirplay = airplayKey && [airplayKey isEqualToString:@"1"];
     
     return instance;
 }
@@ -207,9 +210,10 @@ static NSString *const kPlayableItemsKey = @"playable_items";
 }
 
 - (void)setupPlayerWithCurrentPlayableItem {
+    self.playerViewController.allowAirplay = self.allowAirplay;
     [self.playerViewController setupPlayerWithPlayableItem:self.currentPlayableItem];
     self.playerViewController.isLive = [self.currentPlayableItem isKindOfClass:[APChannel class]];
-
+    
     NSArray *ads = self.currentPlayableItem.extensionsDictionary[@"videoAds"];
     if (ads == nil) {
         ads = self.currentPlayableItem.extensionsDictionary[@"video_ads"];

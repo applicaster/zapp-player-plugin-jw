@@ -14,8 +14,10 @@ NS_ASSUME_NONNULL_BEGIN
 @interface JWPlayerViewController : UIViewController
 
 @property (nonatomic, strong) UIButton *closeButton;
+@property (nonatomic, strong) UIView *airplayButton;
 @property (nonatomic, strong) NSDictionary *configurationJSON;
 @property (nonatomic, assign) BOOL isLive;
+@property (nonatomic, assign) BOOL allowAirplay;
 
 - (void)setupPlayerWithPlayableItem:(NSObject <ZPPlayable> *)playableItem;
 - (void)setupPlayerAdvertisingWithConfiguration:(NSArray *)ads;

@@ -9,6 +9,9 @@
 #import "JWPlayerViewController.h"
 #import "JWPlayer_iOS_SDK/JWPlayerController.h"
 @import UIKit;
+@import AVKit;
+@import AVFoundation;
+@import MediaPlayer;
 
 @interface JWPlayerViewController () <JWPlayerDelegate> {
     BOOL isViewHidden;
@@ -59,6 +62,20 @@
 
 #pragma mark - public
 
+- (void)setAllowAirplay:(BOOL)allowAirplay {
+    _allowAirplay = allowAirplay;
+    
+    if (allowAirplay) {
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleScreenConnected:) name:UIScreenDidConnectNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleScreenDisconnected:) name:UIScreenDidDisconnectNotification object:nil];
+    } else {
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:UIScreenDidConnectNotification object:nil];
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:UIScreenDidDisconnectNotification object:nil];
+    }
+}
+
+#pragma mark -
+
 - (UIButton *)closeButton {
     if (_closeButton) {
         return _closeButton;
@@ -71,6 +88,36 @@
     
     _closeButton = button;
     return button;
+}
+
+- (UIView*)airplayButton {
+    if (_airplayButton) {
+        return _airplayButton;
+    }
+    
+    UIView *buttonView = nil;
+    CGRect buttonFrame = CGRectMake(0, 0, 44, 44);
+    
+    // It's highly recommended to use the AVRoutePickerView in order to avoid AirPlay issues after iOS 11.
+    if (@available(iOS 11.0, *)) {
+        AVRoutePickerView *airplayButton = [[AVRoutePickerView alloc] initWithFrame:buttonFrame];
+        airplayButton.activeTintColor = [UIColor grayColor];
+        airplayButton.tintColor = [UIColor whiteColor];
+        buttonView = airplayButton;
+    } else {
+        // If you still support previous iOS versions, you can use MPVolumeView
+        MPVolumeView *airplayButton = [[MPVolumeView alloc] initWithFrame:buttonFrame];
+        airplayButton.showsVolumeSlider = NO;
+        airplayButton.tintColor = [UIColor whiteColor];
+        buttonView = airplayButton;
+    }
+    
+    _airplayButton = buttonView;
+    
+    _airplayButton.userInteractionEnabled = YES;
+    [_airplayButton addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(airplayButtonTapped:)]];
+    
+    return buttonView;
 }
 
 - (void)setupPlayerWithPlayableItem:(NSObject <ZPPlayable> *)playableItem
@@ -270,6 +317,13 @@
     [self.closeButton.widthAnchor constraintEqualToConstant:  32].active = YES;
 }
 
+- (void) setAirplayButtonConstraints:(UIView *) parentView {
+    [self.airplayButton.topAnchor constraintEqualToAnchor: parentView.topAnchor constant:36].active = YES;
+    [self.airplayButton.trailingAnchor constraintEqualToAnchor: parentView.trailingAnchor constant:-16].active = YES;
+    [self.airplayButton.heightAnchor constraintEqualToConstant: 32].active = YES;
+    [self.airplayButton.widthAnchor constraintEqualToConstant:  32].active = YES;
+}
+
 - (void)setPlayer:(JWPlayerController *)player {
     
     if (_player) {
@@ -304,6 +358,17 @@
     self.player.forceFullScreenOnLandscape = NO;
     self.player.forceLandscapeOnFullScreen = NO;
     
+    if (self.allowAirplay) {
+        [self.airplayButton removeFromSuperview];
+        self.airplayButton.alpha = 1.0;
+        
+        self.airplayButton.translatesAutoresizingMaskIntoConstraints = NO;
+    
+        [player.view addSubview:self.airplayButton];
+        
+        [self setAirplayButtonConstraints:player.view];
+    }
+    
     _player = player;
 }
 
@@ -318,6 +383,7 @@
             [vc.view.window makeKeyAndVisible];
             [vc dismissViewControllerAnimated:YES completion:^ {
                 [self.closeButton removeFromSuperview];
+                [self.airplayButton removeFromSuperview];
             }];
             [vc setNeedsStatusBarAppearanceUpdate];
             [UIViewController attemptRotationToDeviceOrientation];
@@ -326,6 +392,7 @@
     } else {
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.closeButton removeFromSuperview];
+            [self.airplayButton removeFromSuperview];
             [self dismiss:sender];
         });
     }
@@ -333,6 +400,26 @@
 
 - (void)adjustButtonAlpha:(BOOL)visible {
     self.closeButton.alpha = visible ? 1.0 : 0.0;
+    self.airplayButton.alpha = visible ? 1.0 : 0.0;
+}
+
+#pragma mark - Notifications
+
+- (void)airplayButtonTapped:(UIGestureRecognizer *)sender {
+    if (self.allowAirplay) {
+        [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"Tap Cast" parameters:self.extensionsDictionary];
+    }
+}
+- (void)handleScreenConnected:(NSNotification *)sender {
+    if ([UIScreen screens].count > 1 && self.allowAirplay) {
+        [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"Cast Start" parameters:self.extensionsDictionary];
+    }
+}
+
+- (void)handleScreenDisconnected:(NSNotification *)sender {
+    if ([UIScreen screens].count == 1 && self.allowAirplay) {
+        [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"Cast Stop" parameters:self.extensionsDictionary];
+    }
 }
 
 #pragma mark - JWPlayerDelegate

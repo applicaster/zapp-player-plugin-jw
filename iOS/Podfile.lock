@@ -44,9 +44,9 @@ PODS:
 
 DEPENDENCIES:
   - ApplicasterSDK
+  - JWPlayer-SDK
   - JWPlayerPlugin (from `JWPlayerPlugin.podspec`)
-  - ZappLoginPluginsSDK
-  - ZappPlugins
+  - ZappCore
 
 SPEC REPOS:
   "git@github.com:applicaster/CocoaPods-Private.git":
@@ -56,7 +56,7 @@ SPEC REPOS:
     - TTTAttributedLabel
     - ZappCore
     - ZappPlugins
-  https://github.com/cocoapods/specs.git:
+  https://cdn.cocoapods.org/:
     - Alamofire
     - CocoaLumberjack
     - FBSDKCoreKit
