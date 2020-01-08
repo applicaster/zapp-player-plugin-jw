@@ -18,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSDictionary *configurationJSON;
 @property (nonatomic, assign) BOOL isLive;
 @property (nonatomic, assign) BOOL allowAirplay;
+@property (nonatomic, assign) BOOL isInlinePlayer;
 
 - (void)setupPlayerWithPlayableItem:(NSObject <ZPPlayable> *)playableItem;
 - (void)setupPlayerAdvertisingWithConfiguration:(NSArray *)ads;

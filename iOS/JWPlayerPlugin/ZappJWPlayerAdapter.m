@@ -209,8 +209,9 @@ static NSString *const kPlayableItemsKey = @"playable_items";
     return self.currentPlayerState;
 }
 
-- (void)setupPlayerWithCurrentPlayableItem {
+- (void)setupPlayerWithCurrentPlayableItemUsingInlinePlayer:(BOOL)inlinePlayer {
     self.playerViewController.allowAirplay = self.allowAirplay;
+    self.playerViewController.isInlinePlayer = inlinePlayer;
     [self.playerViewController setupPlayerWithPlayableItem:self.currentPlayableItem];
     self.playerViewController.isLive = [self.currentPlayableItem isKindOfClass:[APChannel class]];
     
@@ -276,7 +277,7 @@ static NSString *const kPlayableItemsKey = @"playable_items";
             completion:(void (^)(void))completion {
     __block typeof(self) blockSelf = self;
     [self loadItemIfNeeded:^{
-        [blockSelf setupPlayerWithCurrentPlayableItem];
+        [blockSelf setupPlayerWithCurrentPlayableItemUsingInlinePlayer:NO];
 
         [[rootViewController topmostModalViewController] presentViewController:blockSelf.playerViewController
                                                                       animated:configuration.animated
@@ -294,7 +295,7 @@ static NSString *const kPlayableItemsKey = @"playable_items";
         completion:(void (^)(void))completion {
     __block typeof(self) blockSelf = self;
     [self loadItemIfNeeded:^{
-        [blockSelf setupPlayerWithCurrentPlayableItem];
+        [blockSelf setupPlayerWithCurrentPlayableItemUsingInlinePlayer:YES];
 
         [rootViewController addChildViewController:blockSelf.playerViewController toView:container];
         [blockSelf.playerViewController.view matchParent];

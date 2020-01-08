@@ -343,7 +343,7 @@
     }
     
     [self.closeButton removeFromSuperview];
-    self.closeButton.alpha = 1.0;
+    self.closeButton.alpha = self.isInlinePlayer ? 0.0 : 1.0;
     
     [player.view addSubview:self.closeButton];
     self.closeButton.frame = CGRectZero;
@@ -399,7 +399,7 @@
 }
 
 - (void)adjustButtonAlpha:(BOOL)visible {
-    self.closeButton.alpha = visible ? 1.0 : 0.0;
+    self.closeButton.alpha = visible && !self.isInlinePlayer ? 1.0 : 0.0;
     self.airplayButton.alpha = visible ? 1.0 : 0.0;
 }
 
@@ -508,7 +508,11 @@
 - (void)onFullscreen:(JWEvent<JWFullscreenEvent> *)event {
     [self.closeButton removeFromSuperview];
     [NSLayoutConstraint deactivateConstraints:self.closeButton.constraints];
-
+    
+    self.isInlinePlayer = !event.fullscreen;
+    
+    [self adjustButtonAlpha:NO];
+    
     if (event.fullscreen) {
         self.player.forceFullScreenOnLandscape = YES;
         if ([[UIDevice currentDevice]orientation] == UIInterfaceOrientationPortrait){
