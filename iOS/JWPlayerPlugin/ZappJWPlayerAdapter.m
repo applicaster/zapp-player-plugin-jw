@@ -35,8 +35,13 @@ static NSString *const kPlayableItemsKey = @"playable_items";
     instance.currentPlayableItem = items.firstObject;
     instance.currentPlayableItems = items;
     
-    NSString *airplayKey = configurationJSON[@"airplay"];
-    instance.allowAirplay = airplayKey && [airplayKey isEqualToString:@"1"];
+    id airplayValue = configurationJSON[@"airplay"];
+    
+    if (airplayValue && [airplayValue isKindOfClass:[NSString class]]) {
+        instance.allowAirplay = [((NSString*)airplayValue) isEqualToString:@"1"];
+    } else if (airplayValue && [airplayValue isKindOfClass:[NSNumber class]]) {
+        instance.allowAirplay = [((NSNumber*)airplayValue) boolValue];
+    }
     
     return instance;
 }

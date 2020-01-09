@@ -13,8 +13,8 @@ Pod::Spec.new do |s|
   s.platform                = :ios, '10.0'
   s.requires_arc            = true
 
-  s.source_files = 'JWPlayerPlugin/**/*.{swift,h,m}'
-  s.public_header_files = 'JWPlayerPlugin/**/*.h'
+  s.source_files = 'iOS/JWPlayerPlugin/**/*.{h,m}'
+  s.public_header_files = 'iOS/JWPlayerPlugin/**/*.h'
 
   s.xcconfig =  { 'CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES' => 'YES',
                   'ENABLE_BITCODE' => 'YES',
