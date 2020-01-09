@@ -10,7 +10,7 @@
   "platform": "ios",
   "author_name": "Jesus De Meyr",
   "author_email": "j.demeyer@applicaster.com",
-  "manifest_version": "3.3.0",
+  "manifest_version": "3.3.1",
   "name": "JWPlayer",
   "description": "JW Player Plugin for Applicaster Zapp Platform",
   "type": "player",
@@ -18,7 +18,7 @@
   "identifier": "JWPlayer-Plugin",
   "ui_builder_support": true,
   "dependency_name": "JWPlayerPlugin",
-  "dependency_version": "3.3.0",
+  "dependency_version": "3.3.1",
   "whitelisted_account_ids": [],
   "min_zapp_sdk": "13.0.0-RC",
   "deprecated_since_zapp_sdk": "",
@@ -33,7 +33,7 @@
     {
       "type": "text",
       "key": "live_preroll_ad_url",
-      "tooltip_text": "Live prerol ad URL"
+      "tooltip_text": "Live preroll ad URL"
     },
     {
       "type": "text",
@@ -53,7 +53,7 @@
     {
       "type": "text",
       "key": "vod_preroll_ad_url",
-      "tooltip_text": "VOD prerol ad URL"
+      "tooltip_text": "VOD preroll ad URL"
     },
     {
       "type": "text",

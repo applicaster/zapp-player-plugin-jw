@@ -13,9 +13,8 @@ Pod::Spec.new do |s|
   s.platform                = :ios, '10.0'
   s.requires_arc            = true
 
-  s.source_files = 'JWPlayerPlugin/**/*.{h,m}'
-  s.source_files = 'JWPlayerPlugin/**/*.{swift,h,m}'
-  s.public_header_files = 'JWPlayerPlugin/**/*.h'
+  s.source_files = 'iOS/JWPlayerPlugin/**/*.{h,m}'
+  s.public_header_files = 'iOS/JWPlayerPlugin/**/*.h'
 
   s.xcconfig =  { 'CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES' => 'YES',
                   'ENABLE_BITCODE' => 'YES',
@@ -26,7 +25,7 @@ Pod::Spec.new do |s|
 
   s.dependency 'ZappCore'
   s.dependency 'ApplicasterSDK'
-  s.dependency 'JWPlayer-SDK', '~> 3.0'
-  s.dependency 'GoogleAds-IMA-iOS-SDK', '= 3.9.2'
+  s.dependency 'JWPlayer-SDK'
+  s.dependency 'GoogleAds-IMA-iOS-SDK'
 
 end

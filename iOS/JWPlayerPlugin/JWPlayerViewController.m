@@ -508,7 +508,14 @@
 - (void)onFullscreen:(JWEvent<JWFullscreenEvent> *)event {
     [self.closeButton removeFromSuperview];
     [NSLayoutConstraint deactivateConstraints:self.closeButton.constraints];
-
+    
+    if (self.allowAirplay) {
+        [self.airplayButton removeFromSuperview];
+        [NSLayoutConstraint deactivateConstraints:self.airplayButton.constraints];
+    }
+    
+    [self adjustButtonAlpha:NO];
+    
     if (event.fullscreen) {
         self.player.forceFullScreenOnLandscape = YES;
         if ([[UIDevice currentDevice]orientation] == UIInterfaceOrientationPortrait){
@@ -519,12 +526,20 @@
         UIWindow *keyWindow = [UIApplication sharedApplication].keyWindow;
         [keyWindow addSubview:self.closeButton];
         [self setCloseButtonConstraints:keyWindow];
+        if (self.allowAirplay) {
+            [keyWindow addSubview:self.airplayButton];
+            [self setAirplayButtonConstraints:keyWindow];
+        }
    }
     else {
         self.player.forceFullScreenOnLandscape = NO;
         [[UIDevice currentDevice] setValue:[NSNumber numberWithInt:UIInterfaceOrientationPortrait] forKey:@"orientation"];
         [self.player.view addSubview:self.closeButton];
         [self setCloseButtonConstraints:self.player.view];
+        if (self.allowAirplay) {
+            [self.player.view addSubview:self.airplayButton];
+            [self setAirplayButtonConstraints:self.player.view];
+        }
     }
 }
 
