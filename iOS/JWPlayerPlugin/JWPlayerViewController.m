@@ -49,6 +49,8 @@
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
 
+    [self.player pause];
+    
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:UIApplicationDidEnterBackgroundNotification
                                                   object:nil]; // Fix for JP-5 task
@@ -343,7 +345,7 @@
     }
     
     [self.closeButton removeFromSuperview];
-    self.closeButton.alpha = 1.0;
+    self.closeButton.alpha = self.isInlinePlayer ? 0.0 : 1.0;
     
     [player.view addSubview:self.closeButton];
     self.closeButton.frame = CGRectZero;
@@ -373,33 +375,31 @@
 }
 
 - (void)dismiss:(NSObject *)sender {
-    if ([NSThread isMainThread]) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.closeButton removeFromSuperview];
+        if (self.allowAirplay) {
+            [self.airplayButton removeFromSuperview];
+        }
+        
         self.player.fullscreen = NO;
         [self.player pauseAd:YES];
-        [self.player stop];
         UIViewController *vc = self.presentingViewController;
         
         if (vc) {
+            [self.player stop];
+            
             [vc.view.window makeKeyAndVisible];
             [vc dismissViewControllerAnimated:YES completion:^ {
-                [self.closeButton removeFromSuperview];
-                [self.airplayButton removeFromSuperview];
+                
             }];
             [vc setNeedsStatusBarAppearanceUpdate];
             [UIViewController attemptRotationToDeviceOrientation];
         }
-        
-    } else {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.closeButton removeFromSuperview];
-            [self.airplayButton removeFromSuperview];
-            [self dismiss:sender];
-        });
-    }
+    });
 }
 
 - (void)adjustButtonAlpha:(BOOL)visible {
-    self.closeButton.alpha = visible ? 1.0 : 0.0;
+    self.closeButton.alpha = visible && !self.isInlinePlayer ? 1.0 : 0.0;
     self.airplayButton.alpha = visible ? 1.0 : 0.0;
 }
 
@@ -429,13 +429,9 @@
 }
 
 - (void)onControlBarVisible:(JWEvent<JWControlsEvent> *)event {
-    if ([NSThread isMainThread]) {
+    dispatch_async(dispatch_get_main_queue(), ^{
         [self adjustButtonAlpha:event.controls];
-    } else {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self adjustButtonAlpha:event.controls];
-        });
-    }
+    });
 }
 
 -(void)onTime:(JWEvent<JWTimeEvent> *)event {
@@ -513,6 +509,8 @@
         [self.airplayButton removeFromSuperview];
         [NSLayoutConstraint deactivateConstraints:self.airplayButton.constraints];
     }
+    
+    self.isInlinePlayer = !event.fullscreen;
     
     [self adjustButtonAlpha:NO];
     
