@@ -12,7 +12,7 @@ target 'JWPlayerPlugin' do
   pod 'ApplicasterSDK'
   pod 'JWPlayer-SDK'
   pod 'JWPlayerPlugin', :path => 'JWPlayerPlugin.podspec'
-
+  pod 'google-cast-sdk-no-bluetooth'
 end
 
 post_install do |installer|

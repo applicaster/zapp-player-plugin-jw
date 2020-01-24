@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -13,6 +13,8 @@
 		39A39925217505360023658F /* ZappJWPlayerAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 39A39923217505360023658F /* ZappJWPlayerAdapter.m */; };
 		39A39928217507140023658F /* JWPlayerViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 39A39926217507140023658F /* JWPlayerViewController.h */; };
 		39A39929217507140023658F /* JWPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 39A39927217507140023658F /* JWPlayerViewController.m */; };
+		862D1F6523D8CAB600FD03A3 /* cast_on.png in Resources */ = {isa = PBXBuildFile; fileRef = 862D1F6323D8CAB600FD03A3 /* cast_on.png */; };
+		862D1F6623D8CAB600FD03A3 /* cast_off.png in Resources */ = {isa = PBXBuildFile; fileRef = 862D1F6423D8CAB600FD03A3 /* cast_off.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +28,8 @@
 		3B9B89C3EC63C2F2DB5AA86D /* Pods_JWPlayerPlugin.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_JWPlayerPlugin.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5785435F5CB02A255A0ED76F /* Pods-JWPlayerPlugin.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JWPlayerPlugin.release.xcconfig"; path = "Pods/Target Support Files/Pods-JWPlayerPlugin/Pods-JWPlayerPlugin.release.xcconfig"; sourceTree = "<group>"; };
 		5E19042E0108188386A997CB /* Pods-JWPlayerPlugin.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JWPlayerPlugin.debug.xcconfig"; path = "Pods/Target Support Files/Pods-JWPlayerPlugin/Pods-JWPlayerPlugin.debug.xcconfig"; sourceTree = "<group>"; };
+		862D1F6323D8CAB600FD03A3 /* cast_on.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cast_on.png; sourceTree = "<group>"; };
+		862D1F6423D8CAB600FD03A3 /* cast_off.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cast_off.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,6 +71,8 @@
 				39A39923217505360023658F /* ZappJWPlayerAdapter.m */,
 				39A39926217507140023658F /* JWPlayerViewController.h */,
 				39A39927217507140023658F /* JWPlayerViewController.m */,
+				862D1F6423D8CAB600FD03A3 /* cast_off.png */,
+				862D1F6323D8CAB600FD03A3 /* cast_on.png */,
 			);
 			path = JWPlayerPlugin;
 			sourceTree = "<group>";
@@ -161,6 +167,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				862D1F6623D8CAB600FD03A3 /* cast_off.png in Resources */,
+				862D1F6523D8CAB600FD03A3 /* cast_on.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
