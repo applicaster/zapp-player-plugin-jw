@@ -322,20 +322,41 @@ static NSString *const kPlayableItemsKey = @"playable_items";
         }];
     } else if ([[self currentPlayableItem] isKindOfClass:[APAtomEntryPlayable class]] && ![self.currentPlayableItem.contentVideoURLPath isNotEmptyOrWhiteSpaces])  {
         APAtomEntryPlayable *model = (APAtomEntryPlayable *)[self currentPlayableItem];
-        NSNumber *channelID = model.extensionsDictionary[@"applicaster_channel_id"];
-        APChannel *channel = [[APApplicasterController sharedInstance].account channelByUniqueID:[channelID stringValue]];
-        if (channel) {
-            __block typeof(self) blockSelf = self;
-            [channel loadWithCompletionHandler:^(BOOL success, APModel *model) {
-                blockSelf.currentPlayableItem = (NSObject <ZPPlayable>*)model;
+        
+        // check if we need to load the streamURL of the model
+        if (![self loadVideoURLPathIfNeeded:model completion:completion]) {
+            NSNumber *channelID = model.extensionsDictionary[@"applicaster_channel_id"];
+            APChannel *channel = [[APApplicasterController sharedInstance].account channelByUniqueID:[channelID stringValue]];
+            if (channel) {
+                __block typeof(self) blockSelf = self;
+                [channel loadWithCompletionHandler:^(BOOL success, APModel *model) {
+                    blockSelf.currentPlayableItem = (NSObject <ZPPlayable>*)model;
+                    completion();
+                }];
+            } else {
                 completion();
-            }];
-        } else {
-            completion();
+            }
         }
     } else {
         completion();
     }
+}
+
+// Update streamURL of the playable
+// This fixes an issue when using Applicaster2 and the entry->content has no src field or src is empty
+// returns YES if it needed to update the streamURL, NO otherwise
+- (BOOL)loadVideoURLPathIfNeeded:(APAtomEntryPlayable*)model completion:(void (^)(void))completion {
+    if (model.contentVideoURLPath == nil || [model.contentVideoURLPath isEqualToString:@""]) {
+        [model loadAtomEntryContentUrl:^(NSString * newStreamURL) {
+            [model updateStreamUrl:newStreamURL];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                completion();
+            });
+        }];
+        return YES;
+    }
+    
+    return NO;
 }
 
 #pragma mark - ZPPluggableScreenProtocol / ZPUIBuilderPluginsProtocol
