@@ -5,10 +5,9 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.WindowManager;
-
+import androidx.appcompat.app.AppCompatActivity;
 import com.applicaster.analytics.AnalyticsAgentUtil;
 import com.applicaster.plugin_manager.playersmanager.Playable;
 import com.applicaster.plugin_manager.playersmanager.internal.PlayersManager;
@@ -27,7 +26,16 @@ import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 import java.util.HashMap;
 import java.util.Map;
 
-public class JWPlayerActivity extends AppCompatActivity implements VideoPlayerEvents.OnFullscreenListener, VideoPlayerEvents.OnTimeListener, VideoPlayerEvents.OnSeekListener, AdvertisingEvents.OnAdPlayListener, AdvertisingEvents.OnAdPauseListener, AdvertisingEvents.OnAdCompleteListener, VideoPlayerEvents.OnPlayListener, VideoPlayerEvents.OnPauseListener {
+public class JWPlayerActivity
+        extends AppCompatActivity
+        implements VideoPlayerEvents.OnFullscreenListener,
+                   VideoPlayerEvents.OnTimeListener,
+                   VideoPlayerEvents.OnSeekListener,
+                   AdvertisingEvents.OnAdPlayListener,
+                   AdvertisingEvents.OnAdPauseListener,
+                   AdvertisingEvents.OnAdCompleteListener,
+                   VideoPlayerEvents.OnPlayListener,
+                   VideoPlayerEvents.OnPauseListener {
 
     private static final String PLAYABLE_KEY = "playable";
     private static final String PERCENTAGE_KEY = "percentage";

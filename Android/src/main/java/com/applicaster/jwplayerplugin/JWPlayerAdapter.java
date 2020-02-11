@@ -2,11 +2,10 @@ package com.applicaster.jwplayerplugin;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.ViewGroup;
-
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 import com.applicaster.controller.PlayerLoader;
 import com.applicaster.player.PlayerLoaderI;
 import com.applicaster.player.defaultplayer.BasePlayer;
@@ -20,13 +19,16 @@ import com.longtailvideo.jwplayer.core.PlayerState;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 import com.longtailvideo.jwplayer.fullscreen.FullscreenHandler;
-
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class JWPlayerAdapter extends BasePlayer implements FullscreenHandler, VideoPlayerEvents.OnFullscreenListener, PluginScreen {
+public class JWPlayerAdapter
+        extends BasePlayer
+        implements FullscreenHandler,
+                   VideoPlayerEvents.OnFullscreenListener,
+                   PluginScreen {
 
     public static final String TAG = "JWPLAYER_DEBUG_KEY";
     private static final String LICENSE_KEY = "LICENSE_KEY";

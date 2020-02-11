@@ -3,15 +3,13 @@ apply plugin: 'com.android.library'
 android {
     compileSdkVersion 28
 
-
-
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         consumerProguardFiles 'proguard-rules.pro'
     }
@@ -59,7 +57,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.3'
+        classpath 'com.android.tools.build:gradle:3.2.1'
         classpath 'com.github.dcendents:android-maven-plugin:1.2'
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
     }
@@ -68,7 +66,7 @@ buildscript {
 dependencies {
 
     // Applicaster SDK
-    def applicasterSDKPath = 'com.applicaster:applicaster-android-sdk:4.0.0'
+    def applicasterSDKPath = 'com.applicaster:applicaster-android-sdk:5.0.0'
 
     //Check if an open SDK is defined - if not use the closed one.
     def devSDK = findProject(':applicaster-android-sdk')
@@ -79,11 +77,11 @@ dependencies {
     }
 
     // JWPlayer
-    api ('com.longtailvideo.jwplayer:jwplayer-core:3.7.0')
-    api ('com.longtailvideo.jwplayer:jwplayer-common:3.7.0') {
+    api ('com.longtailvideo.jwplayer:jwplayer-core:3.9.0')
+    api ('com.longtailvideo.jwplayer:jwplayer-common:3.9.0') {
 	exclude group: 'com.google.android.gms', module: 'play-services-ads-identifier'
     }
-    api ('com.longtailvideo.jwplayer:jwplayer-ima:3.7.0') {
+    api ('com.longtailvideo.jwplayer:jwplayer-ima:3.9.0') {
 	exclude group: 'com.google.android.gms', module: 'play-services-ads-identifier'
     }
 }
