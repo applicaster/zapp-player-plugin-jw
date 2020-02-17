@@ -13,6 +13,15 @@
 @import AVFoundation;
 @import MediaPlayer;
 
+// Accessibility IDs
+
+NSString * const kJWPlayerCloseButton = @"jw_player_close_button";
+NSString * const kJWPlayerAirplayButton = @"jw_player_airplay_button";
+NSString * const kJWPlayerScreen = @"jw_player_screen";
+NSString * const kJWPlayerSeekBackButton = @"jw_player_seek_back_button";
+NSString * const kJWPlayerRestartButton = @"jw_player_restart_button";
+NSString * const kJWPlayerPauseButton = @"jw_player_pause_button";
+
 @interface JWPlayerViewController () <JWPlayerDelegate> {
     BOOL isViewHidden;
 }
@@ -42,6 +51,8 @@
                                              selector:@selector(pause)
                                                  name:UIApplicationDidEnterBackgroundNotification
                                                object:nil];     // Fix for JP-5 task
+    
+    [self.view setAccessibilityIdentifier:kJWPlayerScreen];
     
     isViewHidden = false;
 }
@@ -87,6 +98,7 @@
     button.titleLabel.font = [UIFont systemFontOfSize:25];
     [button setTitle:@"X" forState:UIControlStateNormal];
     [button setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
+    [button setAccessibilityIdentifier:kJWPlayerCloseButton];
     
     _closeButton = button;
     return button;
@@ -118,6 +130,7 @@
     
     _airplayButton.userInteractionEnabled = YES;
     [_airplayButton addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(airplayButtonTapped:)]];
+    [_airplayButton setAccessibilityIdentifier:kJWPlayerAirplayButton];
     
     return buttonView;
 }
