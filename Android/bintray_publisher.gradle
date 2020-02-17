@@ -110,7 +110,6 @@ bintray {
 
     dryRun = false
     publish = true
-    override = true
     pkg {
         repo = 'maven_plugins'
         name = ARTIFACT_ID
