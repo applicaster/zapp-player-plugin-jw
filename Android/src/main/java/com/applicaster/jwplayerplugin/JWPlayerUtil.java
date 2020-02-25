@@ -30,11 +30,17 @@ public class JWPlayerUtil {
 
     public static PlaylistItem getPlaylistItem(Playable playable, Map pluginConfiguration){
         PlaylistItem result = null;
+        String streamImageUrl = null;
 
-        if (playable != null){
+        if (playable != null) {
+            if (playable instanceof APAtomEntry.APAtomEntryPlayable) {
+                APAtomEntry entry = ((APAtomEntry.APAtomEntryPlayable) playable).getEntry();
+                streamImageUrl = entry.getStreamImageUrl(entry.isAudio());
+            }
             // Load a media source
             result = new PlaylistItem.Builder()
                     .file(playable.getContentVideoURL())
+                    .image(streamImageUrl)
                     .title(playable.getPlayableName())
                     .description(playable.getPlayableDescription())
                     .adSchedule(getAdSchedule(playable, pluginConfiguration))

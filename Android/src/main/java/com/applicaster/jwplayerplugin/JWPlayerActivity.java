@@ -22,6 +22,7 @@ import com.google.android.gms.cast.MediaSeekOptions;
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastSession;
+import com.google.android.gms.cast.framework.CastState;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.longtailvideo.jwplayer.JWPlayerView;
@@ -134,7 +135,7 @@ public class JWPlayerActivity
         }
 
         //cast
-        castListenerOperator = new CastListenerOperator();
+        castListenerOperator = new CastListenerOperator(mPlayerView);
         castContext.getSessionManager().addSessionManagerListener(castListenerOperator, CastSession.class);
 
     }
@@ -186,8 +187,6 @@ public class JWPlayerActivity
      */
     @Override
     public void onFullscreen(FullscreenEvent fullscreenEvent) {
-
-
         if (fullscreenEvent.getFullscreen()) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         } else {
@@ -232,18 +231,22 @@ public class JWPlayerActivity
     @Override
     public void onSeek(SeekEvent seekEvent) {
         trackedPercentage = 0;
-        MediaSeekOptions seekOptions = new MediaSeekOptions.Builder()
-                .setPosition((long)seekEvent.getPosition())
-                .build();
-        castListenerOperator.getCastSession().getRemoteMediaClient().seek(seekOptions);
+        if (castListenerOperator.getCastSession() != null) {
+            MediaSeekOptions seekOptions = new MediaSeekOptions.Builder()
+                    .setPosition((long) seekEvent.getPosition())
+                    .build();
+            castListenerOperator.getCastSession().getRemoteMediaClient().seek(seekOptions);
+        }
     }
 
     @Override
     public void onControlBarVisibilityChanged(ControlBarVisibilityEvent controlBarVisibilityEvent) {
-        if (controlBarVisibilityEvent.isVisible()) {
-            mediaRouteButton.setVisibility(View.VISIBLE);
-        } else {
-            mediaRouteButton.setVisibility(View.GONE);
+        if (castContext.getCastState() != CastState.NO_DEVICES_AVAILABLE) {
+            if (controlBarVisibilityEvent.isVisible()) {
+                mediaRouteButton.setVisibility(View.VISIBLE);
+            } else {
+                mediaRouteButton.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -276,9 +279,6 @@ public class JWPlayerActivity
     @Override
     public void onPause(PauseEvent pauseEvent) {
         AnalyticsAgentUtil.logEvent("Pause Video", analyticsParams);
-        for (int i = 0; i < mPlayerView.getChildCount(); i++) {
-            View child = mPlayerView.getChildAt(i);
-        }
     }
 
     private boolean doesPackageExist(String targetPackage) {
