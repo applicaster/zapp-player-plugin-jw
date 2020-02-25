@@ -19,13 +19,14 @@ import com.longtailvideo.jwplayer.core.PlayerState;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 import com.longtailvideo.jwplayer.fullscreen.FullscreenHandler;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class JWPlayerAdapter
-        extends BasePlayer
+        extends    BasePlayer
         implements FullscreenHandler,
                    VideoPlayerEvents.OnFullscreenListener,
                    PluginScreen {
