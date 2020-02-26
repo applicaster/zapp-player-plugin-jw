@@ -3,6 +3,7 @@ package com.applicaster.jwplayerplugin.cast;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -39,7 +40,13 @@ public class CastListenerOperator implements SessionManagerListener<CastSession>
             Log.i(TAG, "Cast session STARTED for: " + castSession.getCastDevice().getFriendlyName());
         this.castSession = castSession;
         playerView.play();
-        processViewChildren(playerView);
+        playerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                playerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                processViewChildren(playerView);
+            }
+        });
     }
 
     @Override
