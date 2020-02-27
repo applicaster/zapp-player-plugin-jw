@@ -10,10 +10,14 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
 import android.view.WindowManager;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.mediarouter.app.MediaRouteButton;
 
 import com.applicaster.analytics.AnalyticsAgentUtil;
+import com.applicaster.jwplayerplugin.analytics.AnalyticsAdapter;
+import com.applicaster.jwplayerplugin.analytics.AnalyticsData;
+import com.applicaster.jwplayerplugin.analytics.AnalyticsTypes;
 import com.applicaster.jwplayerplugin.cast.CastListenerOperator;
 import com.applicaster.plugin_manager.playersmanager.Playable;
 import com.applicaster.plugin_manager.playersmanager.internal.PlayersManager;
@@ -42,16 +46,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class JWPlayerActivity
-        extends    AppCompatActivity
+        extends AppCompatActivity
         implements VideoPlayerEvents.OnFullscreenListener,
-                   VideoPlayerEvents.OnTimeListener,
-                   VideoPlayerEvents.OnSeekListener,
-                   AdvertisingEvents.OnAdPlayListener,
-                   AdvertisingEvents.OnAdPauseListener,
-                   AdvertisingEvents.OnAdCompleteListener,
-                   VideoPlayerEvents.OnPlayListener,
-                   VideoPlayerEvents.OnPauseListener,
-                   VideoPlayerEvents.OnControlBarVisibilityListener {
+        VideoPlayerEvents.OnTimeListener,
+        VideoPlayerEvents.OnSeekListener,
+        AdvertisingEvents.OnAdPlayListener,
+        AdvertisingEvents.OnAdPauseListener,
+        AdvertisingEvents.OnAdCompleteListener,
+        VideoPlayerEvents.OnPlayListener,
+        VideoPlayerEvents.OnPauseListener,
+        VideoPlayerEvents.OnControlBarVisibilityListener {
 
     private static final String PLAYABLE_KEY = "playable";
     private static final String PERCENTAGE_KEY = "percentage";
@@ -68,22 +72,17 @@ public class JWPlayerActivity
     protected JWPlayerContainer jwPlayerContainer;
     private double trackedPercentage;
     private Map<String, String> analyticsParams;
+    private AnalyticsData analyticsData;
 
     private CastContext castContext;
     private MediaRouteButton mediaRouteButton;
     private CastListenerOperator castListenerOperator;
+    private String castBtnPreviousState = AnalyticsTypes.CastBtnPreviousState.OFF;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_jwplayer);
-
-        //play services availability check
-        if (isGoogleApiAvailable(this)) {
-            castContext = CastContext.getSharedInstance(this);
-            mediaRouteButton = (MediaRouteButton) findViewById(R.id.media_route_button);
-            CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), mediaRouteButton);
-        }
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
 
@@ -99,12 +98,34 @@ public class JWPlayerActivity
         mPlayerView.addOnPauseListener(this);
         mPlayerView.addOnControlBarVisibilityListener(this);
 
+        final Playable playable = (Playable) getIntent().getSerializableExtra(PLAYABLE_KEY);
+
+        //play services availability check and Chromecast init
+        if (isGoogleApiAvailable(this)) {
+            castContext = CastContext.getSharedInstance(this);
+            collectCastAnalyticsData(playable);
+            castListenerOperator = new CastListenerOperator(mPlayerView, analyticsData);
+            mediaRouteButton = findViewById(R.id.media_route_button);
+            mediaRouteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    analyticsData.setTimeCode(mPlayerView.getPosition());
+                    analyticsData.setItemDuration(mPlayerView.getDuration());
+                    if (castBtnPreviousState.equals(AnalyticsTypes.CastBtnPreviousState.OFF))
+                        castBtnPreviousState = AnalyticsTypes.CastBtnPreviousState.ON;
+                    else
+                        castBtnPreviousState = AnalyticsTypes.CastBtnPreviousState.OFF;
+                    AnalyticsAdapter.logTapCast(analyticsData);
+                }
+            });
+            CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), mediaRouteButton);
+        }
+
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        Playable playable = (Playable) getIntent().getSerializableExtra(PLAYABLE_KEY);
-        Map configuration =  null;
-        if (PlayersManager.getCurrentPlayer() != null ){
-            configuration =  PlayersManager.getCurrentPlayer().getPluginConfigurationParams();
+        Map configuration = null;
+        if (PlayersManager.getCurrentPlayer() != null) {
+            configuration = PlayersManager.getCurrentPlayer().getPluginConfigurationParams();
         }
         analyticsParams = new HashMap<>(playable.getAnalyticsParams());
         AnalyticsAgentUtil.logEvent("Play Video Item", analyticsParams);
@@ -114,6 +135,17 @@ public class JWPlayerActivity
         // Load a media source
         mPlayerView.load(JWPlayerUtil.getPlaylistItem(playable, configuration));
         mPlayerView.play();
+    }
+
+    private void collectCastAnalyticsData(Playable playable) {
+        analyticsData = new AnalyticsData();
+        analyticsData.setFreeOrPaid(playable.isFree());
+        analyticsData.setItemId(playable.getPlayableId());
+        analyticsData.setItemName(playable.getPlayableName());
+        analyticsData.setVideoType(playable);
+        analyticsData.setVodType(playable);
+        analyticsData.setPlayerView(AnalyticsTypes.PlayerView.FULLSCREEN);
+        analyticsData.setPreviousState(castBtnPreviousState);
     }
 
     @Override
@@ -135,8 +167,8 @@ public class JWPlayerActivity
         }
 
         //cast
-        castListenerOperator = new CastListenerOperator(mPlayerView);
-        castContext.getSessionManager().addSessionManagerListener(castListenerOperator, CastSession.class);
+        if (castContext.getSessionManager() != null)
+            castContext.getSessionManager().addSessionManagerListener(castListenerOperator, CastSession.class);
 
     }
 
@@ -145,7 +177,8 @@ public class JWPlayerActivity
         // Let JW Player know that the app is going to the background
         mPlayerView.onPause();
         mPlayerView.pause();
-        castContext.getSessionManager().removeSessionManagerListener(castListenerOperator, CastSession.class);
+        if (castContext.getSessionManager() != null)
+            castContext.getSessionManager().removeSessionManagerListener(castListenerOperator, CastSession.class);
         super.onPause();
     }
 

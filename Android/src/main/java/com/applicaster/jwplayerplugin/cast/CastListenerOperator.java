@@ -9,19 +9,25 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 
 import com.applicaster.jwplayerplugin.R;
+import com.applicaster.jwplayerplugin.analytics.AnalyticsAdapter;
+import com.applicaster.jwplayerplugin.analytics.AnalyticsData;
 import com.google.android.gms.cast.framework.CastSession;
 import com.google.android.gms.cast.framework.SessionManagerListener;
 import com.longtailvideo.jwplayer.JWPlayerView;
+
+import java.lang.ref.WeakReference;
 
 public class CastListenerOperator implements SessionManagerListener<CastSession> {
 
     private final String TAG = this.getClass().getSimpleName();
 
     private CastSession castSession;
-    private JWPlayerView playerView;
+    private WeakReference<JWPlayerView> playerView;
+    private AnalyticsData analyticsData;
 
-    public CastListenerOperator(JWPlayerView playerView) {
-        this.playerView = playerView;
+    public CastListenerOperator(JWPlayerView playerView, AnalyticsData analyticsData) {
+        this.playerView = new WeakReference<>(playerView);
+        this.analyticsData = analyticsData;
     }
 
     public CastSession getCastSession() {
@@ -36,17 +42,21 @@ public class CastListenerOperator implements SessionManagerListener<CastSession>
 
     @Override
     public void onSessionStarted(CastSession castSession, String s) {
-        if (castSession.getCastDevice() != null)
+        if (castSession.getCastDevice() != null) {
             Log.i(TAG, "Cast session STARTED for: " + castSession.getCastDevice().getFriendlyName());
+            analyticsData.setCastingDevice(castSession.getCastDevice().getFriendlyName());
+        }
         this.castSession = castSession;
-        playerView.play();
-        playerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+        playerView.get().play();
+        playerView.get().getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                playerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                processViewChildren(playerView);
+                playerView.get().getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                processViewChildren(playerView.get());
             }
         });
+        analyticsData.setTimeCode(playerView.get().getPosition());
+        AnalyticsAdapter.logCastStart(analyticsData);
     }
 
     @Override
@@ -64,6 +74,8 @@ public class CastListenerOperator implements SessionManagerListener<CastSession>
     @Override
     public void onSessionEnded(CastSession castSession, int i) {
         this.castSession = null;
+        analyticsData.setTimeCode(playerView.get().getPosition());
+        AnalyticsAdapter.logCastStop(analyticsData);
     }
 
     @Override
@@ -77,8 +89,8 @@ public class CastListenerOperator implements SessionManagerListener<CastSession>
         if (castSession.getCastDevice() != null)
             Log.i(TAG, "Cast session RESUMED for: " + castSession.getCastDevice().getFriendlyName());
         this.castSession = castSession;
-        playerView.play();
-        processViewChildren(playerView);
+        playerView.get().play();
+        processViewChildren(playerView.get());
     }
 
     @Override
@@ -109,10 +121,10 @@ public class CastListenerOperator implements SessionManagerListener<CastSession>
             } else if (view instanceof TextView) {
                 try {
                     String btnContentText = ((TextView) view).getText().toString();
-                    String castingToResourceText = playerView.getContext().getString(R.string.casting_to);
+                    String castingToResourceText = playerView.get().getContext().getString(R.string.casting_to);
                     String textToMatch = castingToResourceText.split(":")[0];
                     if (btnContentText.contains(textToMatch)) {
-                        String castingDeviceViewText = playerView.getContext().getString(
+                        String castingDeviceViewText = playerView.get().getContext().getString(
                                 R.string.casting_to,
                                 castSession.getCastDevice().getFriendlyName()
                         );
