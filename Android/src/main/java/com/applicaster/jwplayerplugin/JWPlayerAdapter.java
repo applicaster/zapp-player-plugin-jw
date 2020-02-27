@@ -125,7 +125,7 @@ public class JWPlayerAdapter
      */
     @Override
     public void attachInline(@NonNull ViewGroup videoContainerView) {
-        jwPlayerContainer =new JWPlayerContainer(videoContainerView.getContext());
+        jwPlayerContainer = new JWPlayerContainer(videoContainerView.getContext());
         jwPlayerView = jwPlayerContainer.getJWPlayerView();
         jwPlayerView.setFullscreenHandler(this);
         jwPlayerView.addOnFullscreenListener(this);

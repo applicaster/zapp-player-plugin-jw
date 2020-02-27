@@ -19,6 +19,7 @@ import com.applicaster.jwplayerplugin.analytics.AnalyticsAdapter;
 import com.applicaster.jwplayerplugin.analytics.AnalyticsData;
 import com.applicaster.jwplayerplugin.analytics.AnalyticsTypes;
 import com.applicaster.jwplayerplugin.cast.CastListenerOperator;
+import com.applicaster.jwplayerplugin.cast.CastProvider;
 import com.applicaster.plugin_manager.playersmanager.Playable;
 import com.applicaster.plugin_manager.playersmanager.internal.PlayersManager;
 import com.applicaster.zapp_automation.AutomationManager;
@@ -61,10 +62,6 @@ public class JWPlayerActivity
     private static final String PERCENTAGE_KEY = "percentage";
     private static final String ADVERTISEMENT_POSITION_KEY = "advertisement_position";
 
-    //play services availability
-    private static final String GOOGLE_PLAY_STORE_PACKAGE_NAME_OLD = "com.google.market";
-    private static final String GOOGLE_PLAY_STORE_PACKAGE_NAME_NEW = "com.android.vending";
-
     /**
      * Reference to the {@link JWPlayerView}
      */
@@ -72,12 +69,8 @@ public class JWPlayerActivity
     protected JWPlayerContainer jwPlayerContainer;
     private double trackedPercentage;
     private Map<String, String> analyticsParams;
-    private AnalyticsData analyticsData;
 
-    private CastContext castContext;
-    private MediaRouteButton mediaRouteButton;
-    private CastListenerOperator castListenerOperator;
-    private String castBtnPreviousState = AnalyticsTypes.CastBtnPreviousState.OFF;
+    private CastProvider castProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,28 +91,12 @@ public class JWPlayerActivity
         mPlayerView.addOnPauseListener(this);
         mPlayerView.addOnControlBarVisibilityListener(this);
 
+
         final Playable playable = (Playable) getIntent().getSerializableExtra(PLAYABLE_KEY);
 
-        //play services availability check and Chromecast init
-        if (isGoogleApiAvailable(this)) {
-            castContext = CastContext.getSharedInstance(this);
-            collectCastAnalyticsData(playable);
-            castListenerOperator = new CastListenerOperator(mPlayerView, analyticsData);
-            mediaRouteButton = findViewById(R.id.media_route_button);
-            mediaRouteButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    analyticsData.setTimeCode(mPlayerView.getPosition());
-                    analyticsData.setItemDuration(mPlayerView.getDuration());
-                    if (castBtnPreviousState.equals(AnalyticsTypes.CastBtnPreviousState.OFF))
-                        castBtnPreviousState = AnalyticsTypes.CastBtnPreviousState.ON;
-                    else
-                        castBtnPreviousState = AnalyticsTypes.CastBtnPreviousState.OFF;
-                    AnalyticsAdapter.logTapCast(analyticsData);
-                }
-            });
-            CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), mediaRouteButton);
-        }
+        //Initialize cast provider
+        castProvider = new CastProvider(this, mPlayerView);
+        castProvider.init(playable);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -135,17 +112,6 @@ public class JWPlayerActivity
         // Load a media source
         mPlayerView.load(JWPlayerUtil.getPlaylistItem(playable, configuration));
         mPlayerView.play();
-    }
-
-    private void collectCastAnalyticsData(Playable playable) {
-        analyticsData = new AnalyticsData();
-        analyticsData.setFreeOrPaid(playable.isFree());
-        analyticsData.setItemId(playable.getPlayableId());
-        analyticsData.setItemName(playable.getPlayableName());
-        analyticsData.setVideoType(playable);
-        analyticsData.setVodType(playable);
-        analyticsData.setPlayerView(AnalyticsTypes.PlayerView.FULLSCREEN);
-        analyticsData.setPreviousState(castBtnPreviousState);
     }
 
     @Override
@@ -167,8 +133,7 @@ public class JWPlayerActivity
         }
 
         //cast
-        if (castContext.getSessionManager() != null)
-            castContext.getSessionManager().addSessionManagerListener(castListenerOperator, CastSession.class);
+        castProvider.addSessionManagerListener();
 
     }
 
@@ -177,8 +142,7 @@ public class JWPlayerActivity
         // Let JW Player know that the app is going to the background
         mPlayerView.onPause();
         mPlayerView.pause();
-        if (castContext.getSessionManager() != null)
-            castContext.getSessionManager().removeSessionManagerListener(castListenerOperator, CastSession.class);
+        castProvider.removeSessionManagerListener();
         super.onPause();
     }
 
@@ -187,6 +151,7 @@ public class JWPlayerActivity
         // Let JW Player know that the app is being destroyed
         mPlayerView.onDestroy();
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        castProvider.drop();
         super.onDestroy();
     }
 
@@ -264,21 +229,21 @@ public class JWPlayerActivity
     @Override
     public void onSeek(SeekEvent seekEvent) {
         trackedPercentage = 0;
-        if (castListenerOperator.getCastSession() != null) {
+        if (castProvider.getCastListenerOperator().getCastSession() != null) {
             MediaSeekOptions seekOptions = new MediaSeekOptions.Builder()
                     .setPosition((long) seekEvent.getPosition())
                     .build();
-            castListenerOperator.getCastSession().getRemoteMediaClient().seek(seekOptions);
+            castProvider.getCastListenerOperator().getCastSession().getRemoteMediaClient().seek(seekOptions);
         }
     }
 
     @Override
     public void onControlBarVisibilityChanged(ControlBarVisibilityEvent controlBarVisibilityEvent) {
-        if (castContext.getCastState() != CastState.NO_DEVICES_AVAILABLE) {
+        if (castProvider.getCastContext().getCastState() != CastState.NO_DEVICES_AVAILABLE) {
             if (controlBarVisibilityEvent.isVisible()) {
-                mediaRouteButton.setVisibility(View.VISIBLE);
+                castProvider.getMediaRouteButton().setVisibility(View.VISIBLE);
             } else {
-                mediaRouteButton.setVisibility(View.GONE);
+                castProvider.getMediaRouteButton().setVisibility(View.GONE);
             }
         }
     }
@@ -312,26 +277,5 @@ public class JWPlayerActivity
     @Override
     public void onPause(PauseEvent pauseEvent) {
         AnalyticsAgentUtil.logEvent("Pause Video", analyticsParams);
-    }
-
-    private boolean doesPackageExist(String targetPackage) {
-        try {
-            getPackageManager().getPackageInfo(targetPackage, PackageManager.GET_META_DATA);
-        } catch (PackageManager.NameNotFoundException e) {
-            return false;
-        }
-        return true;
-    }
-
-    // Without the Google API's Chromecast won't work
-    private boolean isGoogleApiAvailable(Context context) {
-        boolean isOldPlayStoreInstalled = doesPackageExist(GOOGLE_PLAY_STORE_PACKAGE_NAME_OLD);
-        boolean isNewPlayStoreInstalled = doesPackageExist(GOOGLE_PLAY_STORE_PACKAGE_NAME_NEW);
-
-        boolean isPlaystoreInstalled = isNewPlayStoreInstalled || isOldPlayStoreInstalled;
-
-        boolean isGoogleApiAvailable = GoogleApiAvailability.getInstance()
-                .isGooglePlayServicesAvailable(context) == ConnectionResult.SUCCESS;
-        return isPlaystoreInstalled && isGoogleApiAvailable;
     }
 }
