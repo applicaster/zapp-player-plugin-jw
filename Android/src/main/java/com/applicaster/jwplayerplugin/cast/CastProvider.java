@@ -86,7 +86,7 @@ public class CastProvider {
             castContext.getSessionManager().removeSessionManagerListener(castListenerOperator, CastSession.class);
     }
 
-    public void drop() {
+    public void release() {
         context = null;
         playerView = null;
         castContext = null;

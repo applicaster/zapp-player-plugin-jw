@@ -2,39 +2,36 @@ package com.applicaster.jwplayerplugin;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
 import android.view.WindowManager;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.mediarouter.app.MediaRouteButton;
 
 import com.applicaster.analytics.AnalyticsAgentUtil;
-import com.applicaster.jwplayerplugin.analytics.AnalyticsAdapter;
-import com.applicaster.jwplayerplugin.analytics.AnalyticsData;
-import com.applicaster.jwplayerplugin.analytics.AnalyticsTypes;
-import com.applicaster.jwplayerplugin.cast.CastListenerOperator;
 import com.applicaster.jwplayerplugin.cast.CastProvider;
+import com.applicaster.jwplayerplugin.networkutil.NetworkChangeReceiver;
+import com.applicaster.jwplayerplugin.networkutil.NetworkUtil;
 import com.applicaster.plugin_manager.playersmanager.Playable;
 import com.applicaster.plugin_manager.playersmanager.internal.PlayersManager;
 import com.applicaster.zapp_automation.AutomationManager;
 import com.google.android.gms.cast.MediaSeekOptions;
 import com.google.android.gms.cast.framework.CastButtonFactory;
-import com.google.android.gms.cast.framework.CastContext;
-import com.google.android.gms.cast.framework.CastSession;
 import com.google.android.gms.cast.framework.CastState;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 import com.longtailvideo.jwplayer.JWPlayerView;
+import com.longtailvideo.jwplayer.core.PlayerState;
 import com.longtailvideo.jwplayer.events.AdCompleteEvent;
 import com.longtailvideo.jwplayer.events.AdPauseEvent;
 import com.longtailvideo.jwplayer.events.AdPlayEvent;
 import com.longtailvideo.jwplayer.events.ControlBarVisibilityEvent;
+import com.longtailvideo.jwplayer.events.ErrorEvent;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.PauseEvent;
 import com.longtailvideo.jwplayer.events.PlayEvent;
@@ -56,7 +53,9 @@ public class JWPlayerActivity
         AdvertisingEvents.OnAdCompleteListener,
         VideoPlayerEvents.OnPlayListener,
         VideoPlayerEvents.OnPauseListener,
-        VideoPlayerEvents.OnControlBarVisibilityListener {
+        VideoPlayerEvents.OnControlBarVisibilityListener,
+        VideoPlayerEvents.OnErrorListener,
+        NetworkUtil.ConnectionAvailabilityCallback {
 
     private static final String PLAYABLE_KEY = "playable";
     private static final String PERCENTAGE_KEY = "percentage";
@@ -69,8 +68,12 @@ public class JWPlayerActivity
     protected JWPlayerContainer jwPlayerContainer;
     private double trackedPercentage;
     private Map<String, String> analyticsParams;
+    private Playable playable;
 
     private CastProvider castProvider;
+    private NetworkChangeReceiver networkChangeReceiver;
+
+    private double playerPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,9 +93,9 @@ public class JWPlayerActivity
         mPlayerView.addOnPlayListener(this);
         mPlayerView.addOnPauseListener(this);
         mPlayerView.addOnControlBarVisibilityListener(this);
+        mPlayerView.addOnErrorListener(this);
 
-
-        final Playable playable = (Playable) getIntent().getSerializableExtra(PLAYABLE_KEY);
+        playable = (Playable) getIntent().getSerializableExtra(PLAYABLE_KEY);
 
         //Initialize cast provider
         castProvider = new CastProvider(this, mPlayerView);
@@ -126,6 +129,8 @@ public class JWPlayerActivity
         // Let JW Player know that the app has returned from the background
         super.onResume();
 
+        setConnectionAvailabilityListener();
+
         //If the video was paused, resume & play.
         if (mPlayerView.getState().name().equals("PAUSED")) {
             mPlayerView.onResume();
@@ -140,9 +145,12 @@ public class JWPlayerActivity
     @Override
     protected void onPause() {
         // Let JW Player know that the app is going to the background
-        mPlayerView.onPause();
-        mPlayerView.pause();
+        if (castProvider.getCastContext().getCastState() != CastState.CONNECTED) {
+            mPlayerView.onPause();
+            mPlayerView.pause();
+        }
         castProvider.removeSessionManagerListener();
+        unregisterConnectionReceiver();
         super.onPause();
     }
 
@@ -151,7 +159,7 @@ public class JWPlayerActivity
         // Let JW Player know that the app is being destroyed
         mPlayerView.onDestroy();
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        castProvider.drop();
+        castProvider.release();
         super.onDestroy();
     }
 
@@ -249,6 +257,13 @@ public class JWPlayerActivity
     }
 
     @Override
+    public void onError(ErrorEvent errorEvent) {
+        if (errorEvent.getException() != null) {
+            playerPosition = mPlayerView.getPosition();
+        }
+    }
+
+    @Override
     public void onAdPlay(AdPlayEvent adPlayEvent) {
         Map<String, String> params = new HashMap<>(analyticsParams);
         params.put(ADVERTISEMENT_POSITION_KEY, "Start");
@@ -277,5 +292,40 @@ public class JWPlayerActivity
     @Override
     public void onPause(PauseEvent pauseEvent) {
         AnalyticsAgentUtil.logEvent("Pause Video", analyticsParams);
+    }
+
+    @Override
+    public void onNetworkAvailable() {
+        if (mPlayerView.getState() == PlayerState.IDLE) {
+            Map configuration = null;
+            if (PlayersManager.getCurrentPlayer() != null) {
+                configuration = PlayersManager.getCurrentPlayer().getPluginConfigurationParams();
+            }
+            mPlayerView.load(JWPlayerUtil.getPlaylistItem(playable, configuration));
+            mPlayerView.seek(playerPosition);
+            mPlayerView.play();
+        }
+    }
+
+    @Override
+    public void onNetworkLost() {
+        Log.e(this.getClass().getSimpleName(), "Network connection was lost!");
+    }
+
+    private void setConnectionAvailabilityListener() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            NetworkUtil.checkConnectionAvailability(this, this);
+        } else if (networkChangeReceiver == null) {
+            IntentFilter intentFilter = new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE");
+            networkChangeReceiver = new NetworkChangeReceiver(this);
+            this.registerReceiver(networkChangeReceiver, intentFilter);
+        }
+    }
+
+    private void unregisterConnectionReceiver() {
+        if (networkChangeReceiver != null) {
+            this.unregisterReceiver(networkChangeReceiver);
+            networkChangeReceiver = null;
+        }
     }
 }
