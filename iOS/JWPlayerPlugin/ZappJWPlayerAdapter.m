@@ -223,14 +223,16 @@ static NSString *const kPlayableItemsKey = @"playable_items";
 }
 
 - (void)setupPlayerWithCurrentPlayableItemUsingInlinePlayer:(BOOL)inlinePlayer {
-    self.playerViewController.allowAirplay = self.allowAirplay;
-    self.playerViewController.allowChromecast = self.allowChromecast;
     self.playerViewController.chromecastButtonOnPath = self.configurationJSON[@"chromecast_on__button_image"];
     self.playerViewController.chromecastButtonOffPath = self.configurationJSON[@"chromecast_off__button_image"];
     
     self.playerViewController.isInlinePlayer = inlinePlayer;
     [self.playerViewController setupPlayerWithPlayableItem:self.currentPlayableItem];
     self.playerViewController.isLive = [self.currentPlayableItem isKindOfClass:[APChannel class]];
+    
+    self.playerViewController.allowAirplay = self.allowAirplay;
+    self.playerViewController.allowChromecast = self.allowChromecast;
+    [self.playerViewController addCastButtons];
     
     NSArray *ads = self.currentPlayableItem.extensionsDictionary[@"videoAds"];
     if (ads == nil) {

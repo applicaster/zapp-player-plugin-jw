@@ -421,6 +421,10 @@
     self.player.forceFullScreenOnLandscape = NO;
     self.player.forceLandscapeOnFullScreen = NO;
     
+    _player = player;
+}
+
+- (void)addCastButtons {
     if (self.allowAirplay) {
         [self.airplayButton removeFromSuperview];
         self.airplayButton.alpha = 1.0;
@@ -432,8 +436,6 @@
         self.castingButton.alpha = 1.0;
         [self.buttonsStackView addArrangedSubview:self.castingButton];
     }
-    
-    _player = player;
 }
 
 - (void)dismiss:(NSObject *)sender {
@@ -714,7 +716,8 @@
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil
                                                                              message:nil
                                                                       preferredStyle:UIAlertControllerStyleActionSheet];
-    
+    alertController.popoverPresentationController.sourceView = self.castingButton;
+    alertController.popoverPresentationController.sourceRect = self.castingButton.frame;
     if (self.castController.connectedDevice == nil) {
         alertController.title = @"Connect to";
         

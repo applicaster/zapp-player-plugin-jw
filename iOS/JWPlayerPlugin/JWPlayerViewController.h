@@ -25,6 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setupPlayerWithPlayableItem:(NSObject <ZPPlayable> *)playableItem;
 - (void)setupPlayerAdvertisingWithConfiguration:(NSArray *)ads;
 - (void)setupPlayerSubtitleTracksWithConfiguration:(NSArray *)subtitleTracks;
+- (void)addCastButtons;
 - (void)play;
 - (void)pause;
 - (void)stop;
