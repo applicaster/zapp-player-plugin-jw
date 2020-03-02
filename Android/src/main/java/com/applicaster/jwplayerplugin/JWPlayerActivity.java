@@ -98,7 +98,7 @@ public class JWPlayerActivity
         playable = (Playable) getIntent().getSerializableExtra(PLAYABLE_KEY);
 
         //Initialize cast provider
-        castProvider = new CastProvider(this, mPlayerView);
+        castProvider = new CastProvider(this, jwPlayerContainer);
         castProvider.init(playable);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -254,6 +254,13 @@ public class JWPlayerActivity
                 castProvider.getMediaRouteButton().setVisibility(View.GONE);
             }
         }
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        return castProvider.getCastContext()
+                .onDispatchVolumeKeyEventBeforeJellyBean(event)
+                || super.dispatchKeyEvent(event);
     }
 
     @Override

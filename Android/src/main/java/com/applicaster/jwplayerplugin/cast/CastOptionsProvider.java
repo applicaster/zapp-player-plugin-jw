@@ -23,6 +23,14 @@ import java.util.List;
 import java.util.Locale;
 
 public class CastOptionsProvider implements OptionsProvider {
+
+    private static String receiverApplicationId = CastMediaControlIntent.DEFAULT_MEDIA_RECEIVER_APPLICATION_ID;
+
+
+    public static void setReceiverApplicationId(String receiverApplicationId) {
+        CastOptionsProvider.receiverApplicationId = receiverApplicationId;
+    }
+
     @Override
     public CastOptions getCastOptions(Context context) {
         LaunchOptions launchOptions = new LaunchOptions.Builder()
@@ -30,19 +38,18 @@ public class CastOptionsProvider implements OptionsProvider {
                 .build();
 
         NotificationOptions notificationOptions = new NotificationOptions.Builder()
-                .setActions(Arrays.asList(MediaIntentReceiver.ACTION_SKIP_NEXT,
-                        MediaIntentReceiver.ACTION_TOGGLE_PLAYBACK,
-                        MediaIntentReceiver.ACTION_STOP_CASTING), new int[]{1, 2})
-                .setTargetActivityClassName(JWPlayerActivity.class.getName())
+                .setActions(Arrays.asList(MediaIntentReceiver.ACTION_TOGGLE_PLAYBACK,
+                        MediaIntentReceiver.ACTION_STOP_CASTING,
+                        MediaIntentReceiver.ACTION_REWIND,
+                        MediaIntentReceiver.ACTION_FORWARD), new int[]{1, 3})
                 .build();
         CastMediaOptions mediaOptions = new CastMediaOptions.Builder()
                 .setImagePicker(new ImagePickerImpl())
                 .setNotificationOptions(notificationOptions)
-                .setExpandedControllerActivityClassName(JWPlayerActivity.class.getName())
                 .build();
 
         return new CastOptions.Builder()
-                .setReceiverApplicationId(CastMediaControlIntent.DEFAULT_MEDIA_RECEIVER_APPLICATION_ID)
+                .setReceiverApplicationId(receiverApplicationId)
                 .setCastMediaOptions(mediaOptions)
                 .setLaunchOptions(launchOptions)
                 .build();
