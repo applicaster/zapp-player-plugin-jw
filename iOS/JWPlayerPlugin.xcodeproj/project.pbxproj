@@ -7,37 +7,39 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		20FC96ECED6A7C0DCCC10692 /* Pods_JWPlayerPlugin.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B9B89C3EC63C2F2DB5AA86D /* Pods_JWPlayerPlugin.framework */; };
-		394BEA482174F0E9009FDB40 /* JWPlayerPlugin.h in Headers */ = {isa = PBXBuildFile; fileRef = 394BEA462174F0E9009FDB40 /* JWPlayerPlugin.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		39A39924217505360023658F /* ZappJWPlayerAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = 39A39922217505360023658F /* ZappJWPlayerAdapter.h */; };
-		39A39925217505360023658F /* ZappJWPlayerAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 39A39923217505360023658F /* ZappJWPlayerAdapter.m */; };
-		39A39928217507140023658F /* JWPlayerViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 39A39926217507140023658F /* JWPlayerViewController.h */; };
-		39A39929217507140023658F /* JWPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 39A39927217507140023658F /* JWPlayerViewController.m */; };
-		862D1F6523D8CAB600FD03A3 /* cast_on.png in Resources */ = {isa = PBXBuildFile; fileRef = 862D1F6323D8CAB600FD03A3 /* cast_on.png */; };
-		862D1F6623D8CAB600FD03A3 /* cast_off.png in Resources */ = {isa = PBXBuildFile; fileRef = 862D1F6423D8CAB600FD03A3 /* cast_off.png */; };
+		741354C2F5CE4141DB882D97 /* Pods_JW_Player_Sample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF63437DF5B278EB05B485F0 /* Pods_JW_Player_Sample.framework */; };
+		A64797A22407D2C7007AC0F0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64797A12407D2C7007AC0F0 /* AppDelegate.swift */; };
+		A64797A62407D2C7007AC0F0 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64797A52407D2C7007AC0F0 /* ViewController.swift */; };
+		A64797A92407D2C7007AC0F0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A64797A72407D2C7007AC0F0 /* Main.storyboard */; };
+		A64797AB2407D2C8007AC0F0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A64797AA2407D2C8007AC0F0 /* Assets.xcassets */; };
+		A64797AE2407D2C8007AC0F0 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A64797AC2407D2C8007AC0F0 /* LaunchScreen.storyboard */; };
+		A64797B42407D8B6007AC0F0 /* Playable.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64797B32407D8B6007AC0F0 /* Playable.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		394BEA432174F0E9009FDB40 /* JWPlayerPlugin.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = JWPlayerPlugin.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		394BEA462174F0E9009FDB40 /* JWPlayerPlugin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JWPlayerPlugin.h; sourceTree = "<group>"; };
-		394BEA472174F0E9009FDB40 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		39A39922217505360023658F /* ZappJWPlayerAdapter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZappJWPlayerAdapter.h; sourceTree = "<group>"; };
-		39A39923217505360023658F /* ZappJWPlayerAdapter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZappJWPlayerAdapter.m; sourceTree = "<group>"; };
-		39A39926217507140023658F /* JWPlayerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JWPlayerViewController.h; sourceTree = "<group>"; };
-		39A39927217507140023658F /* JWPlayerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JWPlayerViewController.m; sourceTree = "<group>"; };
 		3B9B89C3EC63C2F2DB5AA86D /* Pods_JWPlayerPlugin.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_JWPlayerPlugin.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5785435F5CB02A255A0ED76F /* Pods-JWPlayerPlugin.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JWPlayerPlugin.release.xcconfig"; path = "Pods/Target Support Files/Pods-JWPlayerPlugin/Pods-JWPlayerPlugin.release.xcconfig"; sourceTree = "<group>"; };
 		5E19042E0108188386A997CB /* Pods-JWPlayerPlugin.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JWPlayerPlugin.debug.xcconfig"; path = "Pods/Target Support Files/Pods-JWPlayerPlugin/Pods-JWPlayerPlugin.debug.xcconfig"; sourceTree = "<group>"; };
-		862D1F6323D8CAB600FD03A3 /* cast_on.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cast_on.png; sourceTree = "<group>"; };
-		862D1F6423D8CAB600FD03A3 /* cast_off.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cast_off.png; sourceTree = "<group>"; };
+		A647979F2407D2C7007AC0F0 /* JW-Player-Sample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "JW-Player-Sample.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A64797A12407D2C7007AC0F0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		A64797A52407D2C7007AC0F0 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		A64797A82407D2C7007AC0F0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		A64797AA2407D2C8007AC0F0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A64797AD2407D2C8007AC0F0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		A64797AF2407D2C8007AC0F0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A64797B32407D8B6007AC0F0 /* Playable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Playable.swift; sourceTree = "<group>"; };
+		A64797B52407EAAD007AC0F0 /* JW-Player-Sample.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "JW-Player-Sample.entitlements"; sourceTree = "<group>"; };
+		A7908C4397286646C714D605 /* Pods-JW-Player-Sample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JW-Player-Sample.release.xcconfig"; path = "Pods/Target Support Files/Pods-JW-Player-Sample/Pods-JW-Player-Sample.release.xcconfig"; sourceTree = "<group>"; };
+		DE148A9E2BBDDAED29354EB8 /* Pods-JW-Player-Sample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JW-Player-Sample.debug.xcconfig"; path = "Pods/Target Support Files/Pods-JW-Player-Sample/Pods-JW-Player-Sample.debug.xcconfig"; sourceTree = "<group>"; };
+		FF63437DF5B278EB05B485F0 /* Pods_JW_Player_Sample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_JW_Player_Sample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		394BEA402174F0E9009FDB40 /* Frameworks */ = {
+		A647979C2407D2C7007AC0F0 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				20FC96ECED6A7C0DCCC10692 /* Pods_JWPlayerPlugin.framework in Frameworks */,
+				741354C2F5CE4141DB882D97 /* Pods_JW_Player_Sample.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -47,7 +49,7 @@
 		394BEA392174F0E9009FDB40 = {
 			isa = PBXGroup;
 			children = (
-				394BEA452174F0E9009FDB40 /* JWPlayerPlugin */,
+				A64797A02407D2C7007AC0F0 /* JW-Player-Sample */,
 				394BEA442174F0E9009FDB40 /* Products */,
 				8CC79622C2ABB224FBC2A37F /* Pods */,
 				B27DA053EDA9B367B55B27BE /* Frameworks */,
@@ -57,24 +59,9 @@
 		394BEA442174F0E9009FDB40 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				394BEA432174F0E9009FDB40 /* JWPlayerPlugin.framework */,
+				A647979F2407D2C7007AC0F0 /* JW-Player-Sample.app */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		394BEA452174F0E9009FDB40 /* JWPlayerPlugin */ = {
-			isa = PBXGroup;
-			children = (
-				394BEA462174F0E9009FDB40 /* JWPlayerPlugin.h */,
-				394BEA472174F0E9009FDB40 /* Info.plist */,
-				39A39922217505360023658F /* ZappJWPlayerAdapter.h */,
-				39A39923217505360023658F /* ZappJWPlayerAdapter.m */,
-				39A39926217507140023658F /* JWPlayerViewController.h */,
-				39A39927217507140023658F /* JWPlayerViewController.m */,
-				862D1F6423D8CAB600FD03A3 /* cast_off.png */,
-				862D1F6323D8CAB600FD03A3 /* cast_on.png */,
-			);
-			path = JWPlayerPlugin;
 			sourceTree = "<group>";
 		};
 		8CC79622C2ABB224FBC2A37F /* Pods */ = {
@@ -82,53 +69,58 @@
 			children = (
 				5E19042E0108188386A997CB /* Pods-JWPlayerPlugin.debug.xcconfig */,
 				5785435F5CB02A255A0ED76F /* Pods-JWPlayerPlugin.release.xcconfig */,
+				DE148A9E2BBDDAED29354EB8 /* Pods-JW-Player-Sample.debug.xcconfig */,
+				A7908C4397286646C714D605 /* Pods-JW-Player-Sample.release.xcconfig */,
 			);
 			name = Pods;
+			sourceTree = "<group>";
+		};
+		A64797A02407D2C7007AC0F0 /* JW-Player-Sample */ = {
+			isa = PBXGroup;
+			children = (
+				A64797B52407EAAD007AC0F0 /* JW-Player-Sample.entitlements */,
+				A64797B32407D8B6007AC0F0 /* Playable.swift */,
+				A64797A12407D2C7007AC0F0 /* AppDelegate.swift */,
+				A64797A52407D2C7007AC0F0 /* ViewController.swift */,
+				A64797A72407D2C7007AC0F0 /* Main.storyboard */,
+				A64797AA2407D2C8007AC0F0 /* Assets.xcassets */,
+				A64797AC2407D2C8007AC0F0 /* LaunchScreen.storyboard */,
+				A64797AF2407D2C8007AC0F0 /* Info.plist */,
+			);
+			path = "JW-Player-Sample";
 			sourceTree = "<group>";
 		};
 		B27DA053EDA9B367B55B27BE /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 				3B9B89C3EC63C2F2DB5AA86D /* Pods_JWPlayerPlugin.framework */,
+				FF63437DF5B278EB05B485F0 /* Pods_JW_Player_Sample.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
-/* Begin PBXHeadersBuildPhase section */
-		394BEA3E2174F0E9009FDB40 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				39A39924217505360023658F /* ZappJWPlayerAdapter.h in Headers */,
-				39A39928217507140023658F /* JWPlayerViewController.h in Headers */,
-				394BEA482174F0E9009FDB40 /* JWPlayerPlugin.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXHeadersBuildPhase section */
-
 /* Begin PBXNativeTarget section */
-		394BEA422174F0E9009FDB40 /* JWPlayerPlugin */ = {
+		A647979E2407D2C7007AC0F0 /* JW-Player-Sample */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 394BEA4B2174F0E9009FDB40 /* Build configuration list for PBXNativeTarget "JWPlayerPlugin" */;
+			buildConfigurationList = A64797B22407D2C8007AC0F0 /* Build configuration list for PBXNativeTarget "JW-Player-Sample" */;
 			buildPhases = (
-				FD772741E9AE24106EE97110 /* [CP] Check Pods Manifest.lock */,
-				394BEA3E2174F0E9009FDB40 /* Headers */,
-				394BEA3F2174F0E9009FDB40 /* Sources */,
-				394BEA402174F0E9009FDB40 /* Frameworks */,
-				394BEA412174F0E9009FDB40 /* Resources */,
-				F6C7D7E28D70D285CF23D3A5 /* [CP] Copy Pods Resources */,
+				8B1AEE7538EAABFF66DA4F16 /* [CP] Check Pods Manifest.lock */,
+				A647979B2407D2C7007AC0F0 /* Sources */,
+				A647979C2407D2C7007AC0F0 /* Frameworks */,
+				A647979D2407D2C7007AC0F0 /* Resources */,
+				29ACF38B26FA7B4EE5DBC69B /* [CP] Embed Pods Frameworks */,
+				C147B682BF8B785CF8B08F9F /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = JWPlayerPlugin;
-			productName = JWPlayerPlugin;
-			productReference = 394BEA432174F0E9009FDB40 /* JWPlayerPlugin.framework */;
-			productType = "com.apple.product-type.framework";
+			name = "JW-Player-Sample";
+			productName = "JW-Player-Sample";
+			productReference = A647979F2407D2C7007AC0F0 /* JW-Player-Sample.app */;
+			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
@@ -136,11 +128,12 @@
 		394BEA3A2174F0E9009FDB40 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 1130;
 				LastUpgradeCheck = 1000;
 				ORGANIZATIONNAME = Applicaster;
 				TargetAttributes = {
-					394BEA422174F0E9009FDB40 = {
-						CreatedOnToolsVersion = 10.0;
+					A647979E2407D2C7007AC0F0 = {
+						CreatedOnToolsVersion = 11.3;
 					};
 				};
 			};
@@ -157,72 +150,114 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				394BEA422174F0E9009FDB40 /* JWPlayerPlugin */,
+				A647979E2407D2C7007AC0F0 /* JW-Player-Sample */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		394BEA412174F0E9009FDB40 /* Resources */ = {
+		A647979D2407D2C7007AC0F0 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				862D1F6623D8CAB600FD03A3 /* cast_off.png in Resources */,
-				862D1F6523D8CAB600FD03A3 /* cast_on.png in Resources */,
+				A64797AE2407D2C8007AC0F0 /* LaunchScreen.storyboard in Resources */,
+				A64797AB2407D2C8007AC0F0 /* Assets.xcassets in Resources */,
+				A64797A92407D2C7007AC0F0 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		F6C7D7E28D70D285CF23D3A5 /* [CP] Copy Pods Resources */ = {
+		29ACF38B26FA7B4EE5DBC69B /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-JWPlayerPlugin/Pods-JWPlayerPlugin-resources-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-JW-Player-Sample/Pods-JW-Player-Sample-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			name = "[CP] Copy Pods Resources";
+			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-JWPlayerPlugin/Pods-JWPlayerPlugin-resources-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-JW-Player-Sample/Pods-JW-Player-Sample-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-JWPlayerPlugin/Pods-JWPlayerPlugin-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-JW-Player-Sample/Pods-JW-Player-Sample-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		FD772741E9AE24106EE97110 /* [CP] Check Pods Manifest.lock */ = {
+		8B1AEE7538EAABFF66DA4F16 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			inputFileListPaths = (
 			);
 			inputPaths = (
 				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
 				"${PODS_ROOT}/Manifest.lock",
 			);
 			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-JWPlayerPlugin-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-JW-Player-Sample-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		C147B682BF8B785CF8B08F9F /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-JW-Player-Sample/Pods-JW-Player-Sample-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-JW-Player-Sample/Pods-JW-Player-Sample-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-JW-Player-Sample/Pods-JW-Player-Sample-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		394BEA3F2174F0E9009FDB40 /* Sources */ = {
+		A647979B2407D2C7007AC0F0 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				39A39929217507140023658F /* JWPlayerViewController.m in Sources */,
-				39A39925217505360023658F /* ZappJWPlayerAdapter.m in Sources */,
+				A64797A62407D2C7007AC0F0 /* ViewController.swift in Sources */,
+				A64797A22407D2C7007AC0F0 /* AppDelegate.swift in Sources */,
+				A64797B42407D8B6007AC0F0 /* Playable.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		A64797A72407D2C7007AC0F0 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A64797A82407D2C7007AC0F0 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		A64797AC2407D2C8007AC0F0 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A64797AD2407D2C8007AC0F0 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		394BEA492174F0E9009FDB40 /* Debug */ = {
@@ -343,58 +378,50 @@
 			};
 			name = Release;
 		};
-		394BEA4C2174F0E9009FDB40 /* Debug */ = {
+		A64797B02407D2C8007AC0F0 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5E19042E0108188386A997CB /* Pods-JWPlayerPlugin.debug.xcconfig */;
+			baseConfigurationReference = DE148A9E2BBDDAED29354EB8 /* Pods-JW-Player-Sample.debug.xcconfig */;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "";
-				CODE_SIGN_STYLE = Automatic;
-				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = WZZ4E5L8EL;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = JWPlayerPlugin/Info.plist;
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "JW-Player-Sample/JW-Player-Sample.entitlements";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = REC5WH92M6;
+				INFOPLIST_FILE = "JW-Player-Sample/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.3.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.applicaster.JWPlayerPlugin;
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 5.1;
+				PRODUCT_BUNDLE_IDENTIFIER = com.scand.inappsample;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "Dev In App Sample";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
-		394BEA4D2174F0E9009FDB40 /* Release */ = {
+		A64797B12407D2C8007AC0F0 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5785435F5CB02A255A0ED76F /* Pods-JWPlayerPlugin.release.xcconfig */;
+			baseConfigurationReference = A7908C4397286646C714D605 /* Pods-JW-Player-Sample.release.xcconfig */;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "";
-				CODE_SIGN_STYLE = Automatic;
-				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = WZZ4E5L8EL;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = JWPlayerPlugin/Info.plist;
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "JW-Player-Sample/JW-Player-Sample.entitlements";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = REC5WH92M6;
+				INFOPLIST_FILE = "JW-Player-Sample/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.3.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.applicaster.JWPlayerPlugin;
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 5.1;
+				PRODUCT_BUNDLE_IDENTIFIER = com.scand.inappsample;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "Dev In App Sample";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -411,11 +438,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		394BEA4B2174F0E9009FDB40 /* Build configuration list for PBXNativeTarget "JWPlayerPlugin" */ = {
+		A64797B22407D2C8007AC0F0 /* Build configuration list for PBXNativeTarget "JW-Player-Sample" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				394BEA4C2174F0E9009FDB40 /* Debug */,
-				394BEA4D2174F0E9009FDB40 /* Release */,
+				A64797B02407D2C8007AC0F0 /* Debug */,
+				A64797B12407D2C8007AC0F0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

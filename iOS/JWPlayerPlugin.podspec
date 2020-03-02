@@ -28,5 +28,6 @@ Pod::Spec.new do |s|
   s.dependency 'ApplicasterSDK'
   s.dependency 'JWPlayer-SDK'
   s.dependency 'GoogleAds-IMA-iOS-SDK'
-  s.dependency 'google-cast-sdk-no-bluetooth'
+#  s.dependency 'google-cast-sdk-no-bluetooth'
+s.dependency 'google-cast-sdk'
 end

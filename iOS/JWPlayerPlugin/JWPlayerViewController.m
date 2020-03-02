@@ -94,6 +94,7 @@
         if (self.castController == nil) {
             self.castController = [[JWCastController alloc] initWithPlayer:self.player];
             //self.castController.chromeCastReceiverAppID = kGCKDefaultMediaReceiverApplicationID;
+            [self.castController scanForDevices];
         }
         
         self.castController.delegate = self;
@@ -421,7 +422,7 @@
     self.player.forceFullScreenOnLandscape = NO;
     self.player.forceLandscapeOnFullScreen = NO;
     
-    _player = player;
+    _player = player;    
 }
 
 - (void)addCastButtons {
@@ -627,8 +628,8 @@
 
 -(void)onConnectedToCastingDevice:(JWCastingDevice *)device
 {
-    //[self.castController cast];
     [self updateForCastDeviceConnection];
+    [self.castController cast];
 }
 
 -(void)onDisconnectedFromCastingDevice:(NSError *)error
