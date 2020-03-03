@@ -422,7 +422,7 @@
     self.player.forceFullScreenOnLandscape = NO;
     self.player.forceLandscapeOnFullScreen = NO;
     
-    _player = player;    
+    _player = player;
 }
 
 - (void)addCastButtons {
@@ -503,24 +503,9 @@
 -(void)onTime:(JWEvent<JWTimeEvent> *)event {
     CGFloat pos = [event position];
     CGFloat dur = [event duration];
-    CGFloat per = (pos/dur)*100;
-
-    if (per >= 25.0 && per < 26.0 && self.trackedPercentage < 25) {
-        self.trackedPercentage = 25;
-    } else if (per >= 50.0 && per < 51.0 && self.trackedPercentage < 50) {
-        self.trackedPercentage = 50;
-    } else if (per >= 75.0 && per < 76.0 && self.trackedPercentage < 75) {
-        self.trackedPercentage = 75;
-    } else if (per >= 95.0 && per < 96.0 && self.trackedPercentage < 95) {
-        self.trackedPercentage = 95;
-    } else {
-        return;
-    }
-    NSMutableDictionary *extensions = self.extensionsDictionary.mutableCopy;
-    [extensions setObject:[NSNumber numberWithDouble:self.trackedPercentage]
-                   forKey:@"percentage"];
-    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"Watch VOD Percentage"
-                                                                 parameters:extensions];
+    CGFloat percentage = (pos / dur) * 100;
+    
+    self.trackedPercentage = percentage;
 }
 
 -(void)onSeek:(JWEvent<JWSeekEvent> *)event {
