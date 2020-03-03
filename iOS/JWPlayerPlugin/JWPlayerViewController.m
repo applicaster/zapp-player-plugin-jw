@@ -568,7 +568,7 @@
         }
         
         UIWindow *keyWindow = [UIApplication sharedApplication].keyWindow;
-        [self setButtonStackViewContraints:keyWindow];
+        [keyWindow addSubview:self.buttonsStackView];
 
         [self.buttonsStackView addArrangedSubview:self.closeButton];
         if (self.allowAirplay) {
@@ -577,11 +577,16 @@
         if (self.allowChromecast) {
             [self.buttonsStackView addArrangedSubview:self.castingButton];
         }
+        
+        [self setButtonStackViewContraints:keyWindow];
    }
     else {
         self.player.forceFullScreenOnLandscape = NO;
         [[UIDevice currentDevice] setValue:[NSNumber numberWithInt:UIInterfaceOrientationPortrait] forKey:@"orientation"];
+        
+        [self.player.view addSubview:self.buttonsStackView];
         [self setButtonStackViewContraints:self.player.view];
+        
         if (self.allowAirplay) {
             [self.buttonsStackView addArrangedSubview:self.airplayButton];
         }
