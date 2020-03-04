@@ -8,9 +8,9 @@
     "git@github.com:applicaster/zapp-player-plugin-jw.git"
   ],
   "platform": "ios",
-  "author_name": "Jesus De Meyer",
-  "author_email": "j.demeyer@applicaster.com",
-  "manifest_version": "3.3.3",
+  "author_name": "Roman Karpievich",
+  "author_email": "r.karpievich@applicaster.com",
+  "manifest_version": "3.4.0",
   "name": "JWPlayer",
   "description": "JW Player Plugin for Applicaster Zapp Platform",
   "type": "player",
