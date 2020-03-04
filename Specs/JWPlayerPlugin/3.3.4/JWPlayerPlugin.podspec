@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name             = "JWPlayerPlugin"
-  s.version          = '3.4.0'
+  s.version          = '3.3.4'
   s.summary          = 'JWPlayer Player plugin implementation.'
   s.description      = 'An implementation for JWPlayer as a Zapp Player Plugin in Objective C.'
   s.homepage         = "https://github.com/applicaster/zapp-player-plugin-jw"
@@ -15,7 +15,6 @@ Pod::Spec.new do |s|
 
   s.source_files = 'iOS/JWPlayerPlugin/**/*.{h,m}'
   s.public_header_files = 'iOS/JWPlayerPlugin/**/*.h'
-  s.resources = 'iOS/JWPlayerPlugin/**/*.{storyboard,png}'
 
   s.xcconfig =  { 'CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES' => 'YES',
                   'ENABLE_BITCODE' => 'YES',
@@ -28,5 +27,5 @@ Pod::Spec.new do |s|
   s.dependency 'ApplicasterSDK'
   s.dependency 'JWPlayer-SDK'
   s.dependency 'GoogleAds-IMA-iOS-SDK'
-  s.dependency 'google-cast-sdk-no-bluetooth'
+
 end

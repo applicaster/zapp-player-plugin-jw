@@ -143,6 +143,7 @@ public class JWPlayerAdapter extends BasePlayer implements FullscreenHandler, Vi
     @Override
     public void removeInline(@NonNull ViewGroup videoContainerView) {
         if(videoContainerView.indexOfChild(jwPlayerContainer) >= 0) {
+            jwPlayerContainer.getJWPlayerView().onDestroy();
             videoContainerView.removeView(jwPlayerContainer);
         }
     }
