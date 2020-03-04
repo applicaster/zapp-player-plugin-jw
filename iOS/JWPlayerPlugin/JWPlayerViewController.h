@@ -11,6 +11,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class AnalyticsStorage;
+
 @interface JWPlayerViewController : UIViewController
 
 @property (nonatomic, strong) NSDictionary *configurationJSON;
@@ -19,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL allowChromecast;
 @property (nonatomic, nullable) NSString *chromecastButtonOnPath;
 @property (nonatomic, nullable) NSString *chromecastButtonOffPath;
+@property (nonatomic, nullable) AnalyticsStorage *analyticsStorage;
 
 @property (nonatomic, assign) BOOL isInlinePlayer;
 

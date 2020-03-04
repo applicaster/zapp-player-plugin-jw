@@ -14,6 +14,7 @@
 @import MediaPlayer;
 
 #import <GoogleCast/GoogleCast.h>
+#import "JWPlayerPlugin/JWPlayerPlugin-Swift.h"
 
 @interface JWPlayerViewController () <JWPlayerDelegate, JWCastingDelegate> {
     BOOL isViewHidden;
@@ -23,7 +24,6 @@
 @property (nonatomic, strong) JWCastController *castController;
 @property (nonatomic, strong) JWAdConfig *adConfig;
 
-@property (nonatomic) CGFloat trackedPercentage;
 @property (nonatomic, strong) NSDictionary *extensionsDictionary;
 
 @property (nonatomic) UIStackView *buttonsStackView;
@@ -39,6 +39,15 @@
 @implementation JWPlayerViewController
 
 #pragma mark - UIViewController
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        self.analyticsStorage = [AnalyticsStorage new];
+    }
+    return self;
+}
 
 - (void)loadView {
     [super loadView];
@@ -206,6 +215,7 @@
     }
     
     self.player = [[JWPlayerController alloc] initWithConfig:config];
+    [self.analyticsStorage parseParametersFrom:playableItem];
 }
 
 - (void)setupPlayerAdvertisingWithConfiguration:(NSArray *)ads {
@@ -432,11 +442,11 @@
         [self.buttonsStackView addArrangedSubview:self.airplayButton];
     }
     
-    if (self.allowChromecast) {
+//    if (self.allowChromecast) {
         [self.castingButton removeFromSuperview];
         self.castingButton.alpha = 1.0;
         [self.buttonsStackView addArrangedSubview:self.castingButton];
-    }
+//    }
 }
 
 - (void)dismiss:(NSObject *)sender {
@@ -491,7 +501,7 @@
 #pragma mark - JWPlayerDelegate
 
 - (void)onComplete {
-    
+    self.analyticsStorage.isCompleted = true;
 }
 
 - (void)onControlBarVisible:(JWEvent<JWControlsEvent> *)event {
@@ -505,11 +515,12 @@
     CGFloat dur = [event duration];
     CGFloat percentage = (pos / dur) * 100;
     
-    self.trackedPercentage = percentage;
+    self.analyticsStorage.duration = dur;
+    self.analyticsStorage.videoProgress = percentage;
 }
 
 -(void)onSeek:(JWEvent<JWSeekEvent> *)event {
-    self.trackedPercentage = 0;
+    self.analyticsStorage.videoProgress = 0;
 }
 
 -(void)onAdPlay:(JWAdEvent<JWAdStateChangeEvent> *)event {
@@ -557,6 +568,11 @@
     [NSLayoutConstraint deactivateConstraints:self.buttonsStackView.constraints];
     
     self.isInlinePlayer = !event.fullscreen;
+    if (event.fullscreen) {
+        self.analyticsStorage.playerViewType = PlayerViewTypeFullScreen;
+    } else {
+        self.analyticsStorage.playerViewType = PlayerViewTypeInline;
+    }
     
     [self adjustButtonAlpha:NO];
     
@@ -691,18 +707,27 @@
 {
     self.casting = YES;
     [self.castingButton setTintColor:[UIColor greenColor]];
+    self.analyticsStorage.isCasting = true;
+    self.analyticsStorage.playerViewType = PlayerViewTypeCast;
+    [self.analyticsStorage sendWithAnalyticsEvent:AnalyticsEventsCastStart
+                                            timed:true];
 }
 
 - (void)updateForCastingEnd
 {
     self.casting = NO;
     [self.castingButton setTintColor:[UIColor blueColor]];
+    self.analyticsStorage.isCasting = false;
+    [self.analyticsStorage sendWithAnalyticsEvent:AnalyticsEventsCastStop
+                                            timed:true];
 }
 
 #pragma Mark - Cast stuff
 
 - (void)castButtonTapped:(id) sender
 {
+    [self.analyticsStorage sendWithAnalyticsEvent:AnalyticsEventsTapCast
+                                            timed:false];
     __weak JWPlayerViewController *weakSelf = self;
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil
                                                                              message:nil
@@ -712,13 +737,16 @@
     if (self.castController.connectedDevice == nil) {
         alertController.title = @"Connect to";
         
-        [self.castController.availableDevices enumerateObjectsUsingBlock:^(JWCastingDevice  *_Nonnull device, NSUInteger idx, BOOL * _Nonnull stop) {
+        [self.castController.availableDevices enumerateObjectsUsingBlock:^(JWCastingDevice  *_Nonnull device,
+                                                                           NSUInteger idx,
+                                                                           BOOL * _Nonnull stop) {
             UIAlertAction *deviceSelected = [UIAlertAction actionWithTitle:device.name
                                                                      style:UIAlertActionStyleDefault
                                                                    handler:^(UIAlertAction * _Nonnull action) {
-                                                                       [weakSelf.castController connectToDevice:device];
-                                                                       [weakSelf updateWhenConnectingToCastDevice];
-                                                                   }];
+                [weakSelf.castController connectToDevice:device];
+                [weakSelf updateWhenConnectingToCastDevice];
+                weakSelf.analyticsStorage.castingDevice = device.name;
+            }];
             [alertController addAction:deviceSelected];
         }];
     } else {
