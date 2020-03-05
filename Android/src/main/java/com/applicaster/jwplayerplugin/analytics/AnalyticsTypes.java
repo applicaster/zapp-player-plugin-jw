@@ -7,28 +7,51 @@ import java.lang.annotation.RetentionPolicy;
 
 public class AnalyticsTypes {
 
+    //region Analytics Events
     @Retention(RetentionPolicy.SOURCE)
-    @StringDef({CastProperties.ITEM_ID,
-                CastProperties.ITEM_NAME,
-                CastProperties.VIDEO_TYPE,
-                CastProperties.VIEW,
-                CastProperties.ITEM_DURATION,
-                CastProperties.VOD_TYPE,
-                CastProperties.FREE_OR_PAID,
-                CastProperties.TIME_CODE,
-                CastProperties.CASTING_DEVICE,
-                CastProperties.PREVIOUS_STATE})
-    public @interface CastProperties {
+    @StringDef({Event.PLAY_VOD_ITEM,
+                Event.PLAY_LIVE_STREAM,
+                Event.SWITCH_PLAYER_VIEW,
+                Event.PAUSE,
+                Event.SEEK,
+                Event.TAP_REWIND,
+                Event.TAP_CLOSED_CAPTIONS,
+                Event.TAP_CAST,
+                Event.CAST_START,
+                Event.CAST_STOP})
+    public @interface Event {
+        String PLAY_VOD_ITEM = "Play VOD Item";
+        String PLAY_LIVE_STREAM = "Play Live Stream";
+        String SWITCH_PLAYER_VIEW = "Switch Player View";
+        String PAUSE = "Pause";
+        String SEEK = "Seek";
+        String TAP_REWIND = "Tap Rewind";
+        String TAP_CLOSED_CAPTIONS = "Tap Closed Captions";
+        String TAP_CAST = "Tap Cast";
+        String CAST_START = "Cast Start";
+        String CAST_STOP = "Cast Stop";
+    }
+    //endregion
+
+    //region Common Types
+    @Retention(RetentionPolicy.SOURCE)
+    @StringDef({CommonProps.ITEM_ID,
+                CommonProps.ITEM_NAME,
+                CommonProps.ITEM_DURATION,
+                CommonProps.VOD_TYPE,
+                CommonProps.VIEW,
+                CommonProps.VIDEO_TYPE,
+                CommonProps.FREE_OR_PAID,
+                CommonProps.TIME_CODE})
+    public @interface CommonProps {
         String ITEM_ID = "Item ID";
         String ITEM_NAME = "Item Name";
-        String VIDEO_TYPE = "Video Type";
-        String VIEW = "View";
         String ITEM_DURATION = "Item Duration";
         String VOD_TYPE = "VOD Type";
+        String VIEW = "View";
+        String VIDEO_TYPE = "Video Type";
         String FREE_OR_PAID = "Free or Paid";
         String TIME_CODE = "Time Code";
-        String CASTING_DEVICE = "Casting Device";
-        String PREVIOUS_STATE = "Previous State";
     }
 
     @Retention(RetentionPolicy.SOURCE)
@@ -60,6 +83,19 @@ public class AnalyticsTypes {
         String YOUTUBE = "YouTube";
         String ATOM = "ATOM";
     }
+    //endregion
+
+    //region Player Analytics
+
+    //endregion
+
+    //region Cast Analytics
+    @Retention(RetentionPolicy.SOURCE)
+    @StringDef({CastProps.CASTING_DEVICE, CastProps.PREVIOUS_STATE})
+    public @interface CastProps {
+        String CASTING_DEVICE = "Casting Device";
+        String PREVIOUS_STATE = "Previous State";
+    }
 
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({CastBtnPreviousState.ON, CastBtnPreviousState.OFF})
@@ -67,4 +103,5 @@ public class AnalyticsTypes {
         String ON = "On";
         String OFF = "Off";
     }
+    //endregion
 }

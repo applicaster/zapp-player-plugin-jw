@@ -18,10 +18,10 @@ public class AnalyticsData {
     private String itemName = PROP_DATA_NONE_PROVIDED;
     private String videoType = PROP_DATA_NONE_PROVIDED;
     private String playerView = PROP_DATA_NONE_PROVIDED;
-    private String itemDuration = PROP_DATA_NONE_PROVIDED;
+    private String itemDuration = parseDuration(0L);
     private String vodType = PROP_DATA_NONE_PROVIDED;
     private String freeOrPaid = PROP_DATA_NONE_PROVIDED;
-    private String timeCode = PROP_DATA_NONE_PROVIDED;
+    private String timeCode = parseDuration(0L);
     private String castingDevice = PROP_DATA_NONE_PROVIDED;
     private String previousState = PROP_DATA_NONE_PROVIDED;
 

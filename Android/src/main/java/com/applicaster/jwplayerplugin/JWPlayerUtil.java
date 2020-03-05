@@ -2,6 +2,7 @@ package com.applicaster.jwplayerplugin;
 
 import android.util.Log;
 
+import com.applicaster.atom.helpers.MediaItemIdentifier;
 import com.applicaster.atom.model.APAtomEntry;
 import com.applicaster.player.VideoAdsUtil;
 import com.applicaster.plugin_manager.playersmanager.Playable;
@@ -22,20 +23,20 @@ import javax.annotation.CheckReturnValue;
 
 @CheckReturnValue
 public class JWPlayerUtil {
-    final static String EXTERNAL_PLAYER_MIDROLL_INTERVAL="midroll_interval_external_player";
+    final static String EXTERNAL_PLAYER_MIDROLL_INTERVAL = "midroll_interval_external_player";
 
-    public static PlaylistItem getPlaylistItem(Playable playable){
+    public static PlaylistItem getPlaylistItem(Playable playable) {
         return getPlaylistItem(playable, null);
     }
 
-    public static PlaylistItem getPlaylistItem(Playable playable, Map pluginConfiguration){
+    public static PlaylistItem getPlaylistItem(Playable playable, Map pluginConfiguration) {
         PlaylistItem result = null;
         String streamImageUrl = null;
 
         if (playable != null) {
             if (playable instanceof APAtomEntry.APAtomEntryPlayable) {
                 APAtomEntry entry = ((APAtomEntry.APAtomEntryPlayable) playable).getEntry();
-                streamImageUrl = entry.getStreamImageUrl(entry.isAudio());
+                streamImageUrl = getStreamImageUrl(entry);
             }
             // Load a media source
             result = new PlaylistItem.Builder()
@@ -88,7 +89,7 @@ public class JWPlayerUtil {
                             caption.label(label);
                         }
 
-                        if(StringUtil.isNotEmpty(kind)){
+                        if (StringUtil.isNotEmpty(kind)) {
                             caption.kind(CaptionType.CAPTIONS);
                         }
 
@@ -99,7 +100,7 @@ public class JWPlayerUtil {
         }
         return captionList;
     }
-    
+
 
     private static List<AdBreak> getAdSchedule(Playable playable, Map pluginConfiguration) {
         List<AdBreak> adSchedule = new ArrayList<>();
@@ -109,11 +110,11 @@ public class JWPlayerUtil {
             adSchedule = getJWAdScheduler(advertisingList);
         }
 
-        if (adSchedule.size()==0 && pluginConfiguration != null){
-            adSchedule = getPluginConfigurationAdScheduler(playable,pluginConfiguration);
+        if (adSchedule.size() == 0 && pluginConfiguration != null) {
+            adSchedule = getPluginConfigurationAdScheduler(playable, pluginConfiguration);
         }
 
-        if (adSchedule.size()==0){
+        if (adSchedule.size() == 0) {
             adSchedule = getApplicasterAdScheduler(playable);
         }
 
@@ -121,12 +122,12 @@ public class JWPlayerUtil {
     }
 
 
-    private static List<AdBreak> getJWAdScheduler(List<LinkedHashMap<String, String>> advertisingList){
+    private static List<AdBreak> getJWAdScheduler(List<LinkedHashMap<String, String>> advertisingList) {
         List<AdBreak> result = new ArrayList<>();
 
-        if (advertisingList!=null) {
+        if (advertisingList != null) {
             for (int i = 0; i < advertisingList.size(); i++) {
-                LinkedHashMap<String,String> advertisingModel = advertisingList.get(i);
+                LinkedHashMap<String, String> advertisingModel = advertisingList.get(i);
                 AdBreak adBreak = new AdBreak(String.valueOf(advertisingModel.get("offset")), AdSource.VAST, advertisingModel.get("ad_url"));
                 result.add(adBreak);
             }
@@ -136,12 +137,12 @@ public class JWPlayerUtil {
 
     }
 
-    private static List<AdBreak> getPluginConfigurationAdScheduler(Playable playable, Map pluginConfiguration){
+    private static List<AdBreak> getPluginConfigurationAdScheduler(Playable playable, Map pluginConfiguration) {
 
         // Create your ad schedule
         List<AdBreak> adSchedule = new ArrayList<>();
 
-        if (pluginConfiguration!=null) {
+        if (pluginConfiguration != null) {
             if (playable.isLive()) {
                 String liveAdUrl = (String) pluginConfiguration.get("live_ad_url");
                 String liveAdOffset = (String) pluginConfiguration.get("live_ad_offset");
@@ -152,7 +153,8 @@ public class JWPlayerUtil {
                     AdSource liveAdSource = AdSource.valueByName(liveAdType);
                     AdBreak adBreak = new AdBreak(liveAdOffset, liveAdSource, liveAdUrl); // "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator=");
                     adSchedule.add(adBreak);
-                }catch (Exception e){ }
+                } catch (Exception e) {
+                }
 
             } else {
                 String vodPreAdUrl = (String) pluginConfiguration.get("vod_preroll_ad_url");
@@ -168,18 +170,19 @@ public class JWPlayerUtil {
                         adSchedule.add(adBreak);
                     }
 
-                    if ( StringUtil.isNotEmpty(vodMidAdUrl) && StringUtil.isNotEmpty(vodMidAdOffset) ) {
+                    if (StringUtil.isNotEmpty(vodMidAdUrl) && StringUtil.isNotEmpty(vodMidAdOffset)) {
                         AdBreak postrollAdBreak = new AdBreak(vodMidAdOffset, vodAdSource, vodMidAdUrl);
                         adSchedule.add(postrollAdBreak);
                     }
-                }catch (Exception e){ }
+                } catch (Exception e) {
+                }
             }
         }
 
         return adSchedule;
     }
 
-    private static List<AdBreak> getApplicasterAdScheduler(Playable playable){
+    private static List<AdBreak> getApplicasterAdScheduler(Playable playable) {
 
         // Create your ad schedule
         List<AdBreak> adSchedule = new ArrayList<>();
@@ -189,14 +192,14 @@ public class JWPlayerUtil {
         adSchedule.add(adBreak);
 
         String imaPostrollAdUnit = VideoAdsUtil.getAccountPostroll();
-        AdBreak postrollAdBreak = new AdBreak("post", AdSource.IMA, imaPostrollAdUnit );
+        AdBreak postrollAdBreak = new AdBreak("post", AdSource.IMA, imaPostrollAdUnit);
         adSchedule.add(postrollAdBreak);
 
         String imaMidrollAdUnit = VideoAdsUtil.getAccountMidroll();
         int breakInterval = getMidrollInterval(); //percentage
-        if (breakInterval> 0) {
-            for (int i=1; breakInterval*i<100; i++ ){
-                AdBreak midrollAdBreak = new AdBreak(breakInterval*i + "%", AdSource.IMA, imaMidrollAdUnit);
+        if (breakInterval > 0) {
+            for (int i = 1; breakInterval * i < 100; i++) {
+                AdBreak midrollAdBreak = new AdBreak(breakInterval * i + "%", AdSource.IMA, imaMidrollAdUnit);
                 adSchedule.add(midrollAdBreak);
             }
         }
@@ -204,13 +207,24 @@ public class JWPlayerUtil {
         return adSchedule;
     }
 
-    private static int getMidrollInterval(){
-        int interval  = 0;
-            try {
-                interval = (Integer.parseInt((String) AppData.getAPExtension(EXTERNAL_PLAYER_MIDROLL_INTERVAL)));
-            } catch (NumberFormatException e) {
-                e.printStackTrace();
-            }
+    private static int getMidrollInterval() {
+        int interval = 0;
+        try {
+            interval = (Integer.parseInt((String) AppData.getAPExtension(EXTERNAL_PLAYER_MIDROLL_INTERVAL)));
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
         return interval;
+    }
+
+    private static String getStreamImageUrl(APAtomEntry entry) {
+        MediaItemIdentifier.Builder identifier = new MediaItemIdentifier.Builder();
+        if (entry.getContent() != null && (entry.getContent().type).contains("video")) {
+            identifier.setGroupType(APAtomEntry.MediaGroup.IMAGE_KEY)
+                    .setKey("image_base")
+                    .setForm(APAtomEntry.MediaItem.IMAGE_FORM_KEY)
+                    .setScale(APAtomEntry.MediaItem.DEFAULT_LEGACY_SCALE);
+        }
+        return entry.getMediaUrl(identifier.build());
     }
 }
