@@ -14,8 +14,8 @@
   "platform": "android",
   "author_name": "Alex Khomich",
   "author_email": "a.khomich@applicaster.com",
-  "manifest_version": "2.0.0",
-  "dependency_version": "2.0.0",
+  "manifest_version": "2.1.0",
+  "dependency_version": "2.1.0",
   "name": "JW Player",
   "description": "Android plugin for JWPlayer",
   "type": "player",
@@ -70,6 +70,12 @@
     {
       "type": "checkbox",
       "key": "ignore_default_subscription",
+      "default": 0
+    },
+    {
+      "type": "switch",
+      "key": "Chromecast",
+      "tooltip_text": "Enables Chromecast functionality and shows the cast button in the player controls",
       "default": 0
     }
   ],
