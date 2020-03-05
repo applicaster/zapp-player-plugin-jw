@@ -454,11 +454,11 @@ NSString * const kJWPlayerPauseButton = @"jw_player_pause_button";
         [self.buttonsStackView addArrangedSubview:self.airplayButton];
     }
     
-//    if (self.allowChromecast) {
+    if (self.allowChromecast) {
         [self.castingButton removeFromSuperview];
         self.castingButton.alpha = 1.0;
         [self.buttonsStackView addArrangedSubview:self.castingButton];
-//    }
+    }
 }
 
 - (void)dismiss:(NSObject *)sender {
