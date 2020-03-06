@@ -65,6 +65,9 @@ public class JWPlayerContainer extends FrameLayout{
     @Override
     public void onWindowFocusChanged(boolean hasWindowFocus) {
         super.onWindowFocusChanged(hasWindowFocus);
+        if (hasWindowFocus){
+            jwPlayerView.onResume();//onresume() called
+        }
     }
 
     @Override
