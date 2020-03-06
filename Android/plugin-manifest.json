@@ -1,7 +1,8 @@
 {
   "api": {
     "require_startup_execution": false,
-    "class_name": "com.applicaster.jwplayerplugin.JWPlayerAdapter"
+    "class_name": "com.applicaster.jwplayerplugin.JWPlayerAdapter",
+    "proguard_rules": "##----------- JW Player -------------##\n -keepattributes *longtailvideo*\n-keep class com.longtailvideo.**{ *; }\n-dontwarn com.longtailvideo.*\n-keepclasseswithmembernames class * {native <methods>;}\n\n-keep public class com.applicaster.jwplayerplugin.JWPlayerAdapter {\n   public <fields>;\n   public <methods>;\n   protected <methods>;\n}\n-keep public class com.applicaster.jwplayerplugin.JWPlayerContainer {\n   public <fields>;\n   public <methods>;\n}\n-keep public class com.applicaster.jwplayerplugin.cast.CastOptionsProvider { *; }\n\n-keepclassmembers class com.longtailvideo.jwplayer.** {\n    @android.webkit.JavascriptInterface *;\n}\n\n# Block warnings about missing module classes\n-dontwarn com.longtailvideo.jwplayer.**\n-dontwarn com.google.ads.interactivemedia.**\n\n# Classes get rejected without this when running the app if the app has been run through ProGuard\n-keepattributes InnerClasses,EnclosingMethod\n\n# Keep module indicator classes\n-keep class com.longtailvideo.jwplayer.modules.** { *; }\n\n"
   },
   "dependency_repository_url": [
     {
@@ -73,7 +74,7 @@
       "default": 0
     },
     {
-      "type": "switch",
+      "type": "checkbox",
       "key": "Chromecast",
       "tooltip_text": "Enables Chromecast functionality and shows the cast button in the player controls",
       "default": 0

@@ -44,6 +44,7 @@ public class JWPlayerAdapter
     private JWPlayerContainer jwPlayerContainer;
     private JWPlayerView jwPlayerView;
     private String licenseKey;
+    private boolean enableChromecast = false;
 
     private Context context;
     private CastProvider castProvider;
@@ -89,6 +90,7 @@ public class JWPlayerAdapter
     public void setPluginConfigurationParams(Map params) {
         super.setPluginConfigurationParams(params);
         licenseKey = params.get(LICENSE_KEY).toString();
+        enableChromecast = Boolean.parseBoolean(params.get("Chromecast").toString());
     }
 
     /**
@@ -145,7 +147,7 @@ public class JWPlayerAdapter
                 , ViewGroup.LayoutParams.MATCH_PARENT);
         videoContainerView.addView(jwPlayerContainer, playerContainerLayoutParams);
 
-        if (this.context instanceof Activity) {
+        if (this.context instanceof Activity && enableChromecast) {
             castProvider = new CastProvider((Activity) this.context, jwPlayerContainer);
             castProvider.init(getFirstPlayable());
             castProvider.addSessionManagerListener();
@@ -165,8 +167,10 @@ public class JWPlayerAdapter
             jwPlayerContainer.getJWPlayerView().onDestroy();
             videoContainerView.removeView(jwPlayerContainer);
         }
-        castProvider.removeSessionManagerListener();
-        castProvider = null;
+        if (castProvider != null) {
+            castProvider.removeSessionManagerListener();
+            castProvider = null;
+        }
     }
 
     /**
@@ -250,7 +254,7 @@ public class JWPlayerAdapter
 
     @Override
     public void onControlBarVisibilityChanged(ControlBarVisibilityEvent controlBarVisibilityEvent) {
-        if (castProvider.getCastContext().getCastState() != CastState.NO_DEVICES_AVAILABLE
+        if (castProvider != null && castProvider.getCastContext().getCastState() != CastState.NO_DEVICES_AVAILABLE
             && castProvider.getCastContext().getCastState() != CastState.NOT_CONNECTED) {
             if (controlBarVisibilityEvent.isVisible()) {
                 castProvider.getMediaRouteButton().setVisibility(View.VISIBLE);
@@ -283,7 +287,7 @@ public class JWPlayerAdapter
     @Override
     public void onPause() {
         jwPlayerView.pause();
-        castProvider.removeSessionManagerListener();
+        if (castProvider != null) castProvider.removeSessionManagerListener();
     }
 
     @Override

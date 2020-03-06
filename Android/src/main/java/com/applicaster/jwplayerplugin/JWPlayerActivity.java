@@ -60,6 +60,7 @@ public class JWPlayerActivity
     private static final String PLAYABLE_KEY = "playable";
     private static final String PERCENTAGE_KEY = "percentage";
     private static final String ADVERTISEMENT_POSITION_KEY = "advertisement_position";
+    private static String ENABLE_CHROMECAST_KEY = "enable_chromecast";
 
     /**
      * Reference to the {@link JWPlayerView}
@@ -96,10 +97,13 @@ public class JWPlayerActivity
         mPlayerView.addOnErrorListener(this);
 
         playable = (Playable) getIntent().getSerializableExtra(PLAYABLE_KEY);
+        boolean enableChromecast = getIntent().getBooleanExtra(ENABLE_CHROMECAST_KEY, false);
 
         //Initialize cast provider
-        castProvider = new CastProvider(this, jwPlayerContainer);
-        castProvider.init(playable);
+        if (enableChromecast) {
+            castProvider = new CastProvider(this, jwPlayerContainer);
+            castProvider.init(playable);
+        }
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -138,18 +142,17 @@ public class JWPlayerActivity
         }
 
         //cast
-        castProvider.addSessionManagerListener();
-
+        if (castProvider != null) castProvider.addSessionManagerListener();
     }
 
     @Override
     protected void onPause() {
         // Let JW Player know that the app is going to the background
-        if (castProvider.getCastContext().getCastState() != CastState.CONNECTED) {
+        if (castProvider != null && castProvider.getCastContext().getCastState() != CastState.CONNECTED) {
             mPlayerView.onPause();
             mPlayerView.pause();
         }
-        castProvider.removeSessionManagerListener();
+        if (castProvider != null) castProvider.removeSessionManagerListener();
         unregisterConnectionReceiver();
         super.onPause();
     }
@@ -159,7 +162,7 @@ public class JWPlayerActivity
         // Let JW Player know that the app is being destroyed
         mPlayerView.onDestroy();
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        castProvider.release();
+        if (castProvider != null) castProvider.release();
         super.onDestroy();
     }
 
@@ -208,9 +211,17 @@ public class JWPlayerActivity
 
         Bundle bundle = new Bundle();
         bundle.putSerializable(PLAYABLE_KEY, playable);
+        bundle.putBoolean(ENABLE_CHROMECAST_KEY, parseBoolean(params.get("Chromecast")));
         intent.putExtras(bundle);
 
         context.startActivity(intent);
+    }
+
+    private static boolean parseBoolean(String s) {
+        if (s != null) {
+            return s.equalsIgnoreCase("true") || s.equalsIgnoreCase("1");
+        }
+        return false;
     }
 
     @Override
@@ -237,7 +248,7 @@ public class JWPlayerActivity
     @Override
     public void onSeek(SeekEvent seekEvent) {
         trackedPercentage = 0;
-        if (castProvider.getCastListenerOperator().getCastSession() != null) {
+        if (castProvider != null && castProvider.getCastListenerOperator().getCastSession() != null) {
             MediaSeekOptions seekOptions = new MediaSeekOptions.Builder()
                     .setPosition((long) seekEvent.getPosition())
                     .build();
@@ -247,7 +258,7 @@ public class JWPlayerActivity
 
     @Override
     public void onControlBarVisibilityChanged(ControlBarVisibilityEvent controlBarVisibilityEvent) {
-        if (castProvider.getCastContext().getCastState() != CastState.NO_DEVICES_AVAILABLE) {
+        if (castProvider != null && castProvider.getCastContext().getCastState() != CastState.NO_DEVICES_AVAILABLE) {
             if (controlBarVisibilityEvent.isVisible()) {
                 castProvider.getMediaRouteButton().setVisibility(View.VISIBLE);
             } else {
@@ -258,9 +269,12 @@ public class JWPlayerActivity
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-        return castProvider.getCastContext()
-                .onDispatchVolumeKeyEventBeforeJellyBean(event)
-                || super.dispatchKeyEvent(event);
+        if (castProvider != null) {
+            return castProvider.getCastContext()
+                    .onDispatchVolumeKeyEventBeforeJellyBean(event)
+                    || super.dispatchKeyEvent(event);
+        }
+        return super.dispatchKeyEvent(event);
     }
 
     @Override

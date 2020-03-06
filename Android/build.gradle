@@ -84,7 +84,7 @@ dependencies {
     api ('com.longtailvideo.jwplayer:jwplayer-ima:3.9.0') {
 	exclude group: 'com.google.android.gms', module: 'play-services-ads-identifier'
     }
-    implementation 'com.longtailvideo.jwplayer:jwplayer-chromecast:3.9.0'
+    api 'com.longtailvideo.jwplayer:jwplayer-chromecast:3.9.0'
 }
 
 apply from: 'bintray_publisher.gradle'

@@ -9,7 +9,7 @@
         android:supportsRtl="true"
         android:usesCleartextTraffic="true">
         <activity android:name=".JWPlayerActivity"
-            android:configChanges="screenSize|orientation"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:theme="@style/Theme.AppCompat.NoActionBar">
         </activity>
         <meta-data
