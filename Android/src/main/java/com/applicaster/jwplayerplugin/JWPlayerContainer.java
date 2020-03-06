@@ -60,22 +60,11 @@ public class JWPlayerContainer extends FrameLayout{
     @Override
     protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
         super.onVisibilityChanged(changedView, visibility);
-        if (visibility == View.VISIBLE) {
-            jwPlayerView.onResume();//onResume called
-        } else{
-            jwPlayerView.onPause();// onPause() called
-        }
     }
 
     @Override
     public void onWindowFocusChanged(boolean hasWindowFocus) {
         super.onWindowFocusChanged(hasWindowFocus);
-        if (hasWindowFocus){
-            jwPlayerView.onResume();//onresume() called
-        }
-        else {
-            jwPlayerView.onPause();// onPause() called
-        }
     }
 
     @Override

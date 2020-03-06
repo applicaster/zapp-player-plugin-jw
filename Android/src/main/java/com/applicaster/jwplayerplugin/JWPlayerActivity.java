@@ -95,6 +95,7 @@ public class JWPlayerActivity
         mPlayerView.addOnPauseListener(this);
         mPlayerView.addOnControlBarVisibilityListener(this);
         mPlayerView.addOnErrorListener(this);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         playable = (Playable) getIntent().getSerializableExtra(PLAYABLE_KEY);
         boolean enableChromecast = getIntent().getBooleanExtra(ENABLE_CHROMECAST_KEY, false);
@@ -105,7 +106,6 @@ public class JWPlayerActivity
             castProvider.init(playable);
         }
 
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         Map configuration = null;
         if (PlayersManager.getCurrentPlayer() != null) {
@@ -118,7 +118,6 @@ public class JWPlayerActivity
 
         // Load a media source
         mPlayerView.load(JWPlayerUtil.getPlaylistItem(playable, configuration));
-        mPlayerView.play();
     }
 
     @Override
@@ -132,7 +131,6 @@ public class JWPlayerActivity
     protected void onResume() {
         // Let JW Player know that the app has returned from the background
         super.onResume();
-
         setConnectionAvailabilityListener();
 
         //If the video was paused, resume & play.
@@ -147,9 +145,9 @@ public class JWPlayerActivity
 
     @Override
     protected void onPause() {
+        mPlayerView.onPause();
         // Let JW Player know that the app is going to the background
         if (castProvider != null && castProvider.getCastContext().getCastState() != CastState.CONNECTED) {
-            mPlayerView.onPause();
             mPlayerView.pause();
         }
         if (castProvider != null) castProvider.removeSessionManagerListener();
@@ -166,7 +164,6 @@ public class JWPlayerActivity
         super.onDestroy();
     }
 
-
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         // Exit fullscreen when the user pressed the Back button
@@ -178,16 +175,6 @@ public class JWPlayerActivity
         }
         return super.onKeyDown(keyCode, event);
     }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.player_menu, menu);
-        CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), menu,
-                R.id.media_route_menu_item);
-        return true;
-    }
-
 
     /**
      * Handles JW Player going to and returning from fullscreen by hiding the ActionBar

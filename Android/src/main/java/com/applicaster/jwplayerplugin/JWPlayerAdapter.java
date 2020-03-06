@@ -5,6 +5,8 @@ import android.content.Context;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import com.applicaster.controller.PlayerLoader;
@@ -268,14 +270,23 @@ public class JWPlayerAdapter
 
     @Override
     public void onFullscreenRequested() {
-        jwPlayerView.setFullscreen(true, false);
+        if (context instanceof Activity) {
+            ((Activity) context).getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            ((Activity) context).getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+        }
+        jwPlayerContainer.setFitsSystemWindows(false);
+        jwPlayerView.setFullscreen(true, true);
         Log.d(JWPlayerAdapter.TAG, "onFullscreenRequested");
     }
 
     @Override
     public void onFullscreenExitRequested() {
-        jwPlayerView.setFullscreen(false, false);
-        jwPlayerView.play();
+        if (context instanceof Activity) {
+            ((Activity) context).getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+            ((Activity) context).getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        }
+        jwPlayerContainer.setFitsSystemWindows(true);
+        jwPlayerView.setFullscreen(false, true);
         Log.d(JWPlayerAdapter.TAG, "onFullscreenExitRequested");
     }
 
@@ -310,6 +321,7 @@ public class JWPlayerAdapter
 
     @Override
     public void onFullscreen(FullscreenEvent fullscreenEvent) {
+        Log.d(JWPlayerAdapter.TAG, "onFullScreen");
     }
 
     //region PluginScreen
