@@ -32,7 +32,6 @@ public class CastProvider {
 
     private Activity context;
     private JWPlayerView playerView;
-    private JWPlayerContainer container;
 
     private AnalyticsData analyticsData;
 
@@ -45,7 +44,6 @@ public class CastProvider {
     public CastProvider(Activity context, JWPlayerContainer container) {
         this.context = context;
         this.playerView = container.getJWPlayerView();
-        this.container = container;
     }
 
     public CastContext getCastContext() {
@@ -88,7 +86,6 @@ public class CastProvider {
     }
 
     private void initMediaRouteButton() {
-        mediaRouteButton = context.findViewById(R.id.media_route_button);
         if (mediaRouteButton == null) {
             attachCustomMediaRouteButtonView();
         }
@@ -113,7 +110,7 @@ public class CastProvider {
 
     private void attachCustomMediaRouteButtonView() {
         ViewGroup.LayoutParams lp = getMediaRouteButtonLayoutParams();
-        container.addView(mediaRouteButton, lp);
+        playerView.addView(mediaRouteButton, lp);
         ViewGroup.LayoutParams mediaRouteBtnLp = mediaRouteButton.getLayoutParams();
         if (mediaRouteBtnLp instanceof FrameLayout.LayoutParams) {
             ((FrameLayout.LayoutParams) mediaRouteBtnLp).gravity = Gravity.END;

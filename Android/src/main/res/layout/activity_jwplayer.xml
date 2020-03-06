@@ -10,8 +10,4 @@
             android:id="@+id/playerView"
             jwp:jw_autostart="true"/>
 
-        <androidx.mediarouter.app.MediaRouteButton
-            android:id="@+id/media_route_button"
-            style="@style/MediaRouteButton"/>
-
 </FrameLayout>
