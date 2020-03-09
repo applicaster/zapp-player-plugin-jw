@@ -13,7 +13,7 @@ Pod::Spec.new do |s|
   s.platform                = :ios, '10.0'
   s.requires_arc            = true
 
-  s.source_files = 'iOS/JWPlayerPlugin/**/*.{h,m}'
+  s.source_files = 'iOS/JWPlayerPlugin/**/*.{swift,h,m}'
   s.public_header_files = 'iOS/JWPlayerPlugin/**/*.h'
   s.resources = 'iOS/JWPlayerPlugin/**/*.{storyboard,png}'
 
