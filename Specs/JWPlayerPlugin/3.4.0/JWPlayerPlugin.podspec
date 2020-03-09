@@ -7,7 +7,7 @@ Pod::Spec.new do |s|
   s.homepage         = "https://github.com/applicaster/zapp-player-plugin-jw"
   s.license          = 'MIT'
   s.author           = { "Jesus De Meyer" => "j.demeyer@applicaster.com" }
-  s.source           = { :git => "git@github.com:applicaster/zapp-player-plugin-jw.git", :tag => s.version.to_s }
+  s.source           = { :git => "git@github.com:applicaster/zapp-player-plugin-jw.git", :tag => 'ios-' + s.version.to_s }
 
   s.ios.deployment_target   = "10.0"
   s.platform                = :ios, '10.0'
