@@ -41,7 +41,7 @@ public class CastListenerOperator implements SessionManagerListener<CastSession>
     }
 
     @Override
-    public void onSessionStarted(CastSession castSession, String s) {
+    public void onSessionStarted(CastSession castSession, String sessionId) {
         if (castSession.getCastDevice() != null) {
             Log.i(TAG, "Cast session STARTED for: " + castSession.getCastDevice().getFriendlyName());
             analyticsData.setCastingDevice(castSession.getCastDevice().getFriendlyName());
@@ -60,7 +60,7 @@ public class CastListenerOperator implements SessionManagerListener<CastSession>
     }
 
     @Override
-    public void onSessionStartFailed(CastSession castSession, int i) {
+    public void onSessionStartFailed(CastSession castSession, int error) {
         if (castSession.getCastDevice() != null)
             Log.i(TAG, "Cast session START FAILED for: " + castSession.getCastDevice().getFriendlyName());
     }
@@ -72,20 +72,20 @@ public class CastListenerOperator implements SessionManagerListener<CastSession>
     }
 
     @Override
-    public void onSessionEnded(CastSession castSession, int i) {
+    public void onSessionEnded(CastSession castSession, int error) {
         this.castSession = null;
         analyticsData.setTimeCode(playerView.get().getPosition());
         AnalyticsAdapter.logCastStop(analyticsData);
     }
 
     @Override
-    public void onSessionResuming(CastSession castSession, String s) {
+    public void onSessionResuming(CastSession castSession, String sessionId) {
         if (castSession.getCastDevice() != null)
             Log.i(TAG, "Cast session RESUMING for: " + castSession.getCastDevice().getFriendlyName());
     }
 
     @Override
-    public void onSessionResumed(CastSession castSession, boolean b) {
+    public void onSessionResumed(CastSession castSession, boolean wasSuspended) {
         if (castSession.getCastDevice() != null)
             Log.i(TAG, "Cast session RESUMED for: " + castSession.getCastDevice().getFriendlyName());
         this.castSession = castSession;
@@ -94,13 +94,13 @@ public class CastListenerOperator implements SessionManagerListener<CastSession>
     }
 
     @Override
-    public void onSessionResumeFailed(CastSession castSession, int i) {
+    public void onSessionResumeFailed(CastSession castSession, int error) {
         if (castSession.getCastDevice() != null)
             Log.i(TAG, "Cast session RESUME FAILED for: " + castSession.getCastDevice().getFriendlyName());
     }
 
     @Override
-    public void onSessionSuspended(CastSession castSession, int i) {
+    public void onSessionSuspended(CastSession castSession, int reason) {
         if (castSession.getCastDevice() != null)
             Log.i(TAG, "Cast session SUSPENDED for: " + castSession.getCastDevice().getFriendlyName());
     }
