@@ -26,7 +26,7 @@ Pod::Spec.new do |s|
 
   s.dependency 'ZappCore'
   s.dependency 'ApplicasterSDK'
-  s.dependency 'JWPlayer-SDK'
+  s.dependency 'JWPlayer-SDK', '~> 3.10.0'
   s.dependency 'GoogleAds-IMA-iOS-SDK'
   s.dependency 'google-cast-sdk-no-bluetooth'
 end
