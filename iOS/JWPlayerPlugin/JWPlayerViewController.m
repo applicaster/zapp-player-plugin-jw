@@ -12,8 +12,8 @@
 @import AVKit;
 @import AVFoundation;
 @import MediaPlayer;
+@import GoogleCast;
 
-#import <GoogleCast/GoogleCast.h>
 #import "JWPlayerPlugin/JWPlayerPlugin-Swift.h"
 
 // Accessibility IDs
@@ -717,21 +717,23 @@ NSString * const kJWPlayerPauseButton = @"jw_player_pause_button";
 
 - (void)updateForCasting
 {
+    [self.analyticsStorage sendWithAnalyticsEvent:AnalyticsEventsCastStart
+                                            timed:true];
     self.casting = YES;
     [self.castingButton setTintColor:[UIColor greenColor]];
     self.analyticsStorage.isCasting = true;
     self.analyticsStorage.playerViewType = PlayerViewTypeCast;
-    [self.analyticsStorage sendWithAnalyticsEvent:AnalyticsEventsCastStart
-                                            timed:true];
+
 }
 
 - (void)updateForCastingEnd
 {
+    [self.analyticsStorage sendWithAnalyticsEvent:AnalyticsEventsCastStop
+                                            timed:true];
     self.casting = NO;
     [self.castingButton setTintColor:[UIColor blueColor]];
     self.analyticsStorage.isCasting = false;
-    [self.analyticsStorage sendWithAnalyticsEvent:AnalyticsEventsCastStop
-                                            timed:true];
+
 }
 
 #pragma Mark - Cast stuff
