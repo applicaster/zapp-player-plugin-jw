@@ -11,18 +11,24 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class AnalyticsStorage;
+
 @interface JWPlayerViewController : UIViewController
 
-@property (nonatomic, strong) UIButton *closeButton;
-@property (nonatomic, strong) UIView *airplayButton;
 @property (nonatomic, strong) NSDictionary *configurationJSON;
 @property (nonatomic, assign) BOOL isLive;
 @property (nonatomic, assign) BOOL allowAirplay;
+@property (nonatomic, assign) BOOL allowChromecast;
+@property (nonatomic, nullable) NSString *chromecastButtonOnPath;
+@property (nonatomic, nullable) NSString *chromecastButtonOffPath;
+@property (nonatomic, nullable) AnalyticsStorage *analyticsStorage;
+
 @property (nonatomic, assign) BOOL isInlinePlayer;
 
 - (void)setupPlayerWithPlayableItem:(NSObject <ZPPlayable> *)playableItem;
 - (void)setupPlayerAdvertisingWithConfiguration:(NSArray *)ads;
 - (void)setupPlayerSubtitleTracksWithConfiguration:(NSArray *)subtitleTracks;
+- (void)addCastButtons;
 - (void)play;
 - (void)pause;
 - (void)stop;

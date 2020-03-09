@@ -43,6 +43,14 @@ static NSString *const kPlayableItemsKey = @"playable_items";
         instance.allowAirplay = [((NSNumber*)airplayValue) boolValue];
     }
     
+    id chromecastValue = configurationJSON[@"chromecast"];
+    
+    if (chromecastValue && [chromecastValue isKindOfClass:[NSString class]]) {
+        instance.allowChromecast = [((NSString*)chromecastValue) isEqualToString:@"1"];
+    } else if (chromecastValue && [chromecastValue isKindOfClass:[NSNumber class]]) {
+        instance.allowChromecast = [((NSNumber*)chromecastValue) boolValue];
+    }
+    
     return instance;
 }
 
@@ -215,10 +223,16 @@ static NSString *const kPlayableItemsKey = @"playable_items";
 }
 
 - (void)setupPlayerWithCurrentPlayableItemUsingInlinePlayer:(BOOL)inlinePlayer {
-    self.playerViewController.allowAirplay = self.allowAirplay;
+    self.playerViewController.chromecastButtonOnPath = self.configurationJSON[@"chromecast_on__button_image"];
+    self.playerViewController.chromecastButtonOffPath = self.configurationJSON[@"chromecast_off__button_image"];
+    
     self.playerViewController.isInlinePlayer = inlinePlayer;
     [self.playerViewController setupPlayerWithPlayableItem:self.currentPlayableItem];
     self.playerViewController.isLive = [self.currentPlayableItem isKindOfClass:[APChannel class]];
+    
+    self.playerViewController.allowAirplay = self.allowAirplay;
+    self.playerViewController.allowChromecast = self.allowChromecast;
+    [self.playerViewController addCastButtons];
     
     NSArray *ads = self.currentPlayableItem.extensionsDictionary[@"videoAds"];
     if (ads == nil) {

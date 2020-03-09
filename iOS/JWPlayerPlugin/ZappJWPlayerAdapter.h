@@ -23,6 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSDictionary *configurationJSON;
 @property (nonatomic, strong) NSArray<id<ZPPlayable>> *currentPlayableItems;
 @property (nonatomic, assign) BOOL allowAirplay;
+@property (nonatomic, assign) BOOL allowChromecast;
 
 - (NSURL * _Nullable)pluggablePlayerCurrentUrl;
 

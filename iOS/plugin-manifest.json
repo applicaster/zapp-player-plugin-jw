@@ -8,9 +8,9 @@
     "git@github.com:applicaster/zapp-player-plugin-jw.git"
   ],
   "platform": "ios",
-  "author_name": "Jesus De Meyer",
-  "author_email": "j.demeyer@applicaster.com",
-  "manifest_version": "3.3.4",
+  "author_name": "Roman Karpievich",
+  "author_email": "r.karpievich@applicaster.com",
+  "manifest_version": "3.4.0",
   "name": "JWPlayer",
   "description": "JW Player Plugin for Applicaster Zapp Platform",
   "type": "player",
@@ -18,7 +18,7 @@
   "identifier": "JWPlayer-Plugin",
   "ui_builder_support": true,
   "dependency_name": "JWPlayerPlugin",
-  "dependency_version": "3.3.4",
+  "dependency_version": "3.4.0",
   "whitelisted_account_ids": [],
   "min_zapp_sdk": "13.0.0-RC",
   "deprecated_since_zapp_sdk": "",
@@ -80,6 +80,26 @@
         "key": "airplay",
         "tooltip_text": "Enable Airplay",
         "default": 0
+    },
+    {
+      "type": "checkbox",
+      "key": "сhromecast",
+      "tooltip_text": "Enables Chromecast functionality and shows the cast button in the player controls",
+      "default": 0
+    },
+    {
+      "key": "chromecast_on__button_image",
+      "tooltip_text": "Image for Chromecast button when ON",
+      "placeholder": "",
+      "label_tooltip": "",
+      "type": "uploader"
+    },
+    {
+      "key": "chromecast_off_button_image",
+      "tooltip_text": "Image for Chromecast button when OFF",
+      "placeholder": "",
+      "label_tooltip": "",
+      "type": "uploader"
     }
   ],
   "hooks": {

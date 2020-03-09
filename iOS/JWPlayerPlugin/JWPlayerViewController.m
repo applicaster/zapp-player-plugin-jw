@@ -12,9 +12,11 @@
 @import AVKit;
 @import AVFoundation;
 @import MediaPlayer;
+@import GoogleCast;
+
+#import "JWPlayerPlugin/JWPlayerPlugin-Swift.h"
 
 // Accessibility IDs
-
 NSString * const kJWPlayerCloseButton = @"jw_player_close_button";
 NSString * const kJWPlayerAirplayButton = @"jw_player_airplay_button";
 NSString * const kJWPlayerScreen = @"jw_player_screen";
@@ -22,21 +24,38 @@ NSString * const kJWPlayerSeekBackButton = @"jw_player_seek_back_button";
 NSString * const kJWPlayerRestartButton = @"jw_player_restart_button";
 NSString * const kJWPlayerPauseButton = @"jw_player_pause_button";
 
-@interface JWPlayerViewController () <JWPlayerDelegate> {
+@interface JWPlayerViewController () <JWPlayerDelegate, JWCastingDelegate> {
     BOOL isViewHidden;
 }
 
 @property (nonatomic, strong) JWPlayerController *player;
+@property (nonatomic, strong) JWCastController *castController;
 @property (nonatomic, strong) JWAdConfig *adConfig;
 
-@property (nonatomic) CGFloat trackedPercentage;
 @property (nonatomic, strong) NSDictionary *extensionsDictionary;
+
+@property (nonatomic) UIStackView *buttonsStackView;
+@property (nonatomic, strong) UIButton *closeButton;
+@property (nonatomic, strong) UIView *airplayButton;
+@property (nonatomic) UIButton *castingButton;
+
+@property (nonatomic, strong) NSArray *availableCastDevices;
+@property (nonatomic) BOOL casting;
 
 @end
 
 @implementation JWPlayerViewController
 
 #pragma mark - UIViewController
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        self.analyticsStorage = [AnalyticsStorage new];
+    }
+    return self;
+}
 
 - (void)loadView {
     [super loadView];
@@ -87,7 +106,36 @@ NSString * const kJWPlayerPauseButton = @"jw_player_pause_button";
     }
 }
 
-#pragma mark -
+- (void)setAllowChromecast:(BOOL)allowChromecast {
+    _allowChromecast = allowChromecast;
+    
+    if (allowChromecast) {
+        if (self.castController == nil) {
+            self.castController = [[JWCastController alloc] initWithPlayer:self.player];
+            //self.castController.chromeCastReceiverAppID = kGCKDefaultMediaReceiverApplicationID;
+            [self.castController scanForDevices];
+        }
+        
+        self.castController.delegate = self;
+    } else {
+        self.castController.delegate = nil;
+    }
+}
+
+#pragma mark - UI Stuff
+
+- (UIStackView *)buttonsStackView {
+    if (_buttonsStackView) {
+        return _buttonsStackView;
+    }
+    
+    _buttonsStackView = [[UIStackView alloc] initWithArrangedSubviews:@[]];
+    _buttonsStackView.axis = UILayoutConstraintAxisHorizontal;
+    _buttonsStackView.alignment = UIStackViewAlignmentTrailing;
+    _buttonsStackView.distribution = UIStackViewDistributionFill;
+    
+    return _buttonsStackView;
+}
 
 - (UIButton *)closeButton {
     if (_closeButton) {
@@ -135,6 +183,26 @@ NSString * const kJWPlayerPauseButton = @"jw_player_pause_button";
     return buttonView;
 }
 
+- (UIButton*)castingButton {
+    if (_castingButton) {
+        return _castingButton;
+    }
+    
+    CGRect frame = CGRectMake(0, 0, 22, 22);
+    _castingButton = [[UIButton alloc]initWithFrame:frame];
+    
+    [_castingButton addTarget:self
+                           action:@selector(castButtonTapped:)
+                 forControlEvents:UIControlEventTouchUpInside];
+    [_castingButton setImage:[[self imageForCastOff] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] forState:UIControlStateNormal];
+    _castingButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
+    _castingButton.tintColor = [UIColor whiteColor];
+    
+    return _castingButton;
+}
+
+// MARK: -
+
 - (void)setupPlayerWithPlayableItem:(NSObject <ZPPlayable> *)playableItem
 {
     //JW Config
@@ -159,6 +227,7 @@ NSString * const kJWPlayerPauseButton = @"jw_player_pause_button";
     }
     
     self.player = [[JWPlayerController alloc] initWithConfig:config];
+    [self.analyticsStorage parseParametersFrom:playableItem];
 }
 
 - (void)setupPlayerAdvertisingWithConfiguration:(NSArray *)ads {
@@ -325,18 +394,18 @@ NSString * const kJWPlayerPauseButton = @"jw_player_pause_button";
     }
 }
 
-- (void) setCloseButtonConstraints:(UIView *) parentView {
+- (void)setButtonStackViewContraints:(UIView*)parentView {
+    [self.buttonsStackView.topAnchor constraintEqualToAnchor:parentView.topAnchor constant:36.0].active = YES;
+    [self.buttonsStackView.leadingAnchor constraintGreaterThanOrEqualToAnchor:self.closeButton.trailingAnchor constant:16.0].active = YES;
+    [self.buttonsStackView.trailingAnchor constraintEqualToAnchor:parentView.trailingAnchor constant:-16.0].active = YES;
+    [self.buttonsStackView.heightAnchor constraintEqualToConstant:32.0].active = YES;
+}
+
+- (void)setCloseButtonConstraints:(UIView *) parentView {
     [self.closeButton.topAnchor constraintEqualToAnchor: parentView.topAnchor constant:36].active = YES;
     [self.closeButton.leadingAnchor constraintEqualToAnchor: parentView.leadingAnchor constant:16].active = YES;
     [self.closeButton.heightAnchor constraintEqualToConstant: 32].active = YES;
     [self.closeButton.widthAnchor constraintEqualToConstant:  32].active = YES;
-}
-
-- (void) setAirplayButtonConstraints:(UIView *) parentView {
-    [self.airplayButton.topAnchor constraintEqualToAnchor: parentView.topAnchor constant:36].active = YES;
-    [self.airplayButton.trailingAnchor constraintEqualToAnchor: parentView.trailingAnchor constant:-16].active = YES;
-    [self.airplayButton.heightAnchor constraintEqualToConstant: 32].active = YES;
-    [self.airplayButton.widthAnchor constraintEqualToConstant:  32].active = YES;
 }
 
 - (void)setPlayer:(JWPlayerController *)player {
@@ -351,6 +420,9 @@ NSString * const kJWPlayerPauseButton = @"jw_player_pause_button";
     player.delegate = self;
     player.view.frame = self.view.bounds;
     
+    [self.view addSubview:player.view];
+    [player.view matchParent];
+    
     if (self.closeButton.allTargets.count == 0) {
         [self.closeButton addTarget:self
                              action:@selector(dismiss:)
@@ -358,33 +430,35 @@ NSString * const kJWPlayerPauseButton = @"jw_player_pause_button";
     }
     
     [self.closeButton removeFromSuperview];
-    self.closeButton.alpha = self.isInlinePlayer ? 0.0 : 1.0;
-    
     [player.view addSubview:self.closeButton];
-    self.closeButton.frame = CGRectZero;
     self.closeButton.translatesAutoresizingMaskIntoConstraints = NO;
-    
+    self.closeButton.alpha = self.isInlinePlayer ? 0.0 : 1.0;
     [self setCloseButtonConstraints:player.view];
 
-    [self.view addSubview:player.view];
-    [player.view matchParent];
+    [self.buttonsStackView removeFromSuperview];
+    [player.view addSubview:self.buttonsStackView];
+    self.buttonsStackView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self setButtonStackViewContraints:player.view];
     
     self.player.fullscreen                 = NO;
     self.player.forceFullScreenOnLandscape = NO;
     self.player.forceLandscapeOnFullScreen = NO;
     
+    _player = player;
+}
+
+- (void)addCastButtons {
     if (self.allowAirplay) {
         [self.airplayButton removeFromSuperview];
         self.airplayButton.alpha = 1.0;
-        
-        self.airplayButton.translatesAutoresizingMaskIntoConstraints = NO;
-    
-        [player.view addSubview:self.airplayButton];
-        
-        [self setAirplayButtonConstraints:player.view];
+        [self.buttonsStackView addArrangedSubview:self.airplayButton];
     }
     
-    _player = player;
+    if (self.allowChromecast) {
+        [self.castingButton removeFromSuperview];
+        self.castingButton.alpha = 1.0;
+        [self.buttonsStackView addArrangedSubview:self.castingButton];
+    }
 }
 
 - (void)dismiss:(NSObject *)sender {
@@ -414,6 +488,7 @@ NSString * const kJWPlayerPauseButton = @"jw_player_pause_button";
 - (void)adjustButtonAlpha:(BOOL)visible {
     self.closeButton.alpha = visible && !self.isInlinePlayer ? 1.0 : 0.0;
     self.airplayButton.alpha = visible ? 1.0 : 0.0;
+    self.castingButton.alpha = visible ? 1.0 : 0.0;
 }
 
 #pragma mark - Notifications
@@ -438,7 +513,7 @@ NSString * const kJWPlayerPauseButton = @"jw_player_pause_button";
 #pragma mark - JWPlayerDelegate
 
 - (void)onComplete {
-    
+    self.analyticsStorage.isCompleted = true;
 }
 
 - (void)onControlBarVisible:(JWEvent<JWControlsEvent> *)event {
@@ -450,28 +525,14 @@ NSString * const kJWPlayerPauseButton = @"jw_player_pause_button";
 -(void)onTime:(JWEvent<JWTimeEvent> *)event {
     CGFloat pos = [event position];
     CGFloat dur = [event duration];
-    CGFloat per = (pos/dur)*100;
-
-    if (per >= 25.0 && per < 26.0 && self.trackedPercentage < 25) {
-        self.trackedPercentage = 25;
-    } else if (per >= 50.0 && per < 51.0 && self.trackedPercentage < 50) {
-        self.trackedPercentage = 50;
-    } else if (per >= 75.0 && per < 76.0 && self.trackedPercentage < 75) {
-        self.trackedPercentage = 75;
-    } else if (per >= 95.0 && per < 96.0 && self.trackedPercentage < 95) {
-        self.trackedPercentage = 95;
-    } else {
-        return;
-    }
-    NSMutableDictionary *extensions = self.extensionsDictionary.mutableCopy;
-    [extensions setObject:[NSNumber numberWithDouble:self.trackedPercentage]
-                   forKey:@"percentage"];
-    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"Watch VOD Percentage"
-                                                                 parameters:extensions];
+    CGFloat percentage = (pos / dur) * 100;
+    
+    self.analyticsStorage.duration = dur;
+    self.analyticsStorage.videoProgress = percentage;
 }
 
 -(void)onSeek:(JWEvent<JWSeekEvent> *)event {
-    self.trackedPercentage = 0;
+    self.analyticsStorage.videoProgress = 0;
 }
 
 -(void)onAdPlay:(JWAdEvent<JWAdStateChangeEvent> *)event {
@@ -515,15 +576,15 @@ NSString * const kJWPlayerPauseButton = @"jw_player_pause_button";
 }
 
 - (void)onFullscreen:(JWEvent<JWFullscreenEvent> *)event {
-    [self.closeButton removeFromSuperview];
-    [NSLayoutConstraint deactivateConstraints:self.closeButton.constraints];
-    
-    if (self.allowAirplay) {
-        [self.airplayButton removeFromSuperview];
-        [NSLayoutConstraint deactivateConstraints:self.airplayButton.constraints];
-    }
+    [self.buttonsStackView removeFromSuperview];
+    [NSLayoutConstraint deactivateConstraints:self.buttonsStackView.constraints];
     
     self.isInlinePlayer = !event.fullscreen;
+    if (event.fullscreen) {
+        self.analyticsStorage.playerViewType = PlayerViewTypeFullScreen;
+    } else {
+        self.analyticsStorage.playerViewType = PlayerViewTypeInline;
+    }
     
     [self adjustButtonAlpha:NO];
     
@@ -535,23 +596,227 @@ NSString * const kJWPlayerPauseButton = @"jw_player_pause_button";
         }
         
         UIWindow *keyWindow = [UIApplication sharedApplication].keyWindow;
-        [keyWindow addSubview:self.closeButton];
-        [self setCloseButtonConstraints:keyWindow];
+        [keyWindow addSubview:self.buttonsStackView];
+
+        [self.buttonsStackView addArrangedSubview:self.closeButton];
         if (self.allowAirplay) {
-            [keyWindow addSubview:self.airplayButton];
-            [self setAirplayButtonConstraints:keyWindow];
+            [self.buttonsStackView addArrangedSubview:self.airplayButton];
         }
+        if (self.allowChromecast) {
+            [self.buttonsStackView addArrangedSubview:self.castingButton];
+        }
+        
+        [self setButtonStackViewContraints:keyWindow];
    }
     else {
         self.player.forceFullScreenOnLandscape = NO;
         [[UIDevice currentDevice] setValue:[NSNumber numberWithInt:UIInterfaceOrientationPortrait] forKey:@"orientation"];
-        [self.player.view addSubview:self.closeButton];
-        [self setCloseButtonConstraints:self.player.view];
+        
+        [self.player.view addSubview:self.buttonsStackView];
+        [self setButtonStackViewContraints:self.player.view];
+        
         if (self.allowAirplay) {
-            [self.player.view addSubview:self.airplayButton];
-            [self setAirplayButtonConstraints:self.player.view];
+            [self.buttonsStackView addArrangedSubview:self.airplayButton];
+        }
+        if (self.allowChromecast) {
+            [self.buttonsStackView addArrangedSubview:self.castingButton];
         }
     }
+}
+
+// MARK: - Chromecast support
+
+-(void)onCastingDevicesAvailable:(NSArray *)devices
+{
+    self.availableCastDevices = devices;
+    
+    if (devices.count > 0 && self.allowChromecast) {
+        [self.castingButton setHidden:NO];
+        [self updateForCastDeviceDisconnection];
+    } else if (devices.count == 0) {
+        [self.castingButton setHidden:YES];
+    }
+}
+
+-(void)onUserSelectedDevice:(NSInteger)index
+{
+    JWCastingDevice *chosenDevice = self.availableCastDevices[index];
+    [self.castController connectToDevice:chosenDevice];
+}
+
+-(void)onConnectedToCastingDevice:(JWCastingDevice *)device
+{
+    [self updateForCastDeviceConnection];
+    [self.castController cast];
+}
+
+-(void)onDisconnectedFromCastingDevice:(NSError *)error
+{
+    [self updateForCastDeviceDisconnection];
+}
+
+-(void)onConnectionTemporarilySuspended
+{
+    [self updateWhenConnectingToCastDevice];
+}
+
+-(void)onConnectionRecovered
+{
+    [self updateForCastDeviceConnection];
+}
+
+-(void)onConnectionFailed:(NSError *)error
+{
+    if(error) {
+        NSLog(@"Connection Error: %@", error);
+    }
+    [self updateForCastDeviceDisconnection];
+}
+
+-(void)onCasting
+{
+    [self updateForCasting];
+}
+
+-(void)onCastingEnded:(NSError *)error
+{
+    if(error) {
+        NSLog(@"Casting Error: %@", error);
+    }
+    [self updateForCastingEnd];
+}
+
+-(void)onCastingFailed:(NSError *)error
+{
+    if(error) {
+        NSLog(@"Casting Error: %@", error);
+    }
+    [self updateForCastingEnd];
+}
+
+#pragma Mark - Casting Status Helpers
+
+- (void)updateWhenConnectingToCastDevice
+{
+    [self.castingButton setTintColor:[UIColor whiteColor]];
+}
+
+- (void)updateForCastDeviceConnection
+{
+    [self.castingButton setImage:[[self imageForCastOn] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
+                        forState:UIControlStateNormal];
+    [self.castingButton setTintColor:[UIColor blueColor]];
+}
+
+- (void)updateForCastDeviceDisconnection
+{
+    [self.castingButton setImage:[[self imageForCastOff] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
+                        forState:UIControlStateNormal];
+    [self.castingButton setTintColor:[UIColor whiteColor]];
+}
+
+- (void)updateForCasting
+{
+    [self.analyticsStorage sendWithAnalyticsEvent:AnalyticsEventsCastStart
+                                            timed:true];
+    self.casting = YES;
+    [self.castingButton setTintColor:[UIColor greenColor]];
+    self.analyticsStorage.isCasting = true;
+    self.analyticsStorage.playerViewType = PlayerViewTypeCast;
+
+}
+
+- (void)updateForCastingEnd
+{
+    [self.analyticsStorage sendWithAnalyticsEvent:AnalyticsEventsCastStop
+                                            timed:true];
+    self.casting = NO;
+    [self.castingButton setTintColor:[UIColor blueColor]];
+    self.analyticsStorage.isCasting = false;
+
+}
+
+#pragma Mark - Cast stuff
+
+- (void)castButtonTapped:(id) sender
+{
+    [self.analyticsStorage sendWithAnalyticsEvent:AnalyticsEventsTapCast
+                                            timed:false];
+    __weak JWPlayerViewController *weakSelf = self;
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil
+                                                                             message:nil
+                                                                      preferredStyle:UIAlertControllerStyleActionSheet];
+    alertController.popoverPresentationController.sourceView = self.castingButton;
+    alertController.popoverPresentationController.sourceRect = self.castingButton.frame;
+    if (self.castController.connectedDevice == nil) {
+        alertController.title = @"Connect to";
+        
+        [self.castController.availableDevices enumerateObjectsUsingBlock:^(JWCastingDevice  *_Nonnull device,
+                                                                           NSUInteger idx,
+                                                                           BOOL * _Nonnull stop) {
+            UIAlertAction *deviceSelected = [UIAlertAction actionWithTitle:device.name
+                                                                     style:UIAlertActionStyleDefault
+                                                                   handler:^(UIAlertAction * _Nonnull action) {
+                [weakSelf.castController connectToDevice:device];
+                [weakSelf updateWhenConnectingToCastDevice];
+                weakSelf.analyticsStorage.castingDevice = device.name;
+            }];
+            [alertController addAction:deviceSelected];
+        }];
+    } else {
+        alertController.title = self.castController.connectedDevice.name;
+        alertController.message = @"Select an action";
+        
+        UIAlertAction *disconnect = [UIAlertAction actionWithTitle:@"Disconnect"
+                                                             style:UIAlertActionStyleDestructive
+                                                           handler:^(UIAlertAction * _Nonnull action) {
+                                                               [weakSelf.castController disconnect];
+                                                           }];
+        [alertController addAction:disconnect];
+        
+        UIAlertAction *castControl;
+        if (self.casting) {
+            castControl = [UIAlertAction actionWithTitle:@"Stop Casting"
+                                                   style:UIAlertActionStyleDefault
+                                                 handler:^(UIAlertAction * _Nonnull action) {
+                                                     [weakSelf.castController stopCasting];
+                                                 }];
+        } else {
+            castControl = [UIAlertAction actionWithTitle:@"Cast"
+                                                   style:UIAlertActionStyleDefault
+                                                 handler:^(UIAlertAction * _Nonnull action) {
+                                                     [weakSelf.castController cast];
+                                                 }];
+        }
+        [alertController addAction:castControl];
+    }
+    UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"Cancel"
+                            style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {}];
+    [alertController addAction:cancel];
+    
+    [self presentViewController:alertController animated:YES completion:^{}];
+}
+
+// MARK: - Chromecast Images
+
+- (UIImage*)imageForCastOn {
+    NSString *path = [[NSBundle bundleForClass:[self class]] pathForResource:@"cast_on" ofType:@"png"];
+    
+    if (self.chromecastButtonOnPath && ![self.chromecastButtonOnPath isEqualToString:@""]) {
+        path = self.chromecastButtonOnPath;
+    }
+    
+    return [[UIImage alloc] initWithContentsOfFile:path];
+}
+
+- (UIImage*)imageForCastOff {
+    NSString *path = [[NSBundle bundleForClass:[self class]] pathForResource:@"cast_off" ofType:@"png"];
+    
+    if (self.chromecastButtonOffPath && ![self.chromecastButtonOffPath isEqualToString:@""]) {
+        path = self.chromecastButtonOffPath;
+    }
+    
+    return [[UIImage alloc] initWithContentsOfFile:path];
 }
 
 @end
