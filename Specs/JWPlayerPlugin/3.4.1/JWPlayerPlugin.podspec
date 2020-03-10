@@ -13,9 +13,9 @@ Pod::Spec.new do |s|
   s.platform                = :ios, '10.0'
   s.requires_arc            = true
 
-  s.source_files = 'JWPlayerPlugin/**/*.{swift,h,m}'
-  s.public_header_files = 'JWPlayerPlugin/**/*.h'
-  s.resources = 'JWPlayerPlugin/**/*.{storyboard,png}'
+  s.source_files = 'iOS/JWPlayerPlugin/**/*.{swift,h,m}'
+  s.public_header_files = 'iOS/JWPlayerPlugin/**/*.h'
+  s.resources = 'iOS/JWPlayerPlugin/**/*.{storyboard,png}'
 
   s.xcconfig =  { 'CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES' => 'YES',
                   'ENABLE_BITCODE' => 'YES',
@@ -26,7 +26,7 @@ Pod::Spec.new do |s|
 
   s.dependency 'ZappCore'
   s.dependency 'ApplicasterSDK'
-  s.dependency 'JWPlayer-SDK', '~> 3.10.0' # Chromecast seems to be broken in 3.11
+  s.dependency 'JWPlayer-SDK', '~> 3.10.0'
   s.dependency 'GoogleAds-IMA-iOS-SDK'
   s.dependency 'google-cast-sdk-no-bluetooth'
 end
