@@ -83,7 +83,7 @@
     },
     {
       "type": "checkbox",
-      "key": "сhromecast",
+      "key": "Chromecast",
       "tooltip_text": "Enables Chromecast functionality and shows the cast button in the player controls",
       "default": 0
     },

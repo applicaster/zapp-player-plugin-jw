@@ -43,7 +43,7 @@ static NSString *const kPlayableItemsKey = @"playable_items";
         instance.allowAirplay = [((NSNumber*)airplayValue) boolValue];
     }
     
-    id chromecastValue = configurationJSON[@"chromecast"];
+    id chromecastValue = configurationJSON[@"Chromecast"];
     
     if (chromecastValue && [chromecastValue isKindOfClass:[NSString class]]) {
         instance.allowChromecast = [((NSString*)chromecastValue) isEqualToString:@"1"];
