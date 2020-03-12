@@ -707,62 +707,75 @@ NSString * const kJWPlayerPauseButton = @"jw_player_pause_button";
 #pragma Mark - Cast stuff
 
 - (void)castButtonTapped:(id) sender {
-    [self.analyticsStorage sendWithAnalyticsEvent:AnalyticsEventsTapCast
-                                            timed:false];
-    __weak JWPlayerViewController *weakSelf = self;
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil
-                                                                             message:nil
-                                                                      preferredStyle:UIAlertControllerStyleActionSheet];
-    alertController.popoverPresentationController.sourceView = self.castingButton;
-    alertController.popoverPresentationController.sourceRect = self.castingButton.frame;
-    if (self.castController.connectedDevice == nil) {
-        alertController.title = @"Connect to";
-        
-        [self.castController.availableDevices enumerateObjectsUsingBlock:^(JWCastingDevice  *_Nonnull device,
-                                                                           NSUInteger idx,
-                                                                           BOOL * _Nonnull stop) {
-            UIAlertAction *deviceSelected = [UIAlertAction actionWithTitle:device.name
-                                                                     style:UIAlertActionStyleDefault
-                                                                   handler:^(UIAlertAction * _Nonnull action) {
-                [weakSelf.castController connectToDevice:device];
-                [weakSelf updateWhenConnectingToCastDevice];
-                weakSelf.analyticsStorage.castingDevice = device.name;
-            }];
-            [alertController addAction:deviceSelected];
-        }];
-    } else {
-        alertController.title = self.castController.connectedDevice.name;
-        alertController.message = @"Select an action";
-        
-        UIAlertAction *disconnect = [UIAlertAction actionWithTitle:@"Disconnect"
-                                                             style:UIAlertActionStyleDestructive
-                                                           handler:^(UIAlertAction * _Nonnull action) {
-            [weakSelf.castController disconnect];
-        }];
-        [alertController addAction:disconnect];
-        
-        UIAlertAction *castControl;
-        if (self.casting) {
-            castControl = [UIAlertAction actionWithTitle:@"Stop Casting"
-                                                   style:UIAlertActionStyleDefault
-                                                 handler:^(UIAlertAction * _Nonnull action) {
-                [weakSelf.castController stopCasting];
+        [self.analyticsStorage sendWithAnalyticsEvent:AnalyticsEventsTapCast
+                                                timed:false];
+        __weak JWPlayerViewController *weakSelf = self;
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil
+                                                                                 message:nil
+                                                                          preferredStyle:UIAlertControllerStyleActionSheet];
+        alertController.popoverPresentationController.sourceView = self.castingButton;
+        alertController.popoverPresentationController.sourceRect = self.castingButton.frame;
+        if (self.castController.connectedDevice == nil) {
+            alertController.title = @"Connect to";
+            
+            [self.castController.availableDevices enumerateObjectsUsingBlock:^(JWCastingDevice  *_Nonnull device,
+                                                                               NSUInteger idx,
+                                                                               BOOL * _Nonnull stop) {
+                UIAlertAction *deviceSelected = [UIAlertAction actionWithTitle:device.name
+                                                                         style:UIAlertActionStyleDefault
+                                                                       handler:^(UIAlertAction * _Nonnull action) {
+                    [weakSelf.castController connectToDevice:device];
+                    [weakSelf updateWhenConnectingToCastDevice];
+                    weakSelf.analyticsStorage.castingDevice = device.name;
+                }];
+                [alertController addAction:deviceSelected];
             }];
         } else {
-            castControl = [UIAlertAction actionWithTitle:@"Cast"
-                                                   style:UIAlertActionStyleDefault
-                                                 handler:^(UIAlertAction * _Nonnull action) {
-                [weakSelf.castController cast];
+            alertController.title = self.castController.connectedDevice.name;
+            alertController.message = @"Select an action";
+            
+            UIAlertAction *disconnect = [UIAlertAction actionWithTitle:@"Disconnect"
+                                                                 style:UIAlertActionStyleDestructive
+                                                               handler:^(UIAlertAction * _Nonnull action) {
+                [weakSelf.castController disconnect];
             }];
+            [alertController addAction:disconnect];
+            
+            UIAlertAction *castControl;
+            if (self.casting) {
+                castControl = [UIAlertAction actionWithTitle:@"Stop Casting"
+                                                       style:UIAlertActionStyleDefault
+                                                     handler:^(UIAlertAction * _Nonnull action) {
+                    [weakSelf.castController stopCasting];
+                }];
+            } else {
+                castControl = [UIAlertAction actionWithTitle:@"Cast"
+                                                       style:UIAlertActionStyleDefault
+                                                     handler:^(UIAlertAction * _Nonnull action) {
+                    [weakSelf.castController cast];
+                }];
+            }
+            [alertController addAction:castControl];
         }
-        [alertController addAction:castControl];
-    }
-    UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"Cancel"
-                                                     style:UIAlertActionStyleCancel
-                                                   handler:nil];
-    [alertController addAction:cancel];
-    
-    [self presentViewController:alertController animated:YES completion:nil];
+        UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"Cancel"
+                                                         style:UIAlertActionStyleCancel
+                                                       handler:nil];
+        [alertController addAction:cancel];
+                
+        UIViewController *topLevelViewController;
+        if (self.isInlinePlayer) {
+            topLevelViewController = self;
+        } else {
+            topLevelViewController = [UIApplication sharedApplication].keyWindow.rootViewController.presentedViewController;
+        }
+        
+        if (topLevelViewController.presentedViewController != nil) {
+            [topLevelViewController.presentingViewController dismissViewControllerAnimated:false completion:^{
+                [topLevelViewController presentViewController:alertController animated:true completion:nil];
+            }];
+        } else {
+            [topLevelViewController presentViewController:alertController animated:true completion:nil];
+        }
 }
 
 // MARK: - Chromecast Images
