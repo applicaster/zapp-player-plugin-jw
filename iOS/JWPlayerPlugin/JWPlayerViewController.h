@@ -19,8 +19,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL isLive;
 @property (nonatomic, assign) BOOL allowAirplay;
 @property (nonatomic, assign) BOOL allowChromecast;
-@property (nonatomic, nullable) NSString *chromecastButtonOnPath;
-@property (nonatomic, nullable) NSString *chromecastButtonOffPath;
 @property (nonatomic, nullable) AnalyticsStorage *analyticsStorage;
 
 @property (nonatomic, assign) BOOL isInlinePlayer;

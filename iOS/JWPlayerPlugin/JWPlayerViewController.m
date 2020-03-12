@@ -194,7 +194,7 @@ NSString * const kJWPlayerPauseButton = @"jw_player_pause_button";
     [_castingButton addTarget:self
                            action:@selector(castButtonTapped:)
                  forControlEvents:UIControlEventTouchUpInside];
-    [_castingButton setImage:[[self imageForCastOff] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] forState:UIControlStateNormal];
+    [_castingButton setImage:[[self castOffImage] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] forState:UIControlStateNormal];
     _castingButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
     _castingButton.tintColor = [UIColor whiteColor];
     
@@ -703,14 +703,14 @@ NSString * const kJWPlayerPauseButton = @"jw_player_pause_button";
 
 - (void)updateForCastDeviceConnection
 {
-    [self.castingButton setImage:[[self imageForCastOn] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
+    [self.castingButton setImage:[[self castOnImage] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
                         forState:UIControlStateNormal];
     [self.castingButton setTintColor:[UIColor blueColor]];
 }
 
 - (void)updateForCastDeviceDisconnection
 {
-    [self.castingButton setImage:[[self imageForCastOff] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
+    [self.castingButton setImage:[[self castOffImage] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
                         forState:UIControlStateNormal];
     [self.castingButton setTintColor:[UIColor whiteColor]];
 }
@@ -799,23 +799,15 @@ NSString * const kJWPlayerPauseButton = @"jw_player_pause_button";
 
 // MARK: - Chromecast Images
 
-- (UIImage*)imageForCastOn {
-    NSString *path = [[NSBundle bundleForClass:[self class]] pathForResource:@"cast_on" ofType:@"png"];
-    
-    if (self.chromecastButtonOnPath && ![self.chromecastButtonOnPath isEqualToString:@""]) {
-        path = self.chromecastButtonOnPath;
-    }
-    
+- (UIImage*)castOnImage {
+    NSString *path = [[NSBundle bundleForClass:[self class]] pathForResource:@"cast_on"
+                                                                      ofType:@"png"];
     return [[UIImage alloc] initWithContentsOfFile:path];
 }
 
-- (UIImage*)imageForCastOff {
-    NSString *path = [[NSBundle bundleForClass:[self class]] pathForResource:@"cast_off" ofType:@"png"];
-    
-    if (self.chromecastButtonOffPath && ![self.chromecastButtonOffPath isEqualToString:@""]) {
-        path = self.chromecastButtonOffPath;
-    }
-    
+- (UIImage*)castOffImage {
+    NSString *path = [[NSBundle bundleForClass:[self class]] pathForResource:@"cast_off"
+                                                                      ofType:@"png"];
     return [[UIImage alloc] initWithContentsOfFile:path];
 }
 

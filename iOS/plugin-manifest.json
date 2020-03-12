@@ -86,20 +86,6 @@
       "key": "Chromecast",
       "tooltip_text": "Enables Chromecast functionality and shows the cast button in the player controls",
       "default": 0
-    },
-    {
-      "key": "chromecast_on__button_image",
-      "tooltip_text": "Image for Chromecast button when ON",
-      "placeholder": "",
-      "label_tooltip": "",
-      "type": "uploader"
-    },
-    {
-      "key": "chromecast_off_button_image",
-      "tooltip_text": "Image for Chromecast button when OFF",
-      "placeholder": "",
-      "label_tooltip": "",
-      "type": "uploader"
     }
   ],
   "hooks": {
