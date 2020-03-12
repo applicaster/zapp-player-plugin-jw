@@ -131,7 +131,7 @@ NSString * const kJWPlayerPauseButton = @"jw_player_pause_button";
     
     _buttonsStackView = [[UIStackView alloc] initWithArrangedSubviews:@[]];
     _buttonsStackView.axis = UILayoutConstraintAxisHorizontal;
-    _buttonsStackView.alignment = UIStackViewAlignmentTrailing;
+    _buttonsStackView.alignment = UIStackViewAlignmentFill;
     _buttonsStackView.distribution = UIStackViewDistributionFill;
     
     return _buttonsStackView;
@@ -396,7 +396,6 @@ NSString * const kJWPlayerPauseButton = @"jw_player_pause_button";
 
 - (void)setButtonStackViewContraints:(UIView*)parentView {
     [self.buttonsStackView.topAnchor constraintEqualToAnchor:parentView.topAnchor constant:36.0].active = YES;
-    [self.buttonsStackView.leadingAnchor constraintGreaterThanOrEqualToAnchor:self.closeButton.trailingAnchor constant:16.0].active = YES;
     [self.buttonsStackView.trailingAnchor constraintEqualToAnchor:parentView.trailingAnchor constant:-16.0].active = YES;
     [self.buttonsStackView.heightAnchor constraintEqualToConstant:32.0].active = YES;
 }
@@ -432,7 +431,6 @@ NSString * const kJWPlayerPauseButton = @"jw_player_pause_button";
     [self.closeButton removeFromSuperview];
     [player.view addSubview:self.closeButton];
     self.closeButton.translatesAutoresizingMaskIntoConstraints = NO;
-    self.closeButton.alpha = self.isInlinePlayer ? 0.0 : 1.0;
     [self setCloseButtonConstraints:player.view];
 
     [self.buttonsStackView removeFromSuperview];
@@ -486,7 +484,7 @@ NSString * const kJWPlayerPauseButton = @"jw_player_pause_button";
 }
 
 - (void)adjustButtonAlpha:(BOOL)visible {
-    self.closeButton.alpha = visible && !self.isInlinePlayer ? 1.0 : 0.0;
+    self.closeButton.alpha = visible ? 1.0 : 0.0;
     self.airplayButton.alpha = visible ? 1.0 : 0.0;
     self.castingButton.alpha = visible ? 1.0 : 0.0;
 }
@@ -577,7 +575,7 @@ NSString * const kJWPlayerPauseButton = @"jw_player_pause_button";
 
 - (void)onFullscreen:(JWEvent<JWFullscreenEvent> *)event {
     [self.buttonsStackView removeFromSuperview];
-    [NSLayoutConstraint deactivateConstraints:self.buttonsStackView.constraints];
+    [self.closeButton removeFromSuperview];
     
     self.isInlinePlayer = !event.fullscreen;
     if (event.fullscreen) {
@@ -586,8 +584,8 @@ NSString * const kJWPlayerPauseButton = @"jw_player_pause_button";
         self.analyticsStorage.playerViewType = PlayerViewTypeInline;
     }
     
-    [self adjustButtonAlpha:NO];
-    
+    UIView *controlsSuperView;
+        
     if (event.fullscreen) {
         self.player.forceFullScreenOnLandscape = YES;
         if ([[UIDevice currentDevice]orientation] == UIInterfaceOrientationPortrait){
@@ -595,32 +593,25 @@ NSString * const kJWPlayerPauseButton = @"jw_player_pause_button";
             [[UIDevice currentDevice] setValue:value forKey:@"orientation"];
         }
         
-        UIWindow *keyWindow = [UIApplication sharedApplication].keyWindow;
-        [keyWindow addSubview:self.buttonsStackView];
-
-        [self.buttonsStackView addArrangedSubview:self.closeButton];
-        if (self.allowAirplay) {
-            [self.buttonsStackView addArrangedSubview:self.airplayButton];
-        }
-        if (self.allowChromecast) {
-            [self.buttonsStackView addArrangedSubview:self.castingButton];
-        }
-        
-        [self setButtonStackViewContraints:keyWindow];
-   }
-    else {
-        self.player.forceFullScreenOnLandscape = NO;
-        [[UIDevice currentDevice] setValue:[NSNumber numberWithInt:UIInterfaceOrientationPortrait] forKey:@"orientation"];
-        
-        [self.player.view addSubview:self.buttonsStackView];
-        [self setButtonStackViewContraints:self.player.view];
-        
-        if (self.allowAirplay) {
-            [self.buttonsStackView addArrangedSubview:self.airplayButton];
-        }
-        if (self.allowChromecast) {
-            [self.buttonsStackView addArrangedSubview:self.castingButton];
-        }
+        controlsSuperView = [UIApplication sharedApplication].keyWindow;
+   } else {
+       self.player.forceFullScreenOnLandscape = NO;
+       [[UIDevice currentDevice] setValue:[NSNumber numberWithInt:UIInterfaceOrientationPortrait] forKey:@"orientation"];
+       
+       controlsSuperView = self.player.view;
+    }
+    
+    [controlsSuperView addSubview:self.buttonsStackView];
+    [self setButtonStackViewContraints:controlsSuperView];
+    
+    [controlsSuperView addSubview:self.closeButton];
+    [self setCloseButtonConstraints:controlsSuperView];
+    
+    if (self.allowAirplay) {
+        [self.buttonsStackView addArrangedSubview:self.airplayButton];
+    }
+    if (self.allowChromecast) {
+        [self.buttonsStackView addArrangedSubview:self.castingButton];
     }
 }
 
