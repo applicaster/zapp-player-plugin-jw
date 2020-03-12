@@ -48,8 +48,7 @@ NSString * const kJWPlayerPauseButton = @"jw_player_pause_button";
 
 #pragma mark - UIViewController
 
-- (instancetype)init
-{
+- (instancetype)init {
     self = [super init];
     if (self) {
         self.analyticsStorage = [AnalyticsStorage new];
@@ -192,9 +191,10 @@ NSString * const kJWPlayerPauseButton = @"jw_player_pause_button";
     _castingButton = [[UIButton alloc]initWithFrame:frame];
     
     [_castingButton addTarget:self
-                           action:@selector(castButtonTapped:)
-                 forControlEvents:UIControlEventTouchUpInside];
-    [_castingButton setImage:[[self castOffImage] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] forState:UIControlStateNormal];
+                       action:@selector(castButtonTapped:)
+             forControlEvents:UIControlEventTouchUpInside];
+    [_castingButton setImage:[[self castOffImage] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
+                    forState:UIControlStateNormal];
     _castingButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
     _castingButton.tintColor = [UIColor whiteColor];
     
@@ -203,8 +203,7 @@ NSString * const kJWPlayerPauseButton = @"jw_player_pause_button";
 
 // MARK: -
 
-- (void)setupPlayerWithPlayableItem:(NSObject <ZPPlayable> *)playableItem
-{
+- (void)setupPlayerWithPlayableItem:(NSObject <ZPPlayable> *)playableItem {
     //JW Config
     JWConfig *config = [JWConfig new];
     config.sources = [NSArray arrayWithObject:[[JWSource alloc] initWithFile:[playableItem contentVideoURLPath]
@@ -350,8 +349,7 @@ NSString * const kJWPlayerPauseButton = @"jw_player_pause_button";
     }
 }
 
-- (void)play
-{
+- (void)play {
     [self.player play];
 }
 
@@ -359,17 +357,12 @@ NSString * const kJWPlayerPauseButton = @"jw_player_pause_button";
     [self.player pause];
 }
 
-- (void)stop
-{
+- (void)stop {
     
 }
 
 - (BOOL)isPlaying {
-    if (self.player.state == JWPlayerStatePlaying) {
-        return YES;
-    } else {
-        return NO;
-    }
+    return self.player.state == JWPlayerStatePlaying;
 }
 
 #pragma mark - private
@@ -385,8 +378,7 @@ NSString * const kJWPlayerPauseButton = @"jw_player_pause_button";
 }
 
 - (JWAdBreak *)createAdBreakWithTag:(NSString *)tag
-                             offset:(NSString *)offset
-{
+                             offset:(NSString *)offset {
     if ([tag isNotEmptyOrWhiteSpaces] && [offset isNotEmptyOrWhiteSpaces]) {
         return [JWAdBreak adBreakWithTag:tag offset:offset];
     } else {
@@ -617,8 +609,7 @@ NSString * const kJWPlayerPauseButton = @"jw_player_pause_button";
 
 // MARK: - Chromecast support
 
--(void)onCastingDevicesAvailable:(NSArray *)devices
-{
+-(void)onCastingDevicesAvailable:(NSArray *)devices {
     self.availableCastDevices = devices;
     
     if (devices.count > 0 && self.allowChromecast) {
@@ -629,56 +620,47 @@ NSString * const kJWPlayerPauseButton = @"jw_player_pause_button";
     }
 }
 
--(void)onUserSelectedDevice:(NSInteger)index
-{
+-(void)onUserSelectedDevice:(NSInteger)index {
     JWCastingDevice *chosenDevice = self.availableCastDevices[index];
     [self.castController connectToDevice:chosenDevice];
 }
 
--(void)onConnectedToCastingDevice:(JWCastingDevice *)device
-{
+-(void)onConnectedToCastingDevice:(JWCastingDevice *)device {
     [self updateForCastDeviceConnection];
     [self.castController cast];
 }
 
--(void)onDisconnectedFromCastingDevice:(NSError *)error
-{
+-(void)onDisconnectedFromCastingDevice:(NSError *)error {
     [self updateForCastDeviceDisconnection];
 }
 
--(void)onConnectionTemporarilySuspended
-{
+-(void)onConnectionTemporarilySuspended {
     [self updateWhenConnectingToCastDevice];
 }
 
--(void)onConnectionRecovered
-{
+-(void)onConnectionRecovered {
     [self updateForCastDeviceConnection];
 }
 
--(void)onConnectionFailed:(NSError *)error
-{
+-(void)onConnectionFailed:(NSError *)error {
     if(error) {
         NSLog(@"Connection Error: %@", error);
     }
     [self updateForCastDeviceDisconnection];
 }
 
--(void)onCasting
-{
+-(void)onCasting {
     [self updateForCasting];
 }
 
--(void)onCastingEnded:(NSError *)error
-{
+-(void)onCastingEnded:(NSError *)error {
     if(error) {
         NSLog(@"Casting Error: %@", error);
     }
     [self updateForCastingEnd];
 }
 
--(void)onCastingFailed:(NSError *)error
-{
+-(void)onCastingFailed:(NSError *)error {
     if(error) {
         NSLog(@"Casting Error: %@", error);
     }
@@ -687,27 +669,23 @@ NSString * const kJWPlayerPauseButton = @"jw_player_pause_button";
 
 #pragma Mark - Casting Status Helpers
 
-- (void)updateWhenConnectingToCastDevice
-{
+- (void)updateWhenConnectingToCastDevice {
     [self.castingButton setTintColor:[UIColor whiteColor]];
 }
 
-- (void)updateForCastDeviceConnection
-{
+- (void)updateForCastDeviceConnection {
     [self.castingButton setImage:[[self castOnImage] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
                         forState:UIControlStateNormal];
     [self.castingButton setTintColor:[UIColor blueColor]];
 }
 
-- (void)updateForCastDeviceDisconnection
-{
+- (void)updateForCastDeviceDisconnection {
     [self.castingButton setImage:[[self castOffImage] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
                         forState:UIControlStateNormal];
     [self.castingButton setTintColor:[UIColor whiteColor]];
 }
 
-- (void)updateForCasting
-{
+- (void)updateForCasting {
     [self.analyticsStorage sendWithAnalyticsEvent:AnalyticsEventsCastStart
                                             timed:true];
     self.casting = YES;
@@ -717,8 +695,7 @@ NSString * const kJWPlayerPauseButton = @"jw_player_pause_button";
 
 }
 
-- (void)updateForCastingEnd
-{
+- (void)updateForCastingEnd {
     [self.analyticsStorage sendWithAnalyticsEvent:AnalyticsEventsCastStop
                                             timed:true];
     self.casting = NO;
@@ -729,8 +706,7 @@ NSString * const kJWPlayerPauseButton = @"jw_player_pause_button";
 
 #pragma Mark - Cast stuff
 
-- (void)castButtonTapped:(id) sender
-{
+- (void)castButtonTapped:(id) sender {
     [self.analyticsStorage sendWithAnalyticsEvent:AnalyticsEventsTapCast
                                             timed:false];
     __weak JWPlayerViewController *weakSelf = self;
@@ -761,8 +737,8 @@ NSString * const kJWPlayerPauseButton = @"jw_player_pause_button";
         UIAlertAction *disconnect = [UIAlertAction actionWithTitle:@"Disconnect"
                                                              style:UIAlertActionStyleDestructive
                                                            handler:^(UIAlertAction * _Nonnull action) {
-                                                               [weakSelf.castController disconnect];
-                                                           }];
+            [weakSelf.castController disconnect];
+        }];
         [alertController addAction:disconnect];
         
         UIAlertAction *castControl;
@@ -770,22 +746,23 @@ NSString * const kJWPlayerPauseButton = @"jw_player_pause_button";
             castControl = [UIAlertAction actionWithTitle:@"Stop Casting"
                                                    style:UIAlertActionStyleDefault
                                                  handler:^(UIAlertAction * _Nonnull action) {
-                                                     [weakSelf.castController stopCasting];
-                                                 }];
+                [weakSelf.castController stopCasting];
+            }];
         } else {
             castControl = [UIAlertAction actionWithTitle:@"Cast"
                                                    style:UIAlertActionStyleDefault
                                                  handler:^(UIAlertAction * _Nonnull action) {
-                                                     [weakSelf.castController cast];
-                                                 }];
+                [weakSelf.castController cast];
+            }];
         }
         [alertController addAction:castControl];
     }
     UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"Cancel"
-                            style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {}];
+                                                     style:UIAlertActionStyleCancel
+                                                   handler:nil];
     [alertController addAction:cancel];
     
-    [self presentViewController:alertController animated:YES completion:^{}];
+    [self presentViewController:alertController animated:YES completion:nil];
 }
 
 // MARK: - Chromecast Images
