@@ -122,6 +122,12 @@ import ZappPlugins
                                                                      timed: timed)
     }
     
+    @objc public func setLiveProperties() {
+        parameters["Video Type"] = "Live"
+        parameters["Item Duration"] = "None Provided"
+        parameters["Timecode"] = "None Provided"
+    }
+    
     // MARK: - Private methods
     
     private func playableItemProperties() -> Dictionary<String, String> {

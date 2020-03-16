@@ -517,8 +517,12 @@ NSString * const kJWPlayerPauseButton = @"jw_player_pause_button";
     CGFloat dur = [event duration];
     CGFloat percentage = (pos / dur) * 100;
     
-    self.analyticsStorage.duration = dur;
-    self.analyticsStorage.videoProgress = percentage;
+    if (dur >= 0) {
+        self.analyticsStorage.duration = dur;
+        self.analyticsStorage.videoProgress = percentage;
+    } else {
+        [self.analyticsStorage setLiveProperties];
+    }
 }
 
 -(void)onSeek:(JWEvent<JWSeekEvent> *)event {
