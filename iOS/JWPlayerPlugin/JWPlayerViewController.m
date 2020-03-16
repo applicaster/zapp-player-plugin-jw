@@ -39,12 +39,14 @@ NSString * const kJWPlayerPauseButton = @"jw_player_pause_button";
 @property (nonatomic, strong) UIView *airplayButton;
 @property (nonatomic) UIButton *castingButton;
 
-@property (nonatomic, strong) NSArray *availableCastDevices;
+@property (nonatomic, strong) NSArray<JWCastingDevice *> *availableCastDevices;
 @property (nonatomic) BOOL casting;
 
 @end
 
 @implementation JWPlayerViewController
+
+static JWCastingDevice *_connectedDevice;
 
 #pragma mark - UIViewController
 
@@ -517,8 +519,12 @@ NSString * const kJWPlayerPauseButton = @"jw_player_pause_button";
     CGFloat dur = [event duration];
     CGFloat percentage = (pos / dur) * 100;
     
-    self.analyticsStorage.duration = dur;
-    self.analyticsStorage.videoProgress = percentage;
+    if (dur >= 0) {
+        self.analyticsStorage.duration = dur;
+        self.analyticsStorage.videoProgress = percentage;
+    } else {
+        [self.analyticsStorage setLiveProperties];
+    }
 }
 
 -(void)onSeek:(JWEvent<JWSeekEvent> *)event {
@@ -552,6 +558,19 @@ NSString * const kJWPlayerPauseButton = @"jw_player_pause_button";
 - (void)onBeforePlay {
     if (isViewHidden == true) {
         [self.player stop];
+    }
+        
+    if (_connectedDevice != nil) {
+        [self.availableCastDevices enumerateObjectsUsingBlock:^(JWCastingDevice * _Nonnull device,
+                                                                NSUInteger idx,
+                                                                BOOL * _Nonnull stop) {
+            if (device.identifier == _connectedDevice.identifier) {
+                [self.castController connectToDevice:device];
+                [self updateWhenConnectingToCastDevice];
+                self.analyticsStorage.castingDevice = device.name;
+                *stop = true;
+            }
+        }];
     }
 }
 
@@ -628,10 +647,12 @@ NSString * const kJWPlayerPauseButton = @"jw_player_pause_button";
 -(void)onConnectedToCastingDevice:(JWCastingDevice *)device {
     [self updateForCastDeviceConnection];
     [self.castController cast];
+    _connectedDevice = device;
 }
 
 -(void)onDisconnectedFromCastingDevice:(NSError *)error {
     [self updateForCastDeviceDisconnection];
+    _connectedDevice = nil;
 }
 
 -(void)onConnectionTemporarilySuspended {
