@@ -2,6 +2,8 @@ package com.applicaster.jwplayerplugin;
 
 import android.util.Log;
 
+import androidx.annotation.Nullable;
+
 import com.applicaster.atom.helpers.MediaItemIdentifier;
 import com.applicaster.atom.model.APAtomEntry;
 import com.applicaster.player.VideoAdsUtil;
@@ -217,14 +219,18 @@ public class JWPlayerUtil {
         return interval;
     }
 
+    @Nullable
     private static String getStreamImageUrl(APAtomEntry entry) {
         MediaItemIdentifier.Builder identifier = new MediaItemIdentifier.Builder();
-        if (entry.getContent() != null && (entry.getContent().type).contains("video")) {
+        if (entry.getContent() != null
+                && entry.getContent().type != null
+                && (entry.getContent().type).contains("video")) {
             identifier.setGroupType(APAtomEntry.MediaGroup.IMAGE_KEY)
                     .setKey("image_base")
                     .setForm(APAtomEntry.MediaItem.IMAGE_FORM_KEY)
                     .setScale(APAtomEntry.MediaItem.DEFAULT_LEGACY_SCALE);
+            return entry.getMediaUrl(identifier.build());
         }
-        return entry.getMediaUrl(identifier.build());
+        return "";
     }
 }
