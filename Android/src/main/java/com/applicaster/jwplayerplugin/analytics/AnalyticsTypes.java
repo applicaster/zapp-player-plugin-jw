@@ -51,7 +51,7 @@ public class AnalyticsTypes {
         String VIEW = "View";
         String VIDEO_TYPE = "Video Type";
         String FREE_OR_PAID = "Free or Paid";
-        String TIME_CODE = "Time Code";
+        String TIME_CODE = "Timecode";
     }
 
     @Retention(RetentionPolicy.SOURCE)

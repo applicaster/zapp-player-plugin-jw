@@ -18,10 +18,10 @@ public class AnalyticsData {
     private String itemName = PROP_DATA_NONE_PROVIDED;
     private String videoType = PROP_DATA_NONE_PROVIDED;
     private String playerView = PROP_DATA_NONE_PROVIDED;
-    private String itemDuration = parseDuration(0L);
+    private String itemDuration = PROP_DATA_NONE_PROVIDED;
     private String vodType = PROP_DATA_NONE_PROVIDED;
     private String freeOrPaid = PROP_DATA_NONE_PROVIDED;
-    private String timeCode = parseDuration(0L);
+    private String timeCode = PROP_DATA_NONE_PROVIDED;
     private String castingDevice = PROP_DATA_NONE_PROVIDED;
     private String previousState = PROP_DATA_NONE_PROVIDED;
 
@@ -82,12 +82,14 @@ public class AnalyticsData {
     }
 
     public void setVodType(@NonNull Playable playable) {
-        if (playable instanceof APAtomEntry.APAtomEntryPlayable) {
-            this.vodType = AnalyticsTypes.VodType.ATOM;
-        } else if (playable.getPlayableType() == PlayableType.Youtube) {
-            this.vodType = AnalyticsTypes.VodType.YOUTUBE;
-        } else {
-            this.vodType = AnalyticsTypes.VodType.APPLICASTER_MODEL;
+        if (!playable.isLive()) {
+            if (playable instanceof APAtomEntry.APAtomEntryPlayable) {
+                this.vodType = AnalyticsTypes.VodType.ATOM;
+            } else if (playable.getPlayableType() == PlayableType.Youtube) {
+                this.vodType = AnalyticsTypes.VodType.YOUTUBE;
+            } else {
+                this.vodType = AnalyticsTypes.VodType.APPLICASTER_MODEL;
+            }
         }
     }
 
@@ -136,7 +138,7 @@ public class AnalyticsData {
      * Returns a formatted duration string.
      *
      * @param duration The given duration, for example "12345".
-     * @return the formatted duration string, for example "01:05:20". If something went wrong returns an empty string.
+     * @return the formatted duration string, for example "01:05:20". If something went wrong returns an None Provided string.
      */
     private String parseDuration(long duration) {
         if (duration >= 0) {
@@ -150,6 +152,6 @@ public class AnalyticsData {
         } else if (duration == 0L) {
             return String.format(Locale.getDefault(), "%02d:%02d:%02d", 0, 0, 0);
         }
-        return "";
+        return PROP_DATA_NONE_PROVIDED;
     }
 }

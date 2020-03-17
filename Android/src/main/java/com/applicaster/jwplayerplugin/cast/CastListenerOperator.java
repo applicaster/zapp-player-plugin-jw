@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import com.applicaster.jwplayerplugin.R;
 import com.applicaster.jwplayerplugin.analytics.AnalyticsAdapter;
 import com.applicaster.jwplayerplugin.analytics.AnalyticsData;
+import com.applicaster.jwplayerplugin.analytics.AnalyticsTypes;
 import com.google.android.gms.cast.framework.CastSession;
 import com.google.android.gms.cast.framework.SessionManagerListener;
 import com.longtailvideo.jwplayer.JWPlayerView;
@@ -56,6 +57,7 @@ public class CastListenerOperator implements SessionManagerListener<CastSession>
             }
         });
         analyticsData.setTimeCode(playerView.get().getPosition());
+        analyticsData.setPlayerView(AnalyticsTypes.PlayerView.CAST);
         AnalyticsAdapter.logCastStart(analyticsData);
     }
 
@@ -75,6 +77,7 @@ public class CastListenerOperator implements SessionManagerListener<CastSession>
     public void onSessionEnded(CastSession castSession, int error) {
         this.castSession = null;
         analyticsData.setTimeCode(playerView.get().getPosition());
+        analyticsData.setPlayerView(AnalyticsTypes.PlayerView.FULLSCREEN);
         AnalyticsAdapter.logCastStop(analyticsData);
     }
 
@@ -90,6 +93,7 @@ public class CastListenerOperator implements SessionManagerListener<CastSession>
             Log.i(TAG, "Cast session RESUMED for: " + castSession.getCastDevice().getFriendlyName());
         this.castSession = castSession;
         playerView.get().play();
+        analyticsData.setPlayerView(AnalyticsTypes.PlayerView.CAST);
         processViewChildren(playerView.get());
     }
 
@@ -97,6 +101,7 @@ public class CastListenerOperator implements SessionManagerListener<CastSession>
     public void onSessionResumeFailed(CastSession castSession, int error) {
         if (castSession.getCastDevice() != null)
             Log.i(TAG, "Cast session RESUME FAILED for: " + castSession.getCastDevice().getFriendlyName());
+        analyticsData.setPlayerView(AnalyticsTypes.PlayerView.FULLSCREEN);
     }
 
     @Override
