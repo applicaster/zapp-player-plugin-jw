@@ -90,15 +90,18 @@ import ZappPlugins
         parameters["Previous State"] = "Off"
         parameters["Casting Device"] = "None Provided"
         parameters["Item Duration"] = "None Provided"
-        parameters["Timecode"] = String.create(fromInterval: 0.0)
+        parameters["Timecode"] = "None Provided"
         parameters["View"] = PlayerViewType.fullScreen.stringValue
+        parameters["Video Type"] = "VOD"
     }
     
     @objc public func parseParameters(from video: ZPPlayable) {
         parameters["Item ID"] = (video.identifier ?? "") as String
         parameters["Item Name"] = video.playableName()
         parameters["Free or Paid"] = video.isFree() ? "Free" : "Paid"
-        parameters["Video Type"] = video.isLive() ? "Live" : "VOD"
+        if video.isLive() {
+            setLiveProperties()
+        }
     }
     
     @objc public func send(analyticsEvent: AnalyticsEvents, timed: Bool = false) {
@@ -161,6 +164,7 @@ private extension String {
         let formatter = DateComponentsFormatter()
         formatter.allowedUnits = [.hour, .minute, .second]
         formatter.unitsStyle = .positional
+        formatter.zeroFormattingBehavior = .pad
         
         return formatter.string(from: interval) ?? ""
     }
