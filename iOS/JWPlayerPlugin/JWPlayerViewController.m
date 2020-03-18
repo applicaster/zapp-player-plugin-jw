@@ -232,6 +232,10 @@ static JWCastingDevice *_connectedDevice;
 }
 
 - (void)setupPlayerAdvertisingWithConfiguration:(NSArray *)ads {
+    if ([ads isKindOfClass:NSArray.class] == false) {
+        return;
+    }
+    
     JWAdConfig *adConfig = [self createBaseAdConfiguration];
     NSMutableArray *scheduleArray = [NSMutableArray new];
     
