@@ -58,12 +58,12 @@ public class CastProvider {
         return castListenerOperator;
     }
 
-    public void init(Playable playable) {
+    public void init(Playable playable, boolean isFullscreen) {
         //play services availability check and Chromecast init
         if (isGoogleApiAvailable(context)) {
             initMediaRouteButton();
             castContext = CastContext.getSharedInstance(context);
-            collectCastAnalyticsData(playable);
+            collectCastAnalyticsData(playable, isFullscreen);
             castListenerOperator = new CastListenerOperator(playerView, analyticsData);
         }
     }
@@ -74,8 +74,9 @@ public class CastProvider {
     }
 
     public void removeSessionManagerListener() {
-        if (castContext.getSessionManager() != null)
+        if (castContext.getSessionManager() != null) {
             castContext.getSessionManager().removeSessionManagerListener(castListenerOperator, CastSession.class);
+        }
     }
 
     public void release() {
@@ -134,14 +135,18 @@ public class CastProvider {
     }
 
 
-    private void collectCastAnalyticsData(Playable playable) {
+    private void collectCastAnalyticsData(Playable playable, boolean isFullscreen) {
         analyticsData = new AnalyticsData();
         analyticsData.setFreeOrPaid(playable.isFree());
         analyticsData.setItemId(playable.getPlayableId());
         analyticsData.setItemName(playable.getPlayableName());
         analyticsData.setVideoType(playable);
         analyticsData.setVodType(playable);
-        analyticsData.setPlayerView(AnalyticsTypes.PlayerView.FULLSCREEN);
+        if (isFullscreen) {
+            analyticsData.setPlayerView(AnalyticsTypes.PlayerView.FULLSCREEN);
+        } else {
+            analyticsData.setPlayerView(AnalyticsTypes.PlayerView.INLINE);
+        }
         analyticsData.setPreviousState(castBtnPreviousState);
     }
 

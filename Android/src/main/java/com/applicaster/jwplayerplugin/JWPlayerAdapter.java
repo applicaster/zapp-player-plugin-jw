@@ -151,7 +151,7 @@ public class JWPlayerAdapter
 
         if (this.context instanceof Activity && enableChromecast) {
             castProvider = new CastProvider((Activity) this.context, jwPlayerContainer);
-            castProvider.init(getFirstPlayable());
+            castProvider.init(getFirstPlayable(), false);
             castProvider.addSessionManagerListener();
         }
 

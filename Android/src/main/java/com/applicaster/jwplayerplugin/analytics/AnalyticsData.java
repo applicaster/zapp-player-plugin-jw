@@ -1,5 +1,7 @@
 package com.applicaster.jwplayerplugin.analytics;
 
+import android.os.Build;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -13,6 +15,8 @@ import java.util.concurrent.TimeUnit;
 public class AnalyticsData {
 
     private String PROP_DATA_NONE_PROVIDED = "None Provided";
+    private String KEY_MOBILE_DEVICE = "Mobile Device: ";
+    private String KEY_CAST_DEVICE = " Cast Device: ";
 
     private String itemId = PROP_DATA_NONE_PROVIDED;
     private String itemName = PROP_DATA_NONE_PROVIDED;
@@ -22,7 +26,7 @@ public class AnalyticsData {
     private String vodType = PROP_DATA_NONE_PROVIDED;
     private String freeOrPaid = PROP_DATA_NONE_PROVIDED;
     private String timeCode = PROP_DATA_NONE_PROVIDED;
-    private String castingDevice = PROP_DATA_NONE_PROVIDED;
+    private String castingDevice = KEY_MOBILE_DEVICE + getOsVersion() + KEY_CAST_DEVICE + PROP_DATA_NONE_PROVIDED;
     private String previousState = PROP_DATA_NONE_PROVIDED;
 
     @NonNull
@@ -121,7 +125,7 @@ public class AnalyticsData {
 
     public void setCastingDevice(@Nullable String castingDevice) {
         if (castingDevice != null)
-            this.castingDevice = castingDevice;
+            this.castingDevice = KEY_MOBILE_DEVICE + getOsVersion() + KEY_CAST_DEVICE + castingDevice;
     }
 
     @NonNull
@@ -141,7 +145,7 @@ public class AnalyticsData {
      * @return the formatted duration string, for example "01:05:20". If something went wrong returns an None Provided string.
      */
     private String parseDuration(long duration) {
-        if (duration >= 0) {
+        if (duration > 0) {
             long durationMillis = duration * 1000;
 
             long hours = TimeUnit.MILLISECONDS.toHours(durationMillis);
@@ -149,9 +153,11 @@ public class AnalyticsData {
             long seconds = TimeUnit.MILLISECONDS.toSeconds(durationMillis) % TimeUnit.MINUTES.toSeconds(1);
 
             return String.format(Locale.getDefault(), "%02d:%02d:%02d", hours, minutes, seconds);
-        } else if (duration == 0L) {
-            return String.format(Locale.getDefault(), "%02d:%02d:%02d", 0, 0, 0);
         }
         return PROP_DATA_NONE_PROVIDED;
+    }
+
+    public String getOsVersion() {
+        return "Android " + Build.VERSION.RELEASE;
     }
 }

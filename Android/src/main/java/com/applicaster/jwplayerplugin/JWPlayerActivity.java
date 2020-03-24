@@ -9,7 +9,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.Menu;
 import android.view.View;
 import android.view.WindowManager;
 
@@ -23,7 +22,6 @@ import com.applicaster.plugin_manager.playersmanager.Playable;
 import com.applicaster.plugin_manager.playersmanager.internal.PlayersManager;
 import com.applicaster.zapp_automation.AutomationManager;
 import com.google.android.gms.cast.MediaSeekOptions;
-import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastState;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.core.PlayerState;
@@ -76,6 +74,8 @@ public class JWPlayerActivity
 
     private double playerPosition;
 
+    private AdState adState = AdState.IDLE;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,7 +103,7 @@ public class JWPlayerActivity
         //Initialize cast provider
         if (enableChromecast) {
             castProvider = new CastProvider(this, jwPlayerContainer);
-            castProvider.init(playable);
+            castProvider.init(playable, true);
         }
 
 
@@ -138,8 +138,6 @@ public class JWPlayerActivity
             mPlayerView.onResume();
             mPlayerView.play();
         }
-
-        //cast
         if (castProvider != null) castProvider.addSessionManagerListener();
     }
 
@@ -245,7 +243,9 @@ public class JWPlayerActivity
 
     @Override
     public void onControlBarVisibilityChanged(ControlBarVisibilityEvent controlBarVisibilityEvent) {
-        if (castProvider != null && castProvider.getCastContext().getCastState() != CastState.NO_DEVICES_AVAILABLE) {
+        if (castProvider != null
+                && castProvider.getCastContext().getCastState() != CastState.NO_DEVICES_AVAILABLE
+                && adState == AdState.IDLE) {
             if (controlBarVisibilityEvent.isVisible()) {
                 castProvider.getMediaRouteButton().setVisibility(View.VISIBLE);
             } else {
@@ -271,8 +271,18 @@ public class JWPlayerActivity
         }
     }
 
+    private enum AdState {
+        PLAYING,
+        IDLE
+    }
+
     @Override
     public void onAdPlay(AdPlayEvent adPlayEvent) {
+        adState = AdState.PLAYING;
+        if (castProvider != null
+                && castProvider.getCastContext().getCastState() != CastState.NO_DEVICES_AVAILABLE) {
+            castProvider.getMediaRouteButton().setVisibility(View.VISIBLE);
+        }
         Map<String, String> params = new HashMap<>(analyticsParams);
         params.put(ADVERTISEMENT_POSITION_KEY, "Start");
         AnalyticsAgentUtil.logEvent("Watch Video Advertisement", params);
@@ -287,6 +297,11 @@ public class JWPlayerActivity
 
     @Override
     public void onAdComplete(AdCompleteEvent adCompleteEvent) {
+        adState = AdState.IDLE;
+        if (castProvider != null
+                && castProvider.getCastContext().getCastState() != CastState.NO_DEVICES_AVAILABLE) {
+            castProvider.getMediaRouteButton().setVisibility(View.GONE);
+        }
         Map<String, String> params = new HashMap<>(analyticsParams);
         params.put(ADVERTISEMENT_POSITION_KEY, "End");
         AnalyticsAgentUtil.logEvent("Watch Video Advertisement", params);

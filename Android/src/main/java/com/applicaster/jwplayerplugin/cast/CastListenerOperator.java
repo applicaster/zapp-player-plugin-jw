@@ -16,6 +16,8 @@ import com.google.android.gms.cast.framework.CastSession;
 import com.google.android.gms.cast.framework.SessionManagerListener;
 import com.longtailvideo.jwplayer.JWPlayerView;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.lang.ref.WeakReference;
 
 public class CastListenerOperator implements SessionManagerListener<CastSession> {
@@ -57,7 +59,6 @@ public class CastListenerOperator implements SessionManagerListener<CastSession>
             }
         });
         analyticsData.setTimeCode(playerView.get().getPosition());
-        analyticsData.setPlayerView(AnalyticsTypes.PlayerView.CAST);
         AnalyticsAdapter.logCastStart(analyticsData);
     }
 
@@ -77,7 +78,6 @@ public class CastListenerOperator implements SessionManagerListener<CastSession>
     public void onSessionEnded(CastSession castSession, int error) {
         this.castSession = null;
         analyticsData.setTimeCode(playerView.get().getPosition());
-        analyticsData.setPlayerView(AnalyticsTypes.PlayerView.FULLSCREEN);
         AnalyticsAdapter.logCastStop(analyticsData);
     }
 
@@ -88,7 +88,7 @@ public class CastListenerOperator implements SessionManagerListener<CastSession>
     }
 
     @Override
-    public void onSessionResumed(CastSession castSession, boolean wasSuspended) {
+    public void onSessionResumed(@NotNull CastSession castSession, boolean wasSuspended) {
         if (castSession.getCastDevice() != null)
             Log.i(TAG, "Cast session RESUMED for: " + castSession.getCastDevice().getFriendlyName());
         this.castSession = castSession;
@@ -101,7 +101,6 @@ public class CastListenerOperator implements SessionManagerListener<CastSession>
     public void onSessionResumeFailed(CastSession castSession, int error) {
         if (castSession.getCastDevice() != null)
             Log.i(TAG, "Cast session RESUME FAILED for: " + castSession.getCastDevice().getFriendlyName());
-        analyticsData.setPlayerView(AnalyticsTypes.PlayerView.FULLSCREEN);
     }
 
     @Override
