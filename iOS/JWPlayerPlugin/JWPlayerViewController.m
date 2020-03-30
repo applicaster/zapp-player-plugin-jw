@@ -257,9 +257,10 @@ static JWCastingDevice *_connectedDevice;
                     NSString *offset = (NSString *)rawOffset;
                     if ([offset isEqualToString:@"preroll"]) {
                         convertedOffset = @"pre";
-                    }
-                    else if ([offset isEqualToString:@"postroll"]) {
+                    } else if ([offset isEqualToString:@"postroll"]) {
                         convertedOffset = @"post";
+                    } else if ([offset integerValue]) {
+                        convertedOffset = offset;
                     }
                 }
                 else if ([rawOffset isKindOfClass:NSNumber.class]) {
