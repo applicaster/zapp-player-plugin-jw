@@ -294,6 +294,7 @@ static NSString *const kPlayableItemsKey = @"playable_items";
     __block typeof(self) blockSelf = self;
     [self loadItemIfNeeded:^{
         [blockSelf setupPlayerWithCurrentPlayableItemUsingInlinePlayer:NO];
+        blockSelf.playerViewController.modalPresentationStyle = UIModalPresentationFullScreen;
 
         [[rootViewController topmostModalViewController] presentViewController:blockSelf.playerViewController
                                                                       animated:configuration.animated
