@@ -8,10 +8,30 @@
 import Foundation
 import ZappPlugins
 
+@objc public class SeekEvent: NSObject {
+    private(set) var from: Double
+    private(set) var to: Double
+    var seekDirection: String {
+        let value = to > from ? "Fast Forward" : "Rewind"
+        return value
+    }
+    
+    @objc public init(from: Double, to: Double) {
+        self.from = from
+        self.to = to
+        
+        super.init()
+    }
+}
+
 @objc public enum AnalyticsEvents: Int {
     case tapCast
     case castStart
     case castStop
+    case seek
+    case pause
+    case switchPlayerView
+    case play
     
     var key: String {
         switch self {
@@ -21,6 +41,14 @@ import ZappPlugins
             return "Cast Start"
         case .castStop:
             return "Cast Stop"
+        case .seek:
+            return "Seek"
+        case .pause:
+            return "Pause"
+        case .switchPlayerView:
+            return "Switch Player View"
+        case .play:
+            return "None provided"
         }
     }
 }
@@ -53,6 +81,8 @@ import ZappPlugins
     @objc public var playerViewType: PlayerViewType = .fullScreen {
         didSet {
             parameters["View"] = playerViewType.stringValue
+            parameters["Original View"] = oldValue.stringValue
+            parameters["New View"] = playerViewType.stringValue
         }
     }
     
@@ -80,6 +110,20 @@ import ZappPlugins
         }
     }
     
+    @objc public var seek: SeekEvent = SeekEvent(from: 0, to: 0) {
+        didSet {
+            parameters["Seek Direction"] = seek.seekDirection
+            parameters["Timecode From"] = String.create(fromInterval: seek.from)
+            parameters["Timecode To"] = String.create(fromInterval: seek.to)
+        }
+    }
+    
+    @objc public var videoStartTime: Date?
+    @objc public var playerViewSwitchCounter: Int = 0
+    
+    private var isLive: Bool = false
+    private var wasPlayEventSend: Bool = false
+    
     private var parameters: Dictionary<String, String> = [:]
     
     public override init() {
@@ -105,6 +149,10 @@ import ZappPlugins
     }
     
     @objc public func send(analyticsEvent: AnalyticsEvents, timed: Bool = false) {
+        if analyticsEvent == .play, wasPlayEventSend == true {
+            return
+        }
+        
         var parameters = Dictionary<String, String>()
         
         switch analyticsEvent {
@@ -118,9 +166,33 @@ import ZappPlugins
         case .castStop:
             parameters = playableItemProperties()
             parameters = parameters.merge(castProperties())
+        case .seek:
+            parameters = seekProperties()
+        case .pause:
+            parameters = pauseProperties()
+        case .switchPlayerView:
+            playerViewSwitchCounter += 1
+            parameters = switchPlayerViewProperties()
+        case .play:
+            if isLive {
+                parameters = playLiveProperties()
+            } else {
+                parameters = playVodProperties()
+            }
         }
         
-        ZAAppConnector.sharedInstance().analyticsDelegate.trackEvent(name: analyticsEvent.key,
+        var name = analyticsEvent.key
+        
+        if analyticsEvent == .play {
+            if isLive {
+                name = "Play Live Stream"
+            } else {
+                name = "Play VOD Item"
+            }
+            wasPlayEventSend = true
+        }
+        
+        ZAAppConnector.sharedInstance().analyticsDelegate.trackEvent(name: name,
                                                                      parameters: parameters,
                                                                      timed: timed)
     }
@@ -129,6 +201,7 @@ import ZappPlugins
         parameters["Video Type"] = "Live"
         parameters["Item Duration"] = "None Provided"
         parameters["Timecode"] = "None Provided"
+        isLive = true
     }
     
     // MARK: - Private methods
@@ -149,6 +222,86 @@ import ZappPlugins
     private func castProperties() -> Dictionary<String, String> {
         var properties = Dictionary<String, String>()
         properties["Casting Device"] = parameters["Casting Device"]
+        properties["View"] = parameters["View"]
+        
+        return properties
+    }
+    
+    private func seekProperties() -> Dictionary<String, String> {
+        var properties = Dictionary<String, String>()
+        properties["Free or Paid"] = parameters["Free or Paid"]
+        properties["Item ID"] = parameters["Item ID"]
+        properties["Item Name"] = parameters["Item Name"]
+        properties["Seek Direction"] = parameters["Seek Direction"]
+        properties["View"] = parameters["View"]
+        if isLive == false {
+            properties["Item Duration"] = parameters["Item Duration"]
+            properties["VOD Type"] = parameters["VOD Type"]
+        }
+        properties["Timecode From"] = parameters["Timecode From"]
+        properties["Timecode To"] = parameters["Timecode To"]
+        
+        return properties
+    }
+    
+    private func pauseProperties() -> Dictionary<String, String> {
+        var properties = Dictionary<String, String>()
+        properties["Free or Paid"] = parameters["Free or Paid"]
+        properties["Item ID"] = parameters["Item ID"]
+        properties["Item Name"] = parameters["Item Name"]
+        properties["Video Type"] = parameters["Video Type"]
+        properties["View"] = parameters["View"]
+        if isLive == false {
+            properties["Item Duration"] = parameters["Item Duration"]
+            properties["VOD Type"] = parameters["VOD Type"]
+        }
+        properties["Timecode"] = parameters["Timecode"]
+        if let videoStartTime = videoStartTime {
+            properties["Duration In Video"] = String.create(fromInterval: Date().timeIntervalSince(videoStartTime))
+        }
+        
+        return properties
+    }
+    
+    private func switchPlayerViewProperties() -> Dictionary<String, String> {
+        var properties = Dictionary<String, String>()
+        properties["Original View"] = parameters["Original View"]
+        properties["New View"] = parameters["New View"]
+        properties["Free or Paid"] = parameters["Free or Paid"]
+        properties["Item ID"] = parameters["Item ID"]
+        properties["Item Name"] = parameters["Item Name"]
+        properties["Video Type"] = parameters["Video Type"]
+        if isLive == false {
+            properties["Item Duration"] = parameters["Item Duration"]
+            properties["VOD Type"] = parameters["VOD Type"]
+        }
+        properties["Timecode"] = parameters["Timecode"]
+        properties["Switch Instance"] = String(playerViewSwitchCounter)
+        if let videoStartTime = videoStartTime {
+            properties["Duration In Video"] = String.create(fromInterval: Date().timeIntervalSince(videoStartTime))
+        }
+        
+        return properties
+    }
+    
+    private func playVodProperties() -> Dictionary<String, String> {
+        var properties = Dictionary<String, String>()
+        properties["Free or Paid"] = parameters["Free or Paid"]
+        properties["Item ID"] = parameters["Item ID"]
+        properties["Item Name"] = parameters["Item Name"]
+        properties["Item Duration"] = parameters["Item Duration"]
+        properties["Completed"] = parameters["Completed"]
+        properties["VOD Type"] = parameters["VOD Type"]
+        properties["View"] = parameters["View"]
+        
+        return properties
+    }
+    
+    private func playLiveProperties() -> Dictionary<String, String> {
+        var properties = Dictionary<String, String>()
+        properties["Free or Paid"] = parameters["Free or Paid"]
+        properties["Item ID"] = parameters["Item ID"]
+        properties["Item Name"] = parameters["Item Name"]
         properties["View"] = parameters["View"]
         
         return properties

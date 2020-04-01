@@ -219,9 +219,6 @@ static JWCastingDevice *_connectedDevice;
     
     self.extensionsDictionary = playableItem.extensionsDictionary;
     
-    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"Play VOD Item"
-                                                                 parameters:self.extensionsDictionary];
-    
     if (self.adConfig) {
         config.advertising = self.adConfig;
         self.adConfig = nil;
@@ -530,10 +527,17 @@ static JWCastingDevice *_connectedDevice;
     } else {
         [self.analyticsStorage setLiveProperties];
     }
+    
+    [self.analyticsStorage sendWithAnalyticsEvent:AnalyticsEventsPlay
+                                            timed:true];
 }
 
 -(void)onSeek:(JWEvent<JWSeekEvent> *)event {
     self.analyticsStorage.videoProgress = 0;
+    self.analyticsStorage.seek = [[SeekEvent alloc] initFrom:event.position
+                                                          to:event.offset];
+    [self.analyticsStorage sendWithAnalyticsEvent:AnalyticsEventsSeek
+                                            timed:false];
 }
 
 -(void)onAdPlay:(JWAdEvent<JWAdStateChangeEvent> *)event {
@@ -577,6 +581,7 @@ static JWCastingDevice *_connectedDevice;
             }
         }];
     }
+    self.analyticsStorage.videoStartTime = [NSDate new];
 }
 
 -(void)onPlay:(JWEvent<JWStateChangeEvent> *)event {
@@ -585,8 +590,7 @@ static JWCastingDevice *_connectedDevice;
 }
 
 -(void)onPause:(JWEvent<JWStateChangeEvent> *)event {
-    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"Pause Video"
-                                                                 parameters:self.extensionsDictionary];
+    [self.analyticsStorage sendWithAnalyticsEvent:AnalyticsEventsPause timed:false];
 }
 
 - (void)onFullscreen:(JWEvent<JWFullscreenEvent> *)event {
@@ -629,6 +633,9 @@ static JWCastingDevice *_connectedDevice;
     if (self.allowChromecast) {
         [self.buttonsStackView addArrangedSubview:self.castingButton];
     }
+    
+    [self.analyticsStorage sendWithAnalyticsEvent:AnalyticsEventsSwitchPlayerView
+                                            timed:false];
 }
 
 // MARK: - Chromecast support
@@ -677,6 +684,9 @@ static JWCastingDevice *_connectedDevice;
 
 -(void)onCasting {
     [self updateForCasting];
+    
+    [self.analyticsStorage sendWithAnalyticsEvent:AnalyticsEventsSwitchPlayerView
+                                            timed:false];
 }
 
 -(void)onCastingEnded:(NSError *)error {
@@ -709,6 +719,13 @@ static JWCastingDevice *_connectedDevice;
     [self.castingButton setImage:[[self castOffImage] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
                         forState:UIControlStateNormal];
     [self.castingButton setTintColor:[UIColor whiteColor]];
+    if (self.isInlinePlayer) {
+        self.analyticsStorage.playerViewType = PlayerViewTypeInline;
+    } else {
+        self.analyticsStorage.playerViewType = PlayerViewTypeFullScreen;
+    }
+    [self.analyticsStorage sendWithAnalyticsEvent:AnalyticsEventsSwitchPlayerView
+                                            timed:false];
 }
 
 - (void)updateForCasting {
@@ -718,7 +735,6 @@ static JWCastingDevice *_connectedDevice;
     [self.castingButton setTintColor:[UIColor greenColor]];
     self.analyticsStorage.isCasting = true;
     self.analyticsStorage.playerViewType = PlayerViewTypeCast;
-    
 }
 
 - (void)updateForCastingEnd {
