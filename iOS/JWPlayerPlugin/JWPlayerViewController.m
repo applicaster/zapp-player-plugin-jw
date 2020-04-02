@@ -240,6 +240,10 @@ static JWCastingDevice *_connectedDevice;
         // ad configuration dictionary scheduling
         for (NSDictionary *adConfiguration in ads)
         {
+            if ([adConfiguration isKindOfClass:NSDictionary.class] == false) {
+                continue;
+            }
+            
             NSString *type = adConfiguration[@"type"];
             
             if ([type  isEqual: @"vmap"]) {
@@ -635,6 +639,24 @@ static JWCastingDevice *_connectedDevice;
     }
     
     [self.analyticsStorage sendWithAnalyticsEvent:AnalyticsEventsSwitchPlayerView
+                                            timed:false];
+}
+
+- (void)onError:(JWEvent<JWErrorEvent> *)event {
+    self.analyticsStorage.playError = event.error;
+    [self.analyticsStorage sendWithAnalyticsEvent:AnalyticsEventsPlayError
+                                            timed:false];
+}
+
+- (void)onSetupError:(JWEvent<JWErrorEvent> *)event {
+    self.analyticsStorage.playError = event.error;
+    [self.analyticsStorage sendWithAnalyticsEvent:AnalyticsEventsPlayError
+                                            timed:false];
+}
+
+- (void)onAdError:(JWAdEvent<JWErrorEvent> *)event {
+    self.analyticsStorage.adError = event.error;
+    [self.analyticsStorage sendWithAnalyticsEvent:AnalyticsEventsAdError
                                             timed:false];
 }
 

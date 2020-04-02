@@ -32,6 +32,8 @@ import ZappPlugins
     case pause
     case switchPlayerView
     case play
+    case playError
+    case adError
     
     var key: String {
         switch self {
@@ -49,6 +51,10 @@ import ZappPlugins
             return "Switch Player View"
         case .play:
             return "None provided"
+        case .playError:
+            return "Video Play Error"
+        case .adError:
+            return "Video Ad Error"
         }
     }
 }
@@ -121,6 +127,26 @@ import ZappPlugins
     @objc public var videoStartTime: Date?
     @objc public var playerViewSwitchCounter: Int = 0
     
+    @objc public var playError: NSError? {
+        didSet {
+            if let error = playError {
+                parameters["Error Code"] = String(error.code)
+                parameters["Error Message"] = error.localizedDescription
+                parameters["Error Domain"] = error.domain
+            }
+        }
+    }
+    
+    @objc public var adError: NSError? {
+        didSet {
+            if let error = adError {
+                parameters["Error Code"] = String(error.code)
+                parameters["Advertising Provider"] = "IMA"
+                parameters["Error Domain"] = error.domain
+            }
+        }
+    }
+    
     private var isLive: Bool = false
     private var wasPlayEventSend: Bool = false
     
@@ -143,6 +169,7 @@ import ZappPlugins
         parameters["Item ID"] = (video.identifier ?? "") as String
         parameters["Item Name"] = video.playableName()
         parameters["Free or Paid"] = video.isFree() ? "Free" : "Paid"
+        parameters["Item Link"] = video.contentVideoURLPath()
         if video.isLive() {
             setLiveProperties()
         }
@@ -179,6 +206,10 @@ import ZappPlugins
             } else {
                 parameters = playVodProperties()
             }
+        case .playError:
+            parameters = playErrorProperties()
+        case .adError:
+            parameters = adErrorProperties()
         }
         
         var name = analyticsEvent.key
@@ -303,6 +334,42 @@ import ZappPlugins
         properties["Item ID"] = parameters["Item ID"]
         properties["Item Name"] = parameters["Item Name"]
         properties["View"] = parameters["View"]
+        
+        return properties
+    }
+    
+    private func playErrorProperties() -> Dictionary<String, String> {
+        var properties = Dictionary<String, String>()
+        properties["Free or Paid"] = parameters["Free or Paid"]
+        properties["Item ID"] = parameters["Item ID"]
+        properties["Item Name"] = parameters["Item Name"]
+        properties["Item Duration"] = parameters["Item Duration"]
+        properties["Item Link"] = parameters["Item Link"]
+        properties["Completed"] = parameters["Completed"]
+        properties["VOD Type"] = parameters["VOD Type"]
+        properties["View"] = parameters["View"]
+        properties["Error Code"] = parameters["Error Code"]
+        properties["Error Message"] = parameters["Error Message"]
+        properties["Eror Domain"] = parameters["Error Domain"]
+        properties["Video Player Plugin"] = "JW Player"
+        
+        return properties
+    }
+    
+    private func adErrorProperties() -> Dictionary<String, String> {
+        var properties = Dictionary<String, String>()
+        properties["Free or Paid"] = parameters["Free or Paid"]
+        properties["Item ID"] = parameters["Item ID"]
+        properties["Item Name"] = parameters["Item Name"]
+        properties["Item Duration"] = parameters["Item Duration"]
+        properties["Item Link"] = parameters["Item Link"]
+        properties["Completed"] = parameters["Completed"]
+        properties["VOD Type"] = parameters["VOD Type"]
+        properties["View"] = parameters["View"]
+        properties["Video Player Plugin"] = "JW Player"
+        properties["Error Code"] = parameters["Error Code"]
+        properties["Advertising Provider"] = parameters["Advertising Provider"]
+        properties["Error Domain"] = parameters["Error Domain"]
         
         return properties
     }
