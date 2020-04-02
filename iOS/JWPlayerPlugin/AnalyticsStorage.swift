@@ -34,6 +34,7 @@ import ZappPlugins
     case play
     case playError
     case adError
+    case adPlayed
     
     var key: String {
         switch self {
@@ -55,6 +56,8 @@ import ZappPlugins
             return "Video Play Error"
         case .adError:
             return "Video Ad Error"
+        case .adPlayed:
+            return "Watch Video Advertisement"
         }
     }
 }
@@ -147,8 +150,45 @@ import ZappPlugins
         }
     }
     
+    @objc public var adPosition: String = "" {
+        didSet {
+            var analyticsValue = ""
+            switch adPosition {
+            case "pre":
+                analyticsValue = "Preroll"
+            case "mid":
+                analyticsValue = "Midroll"
+            case "post":
+                analyticsValue = "Postroll"
+            default:
+                break
+            }
+            
+            parameters["Video Ad Type"] = analyticsValue
+        }
+    }
+    
+    @objc public var adURL: String = "" {
+        didSet {
+            parameters["Ad Unit"] = adURL
+        }
+    }
+    
+    @objc public var isAdSkipped: Bool = false {
+        didSet {
+            parameters["Skipped"] = isAdSkipped ? "Yes" : "No"
+        }
+    }
+    
+    @objc public var isAdClicked: Bool = false {
+        didSet {
+            parameters["Clicked"] = isAdClicked ? "Yes" : "No"
+        }
+    }
+    
     private var isLive: Bool = false
     private var wasPlayEventSend: Bool = false
+    private var adBreakStarted: Date?
     
     private var parameters: Dictionary<String, String> = [:]
     
@@ -163,6 +203,8 @@ import ZappPlugins
         parameters["Timecode"] = "None Provided"
         parameters["View"] = PlayerViewType.fullScreen.stringValue
         parameters["Video Type"] = "VOD"
+        parameters["Skipped"] = "No"
+        parameters["Clicked"] = "No"
     }
     
     @objc public func parseParameters(from video: ZPPlayable) {
@@ -210,6 +252,8 @@ import ZappPlugins
             parameters = playErrorProperties()
         case .adError:
             parameters = adErrorProperties()
+        case .adPlayed:
+            parameters = adPlayProperies()
         }
         
         var name = analyticsEvent.key
@@ -233,6 +277,32 @@ import ZappPlugins
         parameters["Item Duration"] = "None Provided"
         parameters["Timecode"] = "None Provided"
         isLive = true
+    }
+    
+    @objc public func adStart() {
+        if parameters["Video Ad Type"] == "Preroll" {
+            parameters["Ad Break Time"] = "00:00:00"
+        } else {
+            parameters["Ad Break Time"] = String.create(fromInterval: videoProgress)
+        }
+        adBreakStarted = Date()
+    }
+    
+    @objc public func adEnd() {
+        var adExitMethod = "Completed"
+        
+        if isAdSkipped {
+            adExitMethod = "Skipped"
+        }
+        
+        if isAdClicked {
+            adExitMethod = "Clicked"
+        }
+        
+        parameters["Ad Exit Method"] = adExitMethod
+        if let adBreakStartTime = adBreakStarted {
+            parameters["Ad Break Duration"] = String.create(fromInterval: Date().timeIntervalSince(adBreakStartTime))
+        }
     }
     
     // MARK: - Private methods
@@ -370,6 +440,35 @@ import ZappPlugins
         properties["Error Code"] = parameters["Error Code"]
         properties["Advertising Provider"] = parameters["Advertising Provider"]
         properties["Error Domain"] = parameters["Error Domain"]
+        
+        return properties
+    }
+    
+    private func adPlayProperies() -> Dictionary<String, String> {
+        var properties = Dictionary<String, String>()
+        properties["Video Ad Type"] = parameters["Video Ad Type"]
+        properties["Ad Provider"] = "DFP"
+        properties["Ad Unit"] = parameters["Ad Unit"]
+        properties["Skipped"] = parameters["Skipped"]
+        properties["Content Video Duration"] = parameters["Item Duration"]
+        properties["Ad Break Time"] = parameters["Ad Break Time"]
+        properties["Ad Break Duration"] = parameters["Ad Break Duration"]
+        properties["Ad Exit Method"] = parameters["Ad Exit Method"]
+        if parameters["Video Ad Type"] == "Preroll" {
+            properties["Time When Exited"] = "00:00:00"
+        } else {
+            properties["Time When Exited"] = parameters["Timecode"]
+        }
+        properties["Free or Paid"] = parameters["Free or Paid"]
+        properties["Clicked"] = parameters["Clicked"]
+        properties["Item ID"] = parameters["Item ID"]
+        properties["Item Name"] = parameters["Item Name"]
+        properties["VOD Type"] = parameters["VOD Type"]
+        
+        
+        isAdSkipped = false
+        isAdClicked = false
+        adBreakStarted = nil
         
         return properties
     }
