@@ -26,30 +26,36 @@ public class AdvertisingEventsAnalytics
         AdvertisingEvents.OnAdSkippedListener,
         AdvertisingEvents.OnAdTimeListener {
 
-    private Playable playable;
     private JWPlayerView playerView;
     private AnalyticsData analyticsData;
+    private AdState adState = AdState.UNDEFINED;
+
+    private enum AdState {
+        UNDEFINED,
+        PLAY
+    }
 
     public AdvertisingEventsAnalytics(AnalyticsData analyticsData, Playable playable, JWPlayerView playerView) {
-        this.playable = playable;
         this.playerView = playerView;
         this.analyticsData = analyticsData;
         playerView.addOnAdPlayListener(this);
         playerView.addOnAdCompleteListener(this);
         playerView.addOnAdMetaListener(this);
         playerView.addOnAdErrorListener(this);
+        playerView.addOnAdClickListener(this);
+        playerView.addOnAdSkippedListener(this);
         playerView.addOnAdTimeListener(this);
     }
 
     @Override
     public void onAdPlay(AdPlayEvent adPlayEvent) {
-        analyticsData.setItemDuration(playerView);
+        adState = AdState.PLAY;
         analyticsData.setAdBreakTime(playerView);
     }
 
     @Override
     public void onAdComplete(AdCompleteEvent adCompleteEvent) {
-        analyticsData.setItemDuration(playerView);
+        adState = AdState.UNDEFINED;
         analyticsData.setAdExitMethod(AnalyticsTypes.AdExitMethod.COMPLETED);
         analyticsData.setAdSkipped(AnalyticsTypes.Skipped.NO);
         AnalyticsAdapter.logWatchVideoAdvertising(analyticsData);
@@ -57,6 +63,7 @@ public class AdvertisingEventsAnalytics
 
     @Override
     public void onAdError(AdErrorEvent adErrorEvent) {
+        adState = AdState.UNDEFINED;
         String adError = adErrorEvent.getMessage();
         analyticsData.setAdExitMethod(AnalyticsTypes.AdExitMethod.AD_SERVER_ERROR);
         if (adError != null)
@@ -75,11 +82,13 @@ public class AdvertisingEventsAnalytics
     public void onAdClick(AdClickEvent adClickEvent) {
         analyticsData.setAdClicked(AnalyticsTypes.AdClicked.YES);
         analyticsData.setAdExitMethod(AnalyticsTypes.AdExitMethod.CLICKED);
+        analyticsData.setAdClicked(AnalyticsTypes.AdClicked.NO);
         AnalyticsAdapter.logWatchVideoAdvertising(analyticsData);
     }
 
     @Override
     public void onAdSkipped(AdSkippedEvent adSkippedEvent) {
+        adState = AdState.UNDEFINED;
         analyticsData.setAdSkipped(AnalyticsTypes.Skipped.YES);
         analyticsData.setAdExitMethod(AnalyticsTypes.AdExitMethod.SKIPPED);
         AnalyticsAdapter.logWatchVideoAdvertising(analyticsData);
@@ -94,8 +103,10 @@ public class AdvertisingEventsAnalytics
     }
 
     public void backPressed() {
-        analyticsData.setAdExitMethod(AnalyticsTypes.AdExitMethod.ANDROID_BACK_BUTTON);
-        AnalyticsAdapter.logWatchVideoAdvertising(analyticsData);
+        if (adState == AdState.PLAY) {
+            analyticsData.setAdExitMethod(AnalyticsTypes.AdExitMethod.ANDROID_BACK_BUTTON);
+            AnalyticsAdapter.logWatchVideoAdvertising(analyticsData);
+        }
     }
 
     @Nullable
