@@ -219,9 +219,6 @@ static JWCastingDevice *_connectedDevice;
     
     self.extensionsDictionary = playableItem.extensionsDictionary;
     
-    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"Play VOD Item"
-                                                                 parameters:self.extensionsDictionary];
-    
     if (self.adConfig) {
         config.advertising = self.adConfig;
         self.adConfig = nil;
@@ -243,6 +240,10 @@ static JWCastingDevice *_connectedDevice;
         // ad configuration dictionary scheduling
         for (NSDictionary *adConfiguration in ads)
         {
+            if ([adConfiguration isKindOfClass:NSDictionary.class] == false) {
+                continue;
+            }
+            
             NSString *type = adConfiguration[@"type"];
             
             if ([type  isEqual: @"vmap"]) {
@@ -492,18 +493,21 @@ static JWCastingDevice *_connectedDevice;
 
 - (void)airplayButtonTapped:(UIGestureRecognizer *)sender {
     if (self.allowAirplay) {
-        [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"Tap Cast" parameters:self.extensionsDictionary];
+        [self.analyticsStorage sendWithAnalyticsEvent:AnalyticsEventsTapCast
+                                                timed:false];
     }
 }
 - (void)handleScreenConnected:(NSNotification *)sender {
     if ([UIScreen screens].count > 1 && self.allowAirplay) {
-        [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"Cast Start" parameters:self.extensionsDictionary];
+        [self.analyticsStorage sendWithAnalyticsEvent:AnalyticsEventsCastStart
+                                                timed:false];
     }
 }
 
 - (void)handleScreenDisconnected:(NSNotification *)sender {
     if ([UIScreen screens].count == 1 && self.allowAirplay) {
-        [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"Cast Stop" parameters:self.extensionsDictionary];
+        [self.analyticsStorage sendWithAnalyticsEvent:AnalyticsEventsCastStop
+                                                timed:false];
     }
 }
 
@@ -522,42 +526,43 @@ static JWCastingDevice *_connectedDevice;
 -(void)onTime:(JWEvent<JWTimeEvent> *)event {
     CGFloat pos = [event position];
     CGFloat dur = [event duration];
-    CGFloat percentage = (pos / dur) * 100;
     
     if (dur >= 0) {
         self.analyticsStorage.duration = dur;
-        self.analyticsStorage.videoProgress = percentage;
+        self.analyticsStorage.videoProgress = pos;
     } else {
         [self.analyticsStorage setLiveProperties];
     }
+    
+    [self.analyticsStorage sendWithAnalyticsEvent:AnalyticsEventsPlay
+                                            timed:true];
 }
 
 -(void)onSeek:(JWEvent<JWSeekEvent> *)event {
     self.analyticsStorage.videoProgress = 0;
+    self.analyticsStorage.seek = [[SeekEvent alloc] initFrom:event.position
+                                                          to:event.offset];
+    [self.analyticsStorage sendWithAnalyticsEvent:AnalyticsEventsSeek
+                                            timed:false];
 }
 
--(void)onAdPlay:(JWAdEvent<JWAdStateChangeEvent> *)event {
-    NSMutableDictionary *extensions = self.extensionsDictionary.mutableCopy;
-    [extensions setObject:@"Start"
-                   forKey:@"advertisement_position"];
-    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"Watch Video Advertisement"
-                                                                 parameters:extensions];
-}
-
--(void)onAdPause:(JWAdEvent<JWAdStateChangeEvent> *)event {
-    NSMutableDictionary *extensions = self.extensionsDictionary.mutableCopy;
-    [extensions setObject:@"Pause"
-                   forKey:@"advertisement_position"];
-    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"Watch Video Advertisement"
-                                                                 parameters:extensions];
+- (void)onAdImpression:(JWAdEvent<JWAdImpressionEvent> *)event {
+    self.analyticsStorage.adPosition = event.adPosition;
+    self.analyticsStorage.adURL = event.tag;
+    [self.analyticsStorage adStart];
 }
 
 -(void)onAdComplete:(JWAdEvent<JWAdDetailEvent> *)event {
-    NSMutableDictionary *extensions = self.extensionsDictionary.mutableCopy;
-    [extensions setObject:@"End"
-                   forKey:@"advertisement_position"];
-    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"Watch Video Advertisement"
-                                                                 parameters:extensions];
+    [self.analyticsStorage adEnd];
+    [self.analyticsStorage sendWithAnalyticsEvent:AnalyticsEventsAdPlayed timed:false];
+}
+
+- (void)onAdClick:(JWAdEvent<JWAdDetailEvent> *)event {
+    self.analyticsStorage.isAdClicked = true;
+}
+
+- (void)onAdSkipped:(JWAdEvent<JWAdDetailEvent> *)event {
+    self.analyticsStorage.isAdSkipped = true;
 }
 
 - (void)onBeforePlay {
@@ -577,6 +582,7 @@ static JWCastingDevice *_connectedDevice;
             }
         }];
     }
+    self.analyticsStorage.videoStartTime = [NSDate new];
 }
 
 -(void)onPlay:(JWEvent<JWStateChangeEvent> *)event {
@@ -585,8 +591,7 @@ static JWCastingDevice *_connectedDevice;
 }
 
 -(void)onPause:(JWEvent<JWStateChangeEvent> *)event {
-    [[[ZAAppConnector sharedInstance] analyticsDelegate] trackEventWithName:@"Pause Video"
-                                                                 parameters:self.extensionsDictionary];
+    [self.analyticsStorage sendWithAnalyticsEvent:AnalyticsEventsPause timed:false];
 }
 
 - (void)onFullscreen:(JWEvent<JWFullscreenEvent> *)event {
@@ -629,6 +634,27 @@ static JWCastingDevice *_connectedDevice;
     if (self.allowChromecast) {
         [self.buttonsStackView addArrangedSubview:self.castingButton];
     }
+    
+    [self.analyticsStorage sendWithAnalyticsEvent:AnalyticsEventsSwitchPlayerView
+                                            timed:false];
+}
+
+- (void)onError:(JWEvent<JWErrorEvent> *)event {
+    self.analyticsStorage.playError = event.error;
+    [self.analyticsStorage sendWithAnalyticsEvent:AnalyticsEventsPlayError
+                                            timed:false];
+}
+
+- (void)onSetupError:(JWEvent<JWErrorEvent> *)event {
+    self.analyticsStorage.playError = event.error;
+    [self.analyticsStorage sendWithAnalyticsEvent:AnalyticsEventsPlayError
+                                            timed:false];
+}
+
+- (void)onAdError:(JWAdEvent<JWErrorEvent> *)event {
+    self.analyticsStorage.adError = event.error;
+    [self.analyticsStorage sendWithAnalyticsEvent:AnalyticsEventsAdError
+                                            timed:false];
 }
 
 // MARK: - Chromecast support
@@ -677,6 +703,9 @@ static JWCastingDevice *_connectedDevice;
 
 -(void)onCasting {
     [self updateForCasting];
+    
+    [self.analyticsStorage sendWithAnalyticsEvent:AnalyticsEventsSwitchPlayerView
+                                            timed:false];
 }
 
 -(void)onCastingEnded:(NSError *)error {
@@ -709,6 +738,13 @@ static JWCastingDevice *_connectedDevice;
     [self.castingButton setImage:[[self castOffImage] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
                         forState:UIControlStateNormal];
     [self.castingButton setTintColor:[UIColor whiteColor]];
+    if (self.isInlinePlayer) {
+        self.analyticsStorage.playerViewType = PlayerViewTypeInline;
+    } else {
+        self.analyticsStorage.playerViewType = PlayerViewTypeFullScreen;
+    }
+    [self.analyticsStorage sendWithAnalyticsEvent:AnalyticsEventsSwitchPlayerView
+                                            timed:false];
 }
 
 - (void)updateForCasting {
@@ -718,7 +754,6 @@ static JWCastingDevice *_connectedDevice;
     [self.castingButton setTintColor:[UIColor greenColor]];
     self.analyticsStorage.isCasting = true;
     self.analyticsStorage.playerViewType = PlayerViewTypeCast;
-    
 }
 
 - (void)updateForCastingEnd {
