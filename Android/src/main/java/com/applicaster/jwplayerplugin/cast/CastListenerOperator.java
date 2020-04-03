@@ -93,7 +93,7 @@ public class CastListenerOperator implements SessionManagerListener<CastSession>
             Log.i(TAG, "Cast session RESUMED for: " + castSession.getCastDevice().getFriendlyName());
         this.castSession = castSession;
         playerView.get().play();
-        analyticsData.setPlayerView(AnalyticsTypes.PlayerView.CAST);
+        analyticsData.setView(AnalyticsTypes.PlayerView.CAST);
         processViewChildren(playerView.get());
     }
 
