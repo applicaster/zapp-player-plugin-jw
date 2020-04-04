@@ -227,10 +227,10 @@ public class AnalyticsTypes {
 
 
     @Retention(RetentionPolicy.SOURCE)
-    @StringDef({VideoAdError.PLAYABLE_PROPERTIES,
-                VideoAdError.VIDEO_PLAYER_PLUGIN,
-                VideoAdError.ERROR_CODE})
-    public @interface VideoAdError {
+    @StringDef({VideoAdErrorProps.PLAYABLE_PROPERTIES,
+                VideoAdErrorProps.VIDEO_PLAYER_PLUGIN,
+                VideoAdErrorProps.ERROR_CODE})
+    public @interface VideoAdErrorProps {
         String PLAYABLE_PROPERTIES = "Playable Properties";
         String VIDEO_PLAYER_PLUGIN = "Video Player Plugin";
         String ERROR_CODE = "Error Code";

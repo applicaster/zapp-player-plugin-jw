@@ -191,8 +191,8 @@ public class AnalyticsAdapter {
         propsMap.put(CommonProps.VOD_TYPE, data.getVodType());
         propsMap.put(CommonProps.VIEW, data.getView());
         //Video ad error props
-        propsMap.put(VideoAdError.VIDEO_PLAYER_PLUGIN, data.getVideoPlayerPlugin());
-        propsMap.put(VideoAdError.ERROR_CODE, data.getVideoAdErrorCode());
+        propsMap.put(VideoAdErrorProps.VIDEO_PLAYER_PLUGIN, data.getVideoPlayerPlugin());
+        propsMap.put(VideoAdErrorProps.ERROR_CODE, data.getVideoAdErrorCode());
         propsMap.put(AdProps.ADVERTISING_PROVIDER, data.getAdProvider());
         return propsMap;
     }
