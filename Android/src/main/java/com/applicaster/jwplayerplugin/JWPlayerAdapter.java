@@ -12,6 +12,8 @@ import androidx.fragment.app.Fragment;
 import com.applicaster.controller.PlayerLoader;
 import com.applicaster.jwplayerplugin.analytics.AnalyticsData;
 import com.applicaster.jwplayerplugin.analytics.AnalyticsTypes;
+import com.applicaster.jwplayerplugin.analytics.events.AdvertisingEventsAnalytics;
+import com.applicaster.jwplayerplugin.analytics.events.PlayerEventsAnalytics;
 import com.applicaster.jwplayerplugin.cast.CastProvider;
 import com.applicaster.player.PlayerLoaderI;
 import com.applicaster.player.defaultplayer.BasePlayer;
@@ -52,6 +54,9 @@ public class JWPlayerAdapter
 
     private Context context;
     private CastProvider castProvider;
+
+    private PlayerEventsAnalytics playerEventsAnalytics;
+    private AdvertisingEventsAnalytics advertisingEventsAnalytics;
 
     /**
      * Optional initialization for the PlayerContract - will be called in the App's onCreate
@@ -151,11 +156,15 @@ public class JWPlayerAdapter
                 , ViewGroup.LayoutParams.MATCH_PARENT);
         videoContainerView.addView(jwPlayerContainer, playerContainerLayoutParams);
 
+        AnalyticsData analyticsData = new AnalyticsData(getFirstPlayable(), jwPlayerView);
+        playerEventsAnalytics = new PlayerEventsAnalytics(analyticsData, getFirstPlayable(), jwPlayerView);
+        advertisingEventsAnalytics = new AdvertisingEventsAnalytics(analyticsData, getFirstPlayable(), jwPlayerView);
+
         if (this.context instanceof Activity && enableChromecast) {
             castProvider = new CastProvider((Activity) this.context, jwPlayerContainer);
             castProvider.init(
                     getFirstPlayable(),
-                    new AnalyticsData(getFirstPlayable(), jwPlayerView),
+                    analyticsData,
                     AnalyticsTypes.PlayerView.INLINE
             );
             castProvider.addSessionManagerListener();
@@ -171,6 +180,8 @@ public class JWPlayerAdapter
      */
     @Override
     public void removeInline(@NonNull ViewGroup videoContainerView) {
+        playerEventsAnalytics.backPressed();
+        advertisingEventsAnalytics.backPressed();
         if(videoContainerView.indexOfChild(jwPlayerContainer) >= 0) {
             jwPlayerContainer.getJWPlayerView().onDestroy();
             videoContainerView.removeView(jwPlayerContainer);
@@ -262,8 +273,8 @@ public class JWPlayerAdapter
 
     @Override
     public void onControlBarVisibilityChanged(ControlBarVisibilityEvent controlBarVisibilityEvent) {
-        if (castProvider != null && castProvider.getCastContext().getCastState() != CastState.NO_DEVICES_AVAILABLE
-            && castProvider.getCastContext().getCastState() != CastState.NOT_CONNECTED) {
+        if (castProvider != null
+                && castProvider.getCastContext().getCastState() != CastState.NO_DEVICES_AVAILABLE) {
             if (controlBarVisibilityEvent.isVisible()) {
                 castProvider.getMediaRouteButton().setVisibility(View.VISIBLE);
             } else {

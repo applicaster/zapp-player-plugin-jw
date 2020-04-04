@@ -82,8 +82,8 @@ public class AdvertisingEventsAnalytics
     public void onAdClick(AdClickEvent adClickEvent) {
         analyticsData.setAdClicked(AnalyticsTypes.AdClicked.YES);
         analyticsData.setAdExitMethod(AnalyticsTypes.AdExitMethod.CLICKED);
-        analyticsData.setAdClicked(AnalyticsTypes.AdClicked.NO);
         AnalyticsAdapter.logWatchVideoAdvertising(analyticsData);
+        analyticsData.setAdClicked(AnalyticsTypes.AdClicked.NO);
     }
 
     @Override
