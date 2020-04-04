@@ -39,6 +39,7 @@ public class CastProvider {
     private MediaRouteButton mediaRouteButton;
     private CastListenerOperator castListenerOperator;
     private String castBtnPreviousState = AnalyticsTypes.CastBtnPreviousState.OFF;
+    private String screenAnalyticsState = AnalyticsTypes.PlayerView.FULLSCREEN;
 
 
     public CastProvider(Activity context, JWPlayerContainer container) {
@@ -58,12 +59,14 @@ public class CastProvider {
         return castListenerOperator;
     }
 
-    public void init(Playable playable, boolean isFullscreen) {
+    public void init(Playable playable, AnalyticsData analyticsData, String screenAnalyticsState) {
         //play services availability check and Chromecast init
+        this.analyticsData = analyticsData;
+        this.screenAnalyticsState = screenAnalyticsState;
         if (isGoogleApiAvailable(context)) {
             initMediaRouteButton();
             castContext = CastContext.getSharedInstance(context);
-            collectCastAnalyticsData(playable, isFullscreen);
+            collectCastAnalyticsData(playable);
             castListenerOperator = new CastListenerOperator(playerView, analyticsData);
         }
     }
@@ -77,6 +80,10 @@ public class CastProvider {
         if (castContext.getSessionManager() != null) {
             castContext.getSessionManager().removeSessionManagerListener(castListenerOperator, CastSession.class);
         }
+    }
+
+    public void setScreenAnalyticsState(String screenAnalyticsState) {
+        this.screenAnalyticsState = screenAnalyticsState;
     }
 
     public void release() {
@@ -99,7 +106,6 @@ public class CastProvider {
             @Override
             public void onClick(View v) {
                 analyticsData.setTimeCode(playerView.getPosition());
-                analyticsData.setItemDuration(playerView.getDuration());
                 if (castBtnPreviousState.equals(AnalyticsTypes.CastBtnPreviousState.OFF))
                     castBtnPreviousState = AnalyticsTypes.CastBtnPreviousState.ON;
                 else
@@ -135,18 +141,8 @@ public class CastProvider {
     }
 
 
-    private void collectCastAnalyticsData(Playable playable, boolean isFullscreen) {
-        analyticsData = new AnalyticsData();
-        analyticsData.setFreeOrPaid(playable.isFree());
-        analyticsData.setItemId(playable.getPlayableId());
-        analyticsData.setItemName(playable.getPlayableName());
-        analyticsData.setVideoType(playable);
-        analyticsData.setVodType(playable);
-        if (isFullscreen) {
-            analyticsData.setPlayerView(AnalyticsTypes.PlayerView.FULLSCREEN);
-        } else {
-            analyticsData.setPlayerView(AnalyticsTypes.PlayerView.INLINE);
-        }
+    private void collectCastAnalyticsData(Playable playable) {
+        analyticsData.setView(this.screenAnalyticsState);
         analyticsData.setPreviousState(castBtnPreviousState);
     }
 

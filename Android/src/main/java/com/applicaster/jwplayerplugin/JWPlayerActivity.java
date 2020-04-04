@@ -14,7 +14,9 @@ import android.view.WindowManager;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.applicaster.analytics.AnalyticsAgentUtil;
+import com.applicaster.jwplayerplugin.analytics.AnalyticsData;
+import com.applicaster.jwplayerplugin.analytics.events.AdvertisingEventsAnalytics;
+import com.applicaster.jwplayerplugin.analytics.events.PlayerEventsAnalytics;
 import com.applicaster.jwplayerplugin.cast.CastProvider;
 import com.applicaster.jwplayerplugin.networkutil.NetworkChangeReceiver;
 import com.applicaster.jwplayerplugin.networkutil.NetworkUtil;
@@ -26,38 +28,27 @@ import com.google.android.gms.cast.framework.CastState;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.core.PlayerState;
 import com.longtailvideo.jwplayer.events.AdCompleteEvent;
-import com.longtailvideo.jwplayer.events.AdPauseEvent;
 import com.longtailvideo.jwplayer.events.AdPlayEvent;
 import com.longtailvideo.jwplayer.events.ControlBarVisibilityEvent;
 import com.longtailvideo.jwplayer.events.ErrorEvent;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
-import com.longtailvideo.jwplayer.events.PauseEvent;
-import com.longtailvideo.jwplayer.events.PlayEvent;
 import com.longtailvideo.jwplayer.events.SeekEvent;
-import com.longtailvideo.jwplayer.events.TimeEvent;
 import com.longtailvideo.jwplayer.events.listeners.AdvertisingEvents;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class JWPlayerActivity
         extends AppCompatActivity
         implements VideoPlayerEvents.OnFullscreenListener,
-        VideoPlayerEvents.OnTimeListener,
-        VideoPlayerEvents.OnSeekListener,
-        AdvertisingEvents.OnAdPlayListener,
-        AdvertisingEvents.OnAdPauseListener,
-        AdvertisingEvents.OnAdCompleteListener,
-        VideoPlayerEvents.OnPlayListener,
-        VideoPlayerEvents.OnPauseListener,
         VideoPlayerEvents.OnControlBarVisibilityListener,
+        VideoPlayerEvents.OnSeekListener,
+        AdvertisingEvents.OnAdCompleteListener,
+        AdvertisingEvents.OnAdPlayListener,
         VideoPlayerEvents.OnErrorListener,
         NetworkUtil.ConnectionAvailabilityCallback {
 
     private static final String PLAYABLE_KEY = "playable";
-    private static final String PERCENTAGE_KEY = "percentage";
-    private static final String ADVERTISEMENT_POSITION_KEY = "advertisement_position";
     private static String ENABLE_CHROMECAST_KEY = "enable_chromecast";
 
     /**
@@ -65,8 +56,8 @@ public class JWPlayerActivity
      */
     private JWPlayerView mPlayerView;
     protected JWPlayerContainer jwPlayerContainer;
-    private double trackedPercentage;
-    private Map<String, String> analyticsParams;
+    private PlayerEventsAnalytics playerEventsAnalytics;
+    private AdvertisingEventsAnalytics advertisingEventsAnalytics;
     private Playable playable;
 
     private CastProvider castProvider;
@@ -86,13 +77,9 @@ public class JWPlayerActivity
         jwPlayerContainer = findViewById(R.id.playerView);
         mPlayerView = jwPlayerContainer.getJWPlayerView();
         mPlayerView.addOnFullscreenListener(this);
-        mPlayerView.addOnTimeListener(this);
         mPlayerView.addOnSeekListener(this);
         mPlayerView.addOnAdPlayListener(this);
-        mPlayerView.addOnAdPauseListener(this);
         mPlayerView.addOnAdCompleteListener(this);
-        mPlayerView.addOnPlayListener(this);
-        mPlayerView.addOnPauseListener(this);
         mPlayerView.addOnControlBarVisibilityListener(this);
         mPlayerView.addOnErrorListener(this);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -100,10 +87,15 @@ public class JWPlayerActivity
         playable = (Playable) getIntent().getSerializableExtra(PLAYABLE_KEY);
         boolean enableChromecast = getIntent().getBooleanExtra(ENABLE_CHROMECAST_KEY, false);
 
+        //analytics data and events
+        AnalyticsData analyticsData = new AnalyticsData(playable, mPlayerView);
+        playerEventsAnalytics = new PlayerEventsAnalytics(analyticsData, playable, mPlayerView);
+        advertisingEventsAnalytics = new AdvertisingEventsAnalytics(analyticsData, playable, mPlayerView);
+
         //Initialize cast provider
         if (enableChromecast) {
             castProvider = new CastProvider(this, jwPlayerContainer);
-            castProvider.init(playable, true);
+            castProvider.init(playable, analyticsData, playerEventsAnalytics.getScreenAnalyticsState());
         }
 
 
@@ -111,13 +103,12 @@ public class JWPlayerActivity
         if (PlayersManager.getCurrentPlayer() != null) {
             configuration = PlayersManager.getCurrentPlayer().getPluginConfigurationParams();
         }
-        analyticsParams = new HashMap<>(playable.getAnalyticsParams());
-        AnalyticsAgentUtil.logEvent("Play Video Item", analyticsParams);
 
         AutomationManager.getInstance().setAccessibilityIdentifier(mPlayerView, "jw_player_screen");
 
         // Load a media source
         mPlayerView.load(JWPlayerUtil.getPlaylistItem(playable, configuration));
+        analyticsData.setItemDuration(mPlayerView);
     }
 
     @Override
@@ -186,6 +177,7 @@ public class JWPlayerActivity
         } else {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
+        castProvider.setScreenAnalyticsState(playerEventsAnalytics.getScreenAnalyticsState());
 
         // When going to Fullscreen we want to set fitsSystemWindows="false"
         jwPlayerContainer.setFitsSystemWindows(!fullscreenEvent.getFullscreen());
@@ -210,29 +202,7 @@ public class JWPlayerActivity
     }
 
     @Override
-    public void onTime(TimeEvent timeEvent) {
-        double position = timeEvent.getPosition();
-        double duration = timeEvent.getDuration();
-        double percent = (position / duration) * 100;
-
-        if (percent >= 25f && percent < 26f && trackedPercentage < 25) {
-            trackedPercentage = 25;
-        } else if (percent >= 50f && percent < 51f && trackedPercentage < 50) {
-            trackedPercentage = 50;
-        } else if (percent >= 75f && percent < 76f && trackedPercentage < 75) {
-            trackedPercentage = 75;
-        } else if (percent >= 95f && percent < 96 && trackedPercentage < 95) {
-            trackedPercentage = 95;
-        } else return;
-
-        Map<String, String> params = new HashMap<>(analyticsParams);
-        params.put(PERCENTAGE_KEY, String.valueOf(trackedPercentage));
-        AnalyticsAgentUtil.logEvent("Watch VOD Percentage", params);
-    }
-
-    @Override
     public void onSeek(SeekEvent seekEvent) {
-        trackedPercentage = 0;
         if (castProvider != null && castProvider.getCastListenerOperator().getCastSession() != null) {
             MediaSeekOptions seekOptions = new MediaSeekOptions.Builder()
                     .setPosition((long) seekEvent.getPosition())
@@ -283,16 +253,6 @@ public class JWPlayerActivity
                 && castProvider.getCastContext().getCastState() != CastState.NO_DEVICES_AVAILABLE) {
             castProvider.getMediaRouteButton().setVisibility(View.VISIBLE);
         }
-        Map<String, String> params = new HashMap<>(analyticsParams);
-        params.put(ADVERTISEMENT_POSITION_KEY, "Start");
-        AnalyticsAgentUtil.logEvent("Watch Video Advertisement", params);
-    }
-
-    @Override
-    public void onAdPause(AdPauseEvent adPauseEvent) {
-        Map<String, String> params = new HashMap<>(analyticsParams);
-        params.put(ADVERTISEMENT_POSITION_KEY, "Pause");
-        AnalyticsAgentUtil.logEvent("Watch Video Advertisement", params);
     }
 
     @Override
@@ -302,19 +262,13 @@ public class JWPlayerActivity
                 && castProvider.getCastContext().getCastState() != CastState.NO_DEVICES_AVAILABLE) {
             castProvider.getMediaRouteButton().setVisibility(View.GONE);
         }
-        Map<String, String> params = new HashMap<>(analyticsParams);
-        params.put(ADVERTISEMENT_POSITION_KEY, "End");
-        AnalyticsAgentUtil.logEvent("Watch Video Advertisement", params);
     }
 
     @Override
-    public void onPlay(PlayEvent playEvent) {
-        AnalyticsAgentUtil.logEvent("Start Video", analyticsParams);
-    }
-
-    @Override
-    public void onPause(PauseEvent pauseEvent) {
-        AnalyticsAgentUtil.logEvent("Pause Video", analyticsParams);
+    public void onBackPressed() {
+        super.onBackPressed();
+        playerEventsAnalytics.backPressed();
+        advertisingEventsAnalytics.backPressed();
     }
 
     @Override

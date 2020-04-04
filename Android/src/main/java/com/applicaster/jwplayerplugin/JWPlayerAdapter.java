@@ -10,6 +10,8 @@ import android.view.WindowManager;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import com.applicaster.controller.PlayerLoader;
+import com.applicaster.jwplayerplugin.analytics.AnalyticsData;
+import com.applicaster.jwplayerplugin.analytics.AnalyticsTypes;
 import com.applicaster.jwplayerplugin.cast.CastProvider;
 import com.applicaster.player.PlayerLoaderI;
 import com.applicaster.player.defaultplayer.BasePlayer;
@@ -151,7 +153,11 @@ public class JWPlayerAdapter
 
         if (this.context instanceof Activity && enableChromecast) {
             castProvider = new CastProvider((Activity) this.context, jwPlayerContainer);
-            castProvider.init(getFirstPlayable(), false);
+            castProvider.init(
+                    getFirstPlayable(),
+                    new AnalyticsData(getFirstPlayable(), jwPlayerView),
+                    AnalyticsTypes.PlayerView.INLINE
+            );
             castProvider.addSessionManagerListener();
         }
 
