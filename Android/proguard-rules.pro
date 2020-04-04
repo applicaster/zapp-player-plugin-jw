@@ -13,6 +13,7 @@
    public <fields>;
    public <methods>;
 }
+-keep public class com.applicaster.jwplayerplugin.cast.CastOptionsProvider { *; }
 
 -keepclassmembers class com.longtailvideo.jwplayer.** {
     @android.webkit.JavascriptInterface *;

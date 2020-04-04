@@ -2,12 +2,15 @@ package com.applicaster.jwplayerplugin;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 import com.applicaster.controller.PlayerLoader;
+import com.applicaster.jwplayerplugin.cast.CastProvider;
 import com.applicaster.player.PlayerLoaderI;
 import com.applicaster.player.defaultplayer.BasePlayer;
 import com.applicaster.plugin_manager.login.LoginContract;
@@ -15,8 +18,10 @@ import com.applicaster.plugin_manager.login.LoginManager;
 import com.applicaster.plugin_manager.playersmanager.Playable;
 import com.applicaster.plugin_manager.playersmanager.PlayableConfiguration;
 import com.applicaster.plugin_manager.screen.PluginScreen;
+import com.google.android.gms.cast.framework.CastState;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.core.PlayerState;
+import com.longtailvideo.jwplayer.events.ControlBarVisibilityEvent;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 import com.longtailvideo.jwplayer.fullscreen.FullscreenHandler;
@@ -26,7 +31,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class JWPlayerAdapter extends BasePlayer implements FullscreenHandler, VideoPlayerEvents.OnFullscreenListener, PluginScreen {
+public class JWPlayerAdapter
+        extends    BasePlayer
+        implements FullscreenHandler,
+                   VideoPlayerEvents.OnFullscreenListener,
+                   VideoPlayerEvents.OnControlBarVisibilityListener,
+                   PluginScreen {
 
     public static final String TAG = "JWPLAYER_DEBUG_KEY";
     private static final String LICENSE_KEY = "LICENSE_KEY";
@@ -36,6 +46,10 @@ public class JWPlayerAdapter extends BasePlayer implements FullscreenHandler, Vi
     private JWPlayerContainer jwPlayerContainer;
     private JWPlayerView jwPlayerView;
     private String licenseKey;
+    private boolean enableChromecast = false;
+
+    private Context context;
+    private CastProvider castProvider;
 
     /**
      * Optional initialization for the PlayerContract - will be called in the App's onCreate
@@ -53,7 +67,7 @@ public class JWPlayerAdapter extends BasePlayer implements FullscreenHandler, Vi
     @Override
     public void init(@NonNull Playable playable, @NonNull Context context) {
         super.init(playable, context);
-
+        this.context = context;
         JWPlayerView.setLicenseKey(context, licenseKey);
     }
 
@@ -78,6 +92,7 @@ public class JWPlayerAdapter extends BasePlayer implements FullscreenHandler, Vi
     public void setPluginConfigurationParams(Map params) {
         super.setPluginConfigurationParams(params);
         licenseKey = params.get(LICENSE_KEY).toString();
+        enableChromecast = Boolean.parseBoolean(params.get("Chromecast").toString());
     }
 
     /**
@@ -122,15 +137,23 @@ public class JWPlayerAdapter extends BasePlayer implements FullscreenHandler, Vi
      */
     @Override
     public void attachInline(@NonNull ViewGroup videoContainerView) {
-        jwPlayerContainer =new JWPlayerContainer(videoContainerView.getContext());
+
+        jwPlayerContainer = new JWPlayerContainer(videoContainerView.getContext());
         jwPlayerView = jwPlayerContainer.getJWPlayerView();
         jwPlayerView.setFullscreenHandler(this);
         jwPlayerView.addOnFullscreenListener(this);
+        jwPlayerView.addOnControlBarVisibilityListener(this);
 
         ViewGroup.LayoutParams playerContainerLayoutParams
                 = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT
                 , ViewGroup.LayoutParams.MATCH_PARENT);
         videoContainerView.addView(jwPlayerContainer, playerContainerLayoutParams);
+
+        if (this.context instanceof Activity && enableChromecast) {
+            castProvider = new CastProvider((Activity) this.context, jwPlayerContainer);
+            castProvider.init(getFirstPlayable(), false);
+            castProvider.addSessionManagerListener();
+        }
 
         openLoginPluginIfNeeded(true);
     }
@@ -145,6 +168,10 @@ public class JWPlayerAdapter extends BasePlayer implements FullscreenHandler, Vi
         if(videoContainerView.indexOfChild(jwPlayerContainer) >= 0) {
             jwPlayerContainer.getJWPlayerView().onDestroy();
             videoContainerView.removeView(jwPlayerContainer);
+        }
+        if (castProvider != null) {
+            castProvider.removeSessionManagerListener();
+            castProvider = null;
         }
     }
 
@@ -227,18 +254,39 @@ public class JWPlayerAdapter extends BasePlayer implements FullscreenHandler, Vi
         }
     }
 
+    @Override
+    public void onControlBarVisibilityChanged(ControlBarVisibilityEvent controlBarVisibilityEvent) {
+        if (castProvider != null && castProvider.getCastContext().getCastState() != CastState.NO_DEVICES_AVAILABLE
+            && castProvider.getCastContext().getCastState() != CastState.NOT_CONNECTED) {
+            if (controlBarVisibilityEvent.isVisible()) {
+                castProvider.getMediaRouteButton().setVisibility(View.VISIBLE);
+            } else {
+                castProvider.getMediaRouteButton().setVisibility(View.GONE);
+            }
+        }
+    }
+
     /************************** FullscreenHandler implementation ********************/
 
     @Override
     public void onFullscreenRequested() {
-        jwPlayerView.setFullscreen(false, false);
-        displayVideo(false);
+        if (context instanceof Activity) {
+            ((Activity) context).getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            ((Activity) context).getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+        }
+        jwPlayerContainer.setFitsSystemWindows(false);
+        jwPlayerView.setFullscreen(true, true);
         Log.d(JWPlayerAdapter.TAG, "onFullscreenRequested");
     }
 
     @Override
     public void onFullscreenExitRequested() {
-        jwPlayerView.play();
+        if (context instanceof Activity) {
+            ((Activity) context).getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+            ((Activity) context).getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        }
+        jwPlayerContainer.setFitsSystemWindows(true);
+        jwPlayerView.setFullscreen(false, true);
         Log.d(JWPlayerAdapter.TAG, "onFullscreenExitRequested");
     }
 
@@ -250,6 +298,7 @@ public class JWPlayerAdapter extends BasePlayer implements FullscreenHandler, Vi
     @Override
     public void onPause() {
         jwPlayerView.pause();
+        if (castProvider != null) castProvider.removeSessionManagerListener();
     }
 
     @Override
@@ -272,10 +321,7 @@ public class JWPlayerAdapter extends BasePlayer implements FullscreenHandler, Vi
 
     @Override
     public void onFullscreen(FullscreenEvent fullscreenEvent) {
-        if (jwPlayerView.getFullscreen()) {
-            jwPlayerView.setFullscreen(false, false);
-            displayVideo(false);
-        }
+        Log.d(JWPlayerAdapter.TAG, "onFullScreen");
     }
 
     //region PluginScreen

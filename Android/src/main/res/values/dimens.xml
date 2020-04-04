@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="media_route_btn_margins">30dp</dimen>
+</resources>
