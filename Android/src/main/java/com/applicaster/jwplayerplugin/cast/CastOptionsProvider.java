@@ -24,13 +24,6 @@ import java.util.Locale;
 
 public class CastOptionsProvider implements OptionsProvider {
 
-    private static String receiverApplicationId = CastMediaControlIntent.DEFAULT_MEDIA_RECEIVER_APPLICATION_ID;
-
-
-    public static void setReceiverApplicationId(String receiverApplicationId) {
-        CastOptionsProvider.receiverApplicationId = receiverApplicationId;
-    }
-
     @Override
     public CastOptions getCastOptions(Context context) {
         LaunchOptions launchOptions = new LaunchOptions.Builder()
@@ -49,7 +42,7 @@ public class CastOptionsProvider implements OptionsProvider {
                 .build();
 
         return new CastOptions.Builder()
-                .setReceiverApplicationId(receiverApplicationId)
+                .setReceiverApplicationId(CastMediaControlIntent.DEFAULT_MEDIA_RECEIVER_APPLICATION_ID)
                 .setCastMediaOptions(mediaOptions)
                 .setLaunchOptions(launchOptions)
                 .build();
