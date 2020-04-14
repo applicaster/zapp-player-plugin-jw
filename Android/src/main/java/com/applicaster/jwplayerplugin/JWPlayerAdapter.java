@@ -44,13 +44,16 @@ public class JWPlayerAdapter
 
     public static final String TAG = "JWPLAYER_DEBUG_KEY";
     private static final String LICENSE_KEY = "LICENSE_KEY";
+    public static final String CAST_ENABLED_KEY = "Chromecast";
+    public static final String CAST_RECEIVER_APP_ID = "Custom_Media_Receiver_ID";
 
 
     // Properties
     private JWPlayerContainer jwPlayerContainer;
     private JWPlayerView jwPlayerView;
-    private String licenseKey;
+    private String licenseKey = "";
     private boolean enableChromecast = false;
+    private String receiverApplicationID = "";
 
     private Context context;
     private CastProvider castProvider;
@@ -98,8 +101,19 @@ public class JWPlayerAdapter
     @Override
     public void setPluginConfigurationParams(Map params) {
         super.setPluginConfigurationParams(params);
-        licenseKey = params.get(LICENSE_KEY).toString();
-        enableChromecast = Boolean.parseBoolean(params.get("Chromecast").toString());
+
+        Object licenseKeyObj = params.get(LICENSE_KEY);
+        Object enableChromecastObj = params.get(CAST_ENABLED_KEY);
+        Object customMediaReceiverIdObj = params.get(CAST_RECEIVER_APP_ID);
+
+        if (licenseKeyObj != null)
+            licenseKey = licenseKeyObj.toString();
+
+        if (enableChromecastObj != null)
+            enableChromecast = JWPlayerUtil.parseBoolean(enableChromecastObj.toString());
+
+        if (customMediaReceiverIdObj != null)
+            receiverApplicationID = customMediaReceiverIdObj.toString();
     }
 
     /**
@@ -165,7 +179,8 @@ public class JWPlayerAdapter
             castProvider.init(
                     getFirstPlayable(),
                     analyticsData,
-                    AnalyticsTypes.PlayerView.INLINE
+                    AnalyticsTypes.PlayerView.INLINE,
+                    receiverApplicationID
             );
             castProvider.addSessionManagerListener();
         }

@@ -2,6 +2,7 @@ package com.applicaster.jwplayerplugin;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.applicaster.atom.helpers.MediaItemIdentifier;
@@ -232,5 +233,13 @@ public class JWPlayerUtil {
             return entry.getMediaUrl(identifier.build());
         }
         return "";
+    }
+
+    @NonNull
+    public static boolean parseBoolean(String s) {
+        if (s != null) {
+            return s.equalsIgnoreCase("true") || s.equalsIgnoreCase("1");
+        }
+        return false;
     }
 }

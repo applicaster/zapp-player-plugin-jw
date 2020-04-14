@@ -49,7 +49,6 @@ public class JWPlayerActivity
         NetworkUtil.ConnectionAvailabilityCallback {
 
     private static final String PLAYABLE_KEY = "playable";
-    private static String ENABLE_CHROMECAST_KEY = "enable_chromecast";
 
     /**
      * Reference to the {@link JWPlayerView}
@@ -85,7 +84,8 @@ public class JWPlayerActivity
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         playable = (Playable) getIntent().getSerializableExtra(PLAYABLE_KEY);
-        boolean enableChromecast = getIntent().getBooleanExtra(ENABLE_CHROMECAST_KEY, false);
+        boolean enableChromecast = getIntent().getBooleanExtra(JWPlayerAdapter.CAST_ENABLED_KEY, false);
+        String receiverAppId = getIntent().getStringExtra(JWPlayerAdapter.CAST_RECEIVER_APP_ID);
 
         //analytics data and events
         AnalyticsData analyticsData = new AnalyticsData(playable, mPlayerView);
@@ -95,7 +95,10 @@ public class JWPlayerActivity
         //Initialize cast provider
         if (enableChromecast) {
             castProvider = new CastProvider(this, jwPlayerContainer);
-            castProvider.init(playable, analyticsData, playerEventsAnalytics.getScreenAnalyticsState());
+            castProvider.init(playable,
+                    analyticsData,
+                    playerEventsAnalytics.getScreenAnalyticsState(),
+                    receiverAppId);
         }
 
 
@@ -188,17 +191,11 @@ public class JWPlayerActivity
 
         Bundle bundle = new Bundle();
         bundle.putSerializable(PLAYABLE_KEY, playable);
-        bundle.putBoolean(ENABLE_CHROMECAST_KEY, parseBoolean(params.get("Chromecast")));
+        bundle.putBoolean(JWPlayerAdapter.CAST_ENABLED_KEY, JWPlayerUtil.parseBoolean(params.get(JWPlayerAdapter.CAST_ENABLED_KEY)));
+        bundle.putString(JWPlayerAdapter.CAST_RECEIVER_APP_ID, params.get(JWPlayerAdapter.CAST_RECEIVER_APP_ID));
         intent.putExtras(bundle);
 
         context.startActivity(intent);
-    }
-
-    private static boolean parseBoolean(String s) {
-        if (s != null) {
-            return s.equalsIgnoreCase("true") || s.equalsIgnoreCase("1");
-        }
-        return false;
     }
 
     @Override

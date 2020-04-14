@@ -15,8 +15,8 @@
   "platform": "android",
   "author_name": "Alex Khomich",
   "author_email": "a.khomich@applicaster.com",
-  "manifest_version": "2.5.0",
-  "dependency_version": "2.5.0",
+  "manifest_version": "2.6.0",
+  "dependency_version": "2.6.0",
   "name": "JW Player",
   "description": "Android plugin for JWPlayer",
   "type": "player",
@@ -78,6 +78,11 @@
       "key": "Chromecast",
       "tooltip_text": "Enables Chromecast functionality and shows the cast button in the player controls",
       "default": 0
+    },
+    {
+      "type": "text",
+      "key": "Custom_Media_Receiver_ID",
+      "tooltip_text": "Provide the ID only if the customer has developed a Custom Media Receiver"
     }
   ],
   "hooks": {

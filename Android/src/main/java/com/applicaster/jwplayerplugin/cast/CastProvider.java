@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import androidx.annotation.Nullable;
 import androidx.mediarouter.app.MediaRouteButton;
 
 import com.applicaster.jwplayerplugin.JWPlayerContainer;
@@ -59,13 +60,16 @@ public class CastProvider {
         return castListenerOperator;
     }
 
-    public void init(Playable playable, AnalyticsData analyticsData, String screenAnalyticsState) {
+    public void init(Playable playable, AnalyticsData analyticsData, String screenAnalyticsState, @Nullable String receiverAppId) {
         //play services availability check and Chromecast init
         this.analyticsData = analyticsData;
         this.screenAnalyticsState = screenAnalyticsState;
         if (isGoogleApiAvailable(context)) {
             initMediaRouteButton();
             castContext = CastContext.getSharedInstance(context);
+            if (receiverAppId != null && !receiverAppId.isEmpty()) {
+                castContext.setReceiverApplicationId(receiverAppId);
+            }
             collectCastAnalyticsData(playable);
             castListenerOperator = new CastListenerOperator(playerView, analyticsData);
         }
