@@ -113,6 +113,13 @@ static JWCastingDevice *_connectedDevice;
     if (allowChromecast) {
         if (self.castController == nil) {
             self.castController = [[JWCastController alloc] initWithPlayer:self.player];
+            id customMediaReceiverID = _configurationJSON[@"Custom_Media_Receiver_ID"];
+            
+            if (customMediaReceiverID && [customMediaReceiverID isKindOfClass:[NSString class]]) {
+                if ([(NSString *)customMediaReceiverID length] != 0) {
+                    self.castController.chromeCastReceiverAppID = customMediaReceiverID;
+                }
+            }
             //self.castController.chromeCastReceiverAppID = kGCKDefaultMediaReceiverApplicationID;
             [self.castController scanForDevices];
         }
