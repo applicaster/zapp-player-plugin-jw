@@ -236,7 +236,7 @@ static JWCastingDevice *_connectedDevice;
 }
 
 - (void)setupPlayerAdvertisingWithConfiguration:(NSArray *)ads {
-    if ([ads isKindOfClass:NSArray.class] == false) {
+    if (ads != nil && [ads isKindOfClass:NSArray.class] == false) {
         return;
     }
     
