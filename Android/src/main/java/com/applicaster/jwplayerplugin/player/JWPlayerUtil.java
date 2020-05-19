@@ -24,7 +24,7 @@ import javax.annotation.CheckReturnValue;
 public class JWPlayerUtil {
     final static String EXTERNAL_PLAYER_MIDROLL_INTERVAL = "midroll_interval_external_player";
 
-    private static AdBreak postrollAdBreak;
+    private static AdBreak midrollAdBreak;
 
     public static PlaylistItem getPlaylistItem(Playable playable) {
         return getPlaylistItem(playable, null);
@@ -135,7 +135,7 @@ public class JWPlayerUtil {
     }
 
     public static AdBreak getConfigMidrollInterval() {
-        return postrollAdBreak;
+        return midrollAdBreak;
     }
 
     public static List<AdBreak> getPluginConfigurationAdScheduler(Playable playable, Map pluginConfiguration) {
@@ -146,14 +146,10 @@ public class JWPlayerUtil {
         if (pluginConfiguration != null) {
             if (playable.isLive()) {
                 String liveAdUrl = (String) pluginConfiguration.get("live_ad_url");
-                String liveAdType = (String) pluginConfiguration.get("live_ad_type");
 
                 try {
-                    AdSource liveAdSource = AdSource.valueByName(liveAdType);
-                    if (liveAdSource == AdSource.VAST) {
-                        AdBreak adBreak = new AdBreak("pre", liveAdSource, liveAdUrl); // "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator=");
-                        adSchedule.add(adBreak);
-                    }
+                    AdBreak adBreak = new AdBreak("pre", AdSource.VAST, liveAdUrl); // "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator=");
+                    adSchedule.add(adBreak);
                 } catch (Exception e) {
                 }
 
@@ -173,7 +169,7 @@ public class JWPlayerUtil {
                         }
 
                         if (StringUtil.isNotEmpty(vodMidAdUrl) && StringUtil.isNotEmpty(vodMidAdOffset)) {
-                            postrollAdBreak = new AdBreak(vodMidAdOffset, vodAdSource, vodMidAdUrl);
+                            midrollAdBreak = new AdBreak(vodMidAdOffset, vodAdSource, vodMidAdUrl);
                         }
                     }
                 } catch (Exception e) {
