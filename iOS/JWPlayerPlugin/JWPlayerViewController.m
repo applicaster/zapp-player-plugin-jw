@@ -40,7 +40,7 @@ NSString * const kJWPlayerPauseButton = @"jw_player_pause_button";
 @property (nonatomic) UIButton *castingButton;
 
 @property (nonatomic, strong) NSArray<JWCastingDevice *> *availableCastDevices;
-@property (nonatomic) BOOL shouldCreateFallbackMidrolls;
+@property (nonatomic) BOOL shouldCreateFallbackMidrollsFlag;
 @property (nonatomic, strong) NSMutableArray *fallbackMidrolls;
 @property (nonatomic) BOOL casting;
 
@@ -312,7 +312,7 @@ static JWCastingDevice *_connectedDevice;
             if (midRoll != nil) {
                 _fallbackMidrolls = [NSMutableArray new];
                 [_fallbackMidrolls addObject:midRoll];
-                _shouldCreateFallbackMidrolls = true;
+                _shouldCreateFallbackMidrollsFlag = true;
             }
         }
     }
@@ -523,8 +523,8 @@ static JWCastingDevice *_connectedDevice;
     CGFloat pos = [event position];
     CGFloat dur = [event duration];
    
-    if (_shouldCreateFallbackMidrolls) {
-        _shouldCreateFallbackMidrolls = false;
+    if (_shouldCreateFallbackMidrollsFlag) {
+        _shouldCreateFallbackMidrollsFlag = false;
         [self createFallbackMidrolls:dur];
     }
     
