@@ -10,7 +10,7 @@
   "platform": "ios",
   "author_name": "Roman Karpievich",
   "author_email": "r.karpievich@applicaster.com",
-  "manifest_version": "3.7.0",
+  "manifest_version": "3.8.0",
   "name": "JWPlayer",
   "description": "JW Player Plugin for Applicaster Zapp Platform",
   "type": "player",
@@ -18,7 +18,7 @@
   "identifier": "JWPlayer-Plugin",
   "ui_builder_support": true,
   "dependency_name": "JWPlayerPlugin",
-  "dependency_version": "3.7.0",
+  "dependency_version": "3.8.0",
   "whitelisted_account_ids": [],
   "min_zapp_sdk": "13.0.0-RC",
   "deprecated_since_zapp_sdk": "",
@@ -37,21 +37,6 @@
     },
     {
       "type": "text",
-      "key": "live_midroll_ad_url",
-      "tooltip_text": "Live midroll ad URL"
-    },
-    {
-      "type": "text",
-      "key": "live_midroll_offset",
-      "tooltip_text": "Live midroll ad offset"
-    },
-    {
-      "type": "text",
-      "key": "live_ad_type",
-      "tooltip_text": "Live ad type"
-    },
-    {
-      "type": "text",
       "key": "vod_preroll_ad_url",
       "tooltip_text": "VOD preroll ad URL"
     },
@@ -64,11 +49,6 @@
       "type": "text",
       "key": "vod_midroll_offset",
       "tooltip_text": "VOD midroll ad offset"
-    },
-    {
-      "type": "text",
-      "key": "vod_ad_type",
-      "tooltip_text": "VOD ad type"
     },
     {
       "type": "text",

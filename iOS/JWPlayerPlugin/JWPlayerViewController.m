@@ -40,6 +40,8 @@ NSString * const kJWPlayerPauseButton = @"jw_player_pause_button";
 @property (nonatomic) UIButton *castingButton;
 
 @property (nonatomic, strong) NSArray<JWCastingDevice *> *availableCastDevices;
+@property (nonatomic) BOOL shouldCreateFallbackMidrollsFlag;
+@property (nonatomic, strong) NSMutableArray *fallbackMidrolls;
 @property (nonatomic) BOOL casting;
 
 @end
@@ -289,21 +291,10 @@ static JWCastingDevice *_connectedDevice;
             // Grab live ad fallbackconfiguration
             JWAdBreak *preroll = [self createAdBreakWithTag:self.configurationJSON[@"live_preroll_ad_url"]
                                                      offset:@"pre"];
-            JWAdBreak *midRoll = [self createAdBreakWithTag:self.configurationJSON[@"live_midroll_ad_url"]
-                                                     offset:self.configurationJSON[@"live_midroll_offset"]];
-            
-            if ([self.configurationJSON[@"live_ad_type"]  isEqual: @"googleima"]) {
-                adConfig.client = JWAdClientGoogima;
-            } else {
-                adConfig.client = JWAdClientVast;
-            }
+            adConfig.client = JWAdClientGoogima;
             
             if (preroll != nil) {
                 [scheduleArray addObject:preroll];
-            }
-            
-            if (midRoll != nil) {
-                [scheduleArray addObject:midRoll];
             }
         } else {
             // Grab live ad fallbackconfiguration
@@ -312,18 +303,16 @@ static JWCastingDevice *_connectedDevice;
             JWAdBreak *midRoll = [self createAdBreakWithTag:self.configurationJSON[@"vod_midroll_ad_url"]
                                                      offset:self.configurationJSON[@"vod_midroll_offset"]];
             
-            if ([self.configurationJSON[@"vod_ad_type"]  isEqual: @"googleima"]) {
-                adConfig.client = JWAdClientGoogima;
-            } else {
-                adConfig.client = JWAdClientVast;
-            }
+            adConfig.client = JWAdClientGoogima;
             
             if (preroll != nil) {
                 [scheduleArray addObject:preroll];
             }
             
             if (midRoll != nil) {
-                [scheduleArray addObject:midRoll];
+                _fallbackMidrolls = [NSMutableArray new];
+                [_fallbackMidrolls addObject:midRoll];
+                _shouldCreateFallbackMidrollsFlag = true;
             }
         }
     }
@@ -533,6 +522,17 @@ static JWCastingDevice *_connectedDevice;
 -(void)onTime:(JWEvent<JWTimeEvent> *)event {
     CGFloat pos = [event position];
     CGFloat dur = [event duration];
+   
+    if (_shouldCreateFallbackMidrollsFlag) {
+        _shouldCreateFallbackMidrollsFlag = false;
+        [self createFallbackMidrolls:dur];
+    }
+    
+    NSString *tag = [self requestMiddrollFor:pos];
+    
+    if (tag != nil) {
+        [self.player playAd:tag onClient:self.player.config.advertising.client];
+    }
     
     if (dur >= 0) {
         self.analyticsStorage.duration = dur;
@@ -543,6 +543,35 @@ static JWCastingDevice *_connectedDevice;
     
     [self.analyticsStorage sendWithAnalyticsEvent:AnalyticsEventsPlay
                                             timed:true];
+}
+
+-(NSString *)requestMiddrollFor:(CGFloat) position {
+    NSString * result;
+    if (self.isLive || _fallbackMidrolls.count == 0) {
+        return result;
+    }
+    NSUInteger index = [_fallbackMidrolls indexOfObjectWithOptions:NSEnumerationReverse
+                                                       passingTest:^BOOL(id obj, NSUInteger i, BOOL *stop) {
+        CGFloat offset = [((JWAdBreak *)obj).offset floatValue];
+        return offset < position;
+    }];
+    
+    if (index != NSNotFound) {
+        result = ((JWAdBreak *)_fallbackMidrolls[index]).tag;
+        [_fallbackMidrolls removeObjectsInRange:NSMakeRange(0, index+1)];
+    }
+    return result;
+}
+
+-(void)createFallbackMidrolls:(CGFloat) duration {
+    JWAdBreak* pluginConfigMidroll = [_fallbackMidrolls lastObject];
+    [_fallbackMidrolls removeAllObjects];
+    NSInteger numberOfMidrolls = duration / [pluginConfigMidroll.offset floatValue];
+    for (int i = 0; i < numberOfMidrolls; i++) {
+        float offset = (i + 1) * [pluginConfigMidroll.offset floatValue];
+        JWAdBreak* midroll = [self createAdBreakWithTag:pluginConfigMidroll.tag offset:@(offset).stringValue];
+        [_fallbackMidrolls addObject:midroll];
+    }
 }
 
 -(void)onSeek:(JWEvent<JWSeekEvent> *)event {
