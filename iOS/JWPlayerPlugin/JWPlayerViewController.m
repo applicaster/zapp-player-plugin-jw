@@ -291,17 +291,10 @@ static JWCastingDevice *_connectedDevice;
             // Grab live ad fallbackconfiguration
             JWAdBreak *preroll = [self createAdBreakWithTag:self.configurationJSON[@"live_preroll_ad_url"]
                                                      offset:@"pre"];
-            JWAdBreak *midRoll = [self createAdBreakWithTag:self.configurationJSON[@"live_midroll_ad_url"]
-                                                     offset:self.configurationJSON[@"live_midroll_offset"]];
-            
             adConfig.client = JWAdClientGoogima;
             
             if (preroll != nil) {
                 [scheduleArray addObject:preroll];
-            }
-            
-            if (midRoll != nil) {
-                [scheduleArray addObject:midRoll];
             }
         } else {
             // Grab live ad fallbackconfiguration

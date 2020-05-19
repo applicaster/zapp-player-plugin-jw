@@ -37,21 +37,6 @@
     },
     {
       "type": "text",
-      "key": "live_midroll_ad_url",
-      "tooltip_text": "Live midroll ad URL"
-    },
-    {
-      "type": "text",
-      "key": "live_midroll_offset",
-      "tooltip_text": "Live midroll ad offset"
-    },
-    {
-      "type": "text",
-      "key": "live_ad_type",
-      "tooltip_text": "Live ad type"
-    },
-    {
-      "type": "text",
       "key": "vod_preroll_ad_url",
       "tooltip_text": "VOD preroll ad URL"
     },
@@ -64,11 +49,6 @@
       "type": "text",
       "key": "vod_midroll_offset",
       "tooltip_text": "VOD midroll ad offset"
-    },
-    {
-      "type": "text",
-      "key": "vod_ad_type",
-      "tooltip_text": "VOD ad type"
     },
     {
       "type": "text",
