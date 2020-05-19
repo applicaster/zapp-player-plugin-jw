@@ -1,15 +1,11 @@
-package com.applicaster.jwplayerplugin;
+package com.applicaster.jwplayerplugin.player;
 
 import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.applicaster.atom.helpers.MediaItemIdentifier;
 import com.applicaster.atom.model.APAtomEntry;
-import com.applicaster.player.VideoAdsUtil;
 import com.applicaster.plugin_manager.playersmanager.Playable;
-import com.applicaster.util.AppData;
 import com.applicaster.util.StringUtil;
 import com.longtailvideo.jwplayer.media.ads.AdBreak;
 import com.longtailvideo.jwplayer.media.ads.AdSource;
@@ -27,6 +23,8 @@ import javax.annotation.CheckReturnValue;
 @CheckReturnValue
 public class JWPlayerUtil {
     final static String EXTERNAL_PLAYER_MIDROLL_INTERVAL = "midroll_interval_external_player";
+
+    private static AdBreak postrollAdBreak;
 
     public static PlaylistItem getPlaylistItem(Playable playable) {
         return getPlaylistItem(playable, null);
@@ -117,10 +115,6 @@ public class JWPlayerUtil {
             adSchedule = getPluginConfigurationAdScheduler(playable, pluginConfiguration);
         }
 
-        if (adSchedule.size() == 0) {
-            adSchedule = getApplicasterAdScheduler(playable);
-        }
-
         return adSchedule;
     }
 
@@ -140,7 +134,11 @@ public class JWPlayerUtil {
 
     }
 
-    private static List<AdBreak> getPluginConfigurationAdScheduler(Playable playable, Map pluginConfiguration) {
+    public static AdBreak getConfigMidrollInterval() {
+        return postrollAdBreak;
+    }
+
+    public static List<AdBreak> getPluginConfigurationAdScheduler(Playable playable, Map pluginConfiguration) {
 
         // Create your ad schedule
         List<AdBreak> adSchedule = new ArrayList<>();
@@ -148,14 +146,14 @@ public class JWPlayerUtil {
         if (pluginConfiguration != null) {
             if (playable.isLive()) {
                 String liveAdUrl = (String) pluginConfiguration.get("live_ad_url");
-                String liveAdOffset = (String) pluginConfiguration.get("live_ad_offset");
                 String liveAdType = (String) pluginConfiguration.get("live_ad_type");
-
 
                 try {
                     AdSource liveAdSource = AdSource.valueByName(liveAdType);
-                    AdBreak adBreak = new AdBreak(liveAdOffset, liveAdSource, liveAdUrl); // "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator=");
-                    adSchedule.add(adBreak);
+                    if (liveAdSource == AdSource.VAST) {
+                        AdBreak adBreak = new AdBreak("pre", liveAdSource, liveAdUrl); // "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator=");
+                        adSchedule.add(adBreak);
+                    }
                 } catch (Exception e) {
                 }
 
@@ -168,14 +166,15 @@ public class JWPlayerUtil {
 
                 try {
                     AdSource vodAdSource = AdSource.valueByName(vodAdType);
-                    if (StringUtil.isNotEmpty(vodPreAdUrl)) {
-                        AdBreak adBreak = new AdBreak("pre", vodAdSource, vodPreAdUrl); // "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator=");
-                        adSchedule.add(adBreak);
-                    }
+                    if (vodAdSource == AdSource.VAST) {
+                        if (StringUtil.isNotEmpty(vodPreAdUrl)) {
+                            AdBreak adBreak = new AdBreak("pre", vodAdSource, vodPreAdUrl);// "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator=");
+                            adSchedule.add(adBreak);
+                        }
 
-                    if (StringUtil.isNotEmpty(vodMidAdUrl) && StringUtil.isNotEmpty(vodMidAdOffset)) {
-                        AdBreak postrollAdBreak = new AdBreak(vodMidAdOffset, vodAdSource, vodMidAdUrl);
-                        adSchedule.add(postrollAdBreak);
+                        if (StringUtil.isNotEmpty(vodMidAdUrl) && StringUtil.isNotEmpty(vodMidAdOffset)) {
+                            postrollAdBreak = new AdBreak(vodMidAdOffset, vodAdSource, vodMidAdUrl);
+                        }
                     }
                 } catch (Exception e) {
                 }
@@ -183,41 +182,6 @@ public class JWPlayerUtil {
         }
 
         return adSchedule;
-    }
-
-    private static List<AdBreak> getApplicasterAdScheduler(Playable playable) {
-
-        // Create your ad schedule
-        List<AdBreak> adSchedule = new ArrayList<>();
-
-        String imaPrerollAdUnit = VideoAdsUtil.getAccountPreroll(playable.isLive(), false);
-        AdBreak adBreak = new AdBreak("pre", AdSource.IMA, imaPrerollAdUnit); // "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator=");
-        adSchedule.add(adBreak);
-
-        String imaPostrollAdUnit = VideoAdsUtil.getAccountPostroll();
-        AdBreak postrollAdBreak = new AdBreak("post", AdSource.IMA, imaPostrollAdUnit);
-        adSchedule.add(postrollAdBreak);
-
-        String imaMidrollAdUnit = VideoAdsUtil.getAccountMidroll();
-        int breakInterval = getMidrollInterval(); //percentage
-        if (breakInterval > 0) {
-            for (int i = 1; breakInterval * i < 100; i++) {
-                AdBreak midrollAdBreak = new AdBreak(breakInterval * i + "%", AdSource.IMA, imaMidrollAdUnit);
-                adSchedule.add(midrollAdBreak);
-            }
-        }
-
-        return adSchedule;
-    }
-
-    private static int getMidrollInterval() {
-        int interval = 0;
-        try {
-            interval = (Integer.parseInt((String) AppData.getAPExtension(EXTERNAL_PLAYER_MIDROLL_INTERVAL)));
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-        }
-        return interval;
     }
 
     @Nullable

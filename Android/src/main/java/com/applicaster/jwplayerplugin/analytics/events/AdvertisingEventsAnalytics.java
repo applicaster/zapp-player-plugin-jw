@@ -74,8 +74,10 @@ public class AdvertisingEventsAnalytics
 
     @Override
     public void onAdMeta(AdMetaEvent adMetaEvent) {
-        analyticsData.setVideoAdType(getVideoAdType(adMetaEvent.getAdPosition()));
-        analyticsData.setAdUnit(adMetaEvent.getTag());
+        if (adMetaEvent != null) {
+            analyticsData.setVideoAdType(getVideoAdType(adMetaEvent.getAdPosition()));
+            analyticsData.setAdUnit(adMetaEvent.getTag());
+        }
     }
 
     @Override
