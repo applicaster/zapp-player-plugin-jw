@@ -5,16 +5,23 @@ import android.content.Context;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LifecycleObserver;
+
 import com.applicaster.controller.PlayerLoader;
+import com.applicaster.jwplayerplugin.ad.MidrollIntervalHandler;
 import com.applicaster.jwplayerplugin.analytics.AnalyticsData;
 import com.applicaster.jwplayerplugin.analytics.AnalyticsTypes;
 import com.applicaster.jwplayerplugin.analytics.events.AdvertisingEventsAnalytics;
 import com.applicaster.jwplayerplugin.analytics.events.PlayerEventsAnalytics;
 import com.applicaster.jwplayerplugin.cast.CastProvider;
+import com.applicaster.jwplayerplugin.player.Constants;
+import com.applicaster.jwplayerplugin.player.JWPlayerActivity;
+import com.applicaster.jwplayerplugin.player.JWPlayerContainer;
+import com.applicaster.jwplayerplugin.player.JWPlayerUtil;
+import com.applicaster.jwplayerplugin.player.PlayerViewState;
 import com.applicaster.player.PlayerLoaderI;
 import com.applicaster.player.defaultplayer.BasePlayer;
 import com.applicaster.plugin_manager.login.LoginContract;
@@ -26,7 +33,10 @@ import com.google.android.gms.cast.framework.CastState;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.core.PlayerState;
 import com.longtailvideo.jwplayer.events.ControlBarVisibilityEvent;
+import com.longtailvideo.jwplayer.events.FirstFrameEvent;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
+import com.longtailvideo.jwplayer.events.PlayEvent;
+import com.longtailvideo.jwplayer.events.TimeEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 import com.longtailvideo.jwplayer.fullscreen.FullscreenHandler;
 
@@ -40,14 +50,12 @@ public class JWPlayerAdapter
         implements FullscreenHandler,
                    VideoPlayerEvents.OnFullscreenListener,
                    VideoPlayerEvents.OnControlBarVisibilityListener,
-                   PluginScreen {
+                   VideoPlayerEvents.OnPlayListener,
+                    VideoPlayerEvents.OnFirstFrameListener,
+                   PluginScreen, LifecycleObserver {
+
 
     public static final String TAG = "JWPLAYER_DEBUG_KEY";
-    private static final String LICENSE_KEY = "LICENSE_KEY";
-    public static final String CAST_ENABLED_KEY = "Chromecast";
-    public static final String CAST_RECEIVER_APP_ID = "Custom_Media_Receiver_ID";
-
-
     // Properties
     private JWPlayerContainer jwPlayerContainer;
     private JWPlayerView jwPlayerView;
@@ -60,6 +68,11 @@ public class JWPlayerAdapter
 
     private PlayerEventsAnalytics playerEventsAnalytics;
     private AdvertisingEventsAnalytics advertisingEventsAnalytics;
+    private AnalyticsData analyticsData;
+
+    public static PlayerViewState previousViewState = PlayerViewState.INLINE;
+    public static double currentPlayerPosition = -1;
+    private boolean isAlreadySeekRequested = false;
 
     /**
      * Optional initialization for the PlayerContract - will be called in the App's onCreate
@@ -102,9 +115,9 @@ public class JWPlayerAdapter
     public void setPluginConfigurationParams(Map params) {
         super.setPluginConfigurationParams(params);
 
-        Object licenseKeyObj = params.get(LICENSE_KEY);
-        Object enableChromecastObj = params.get(CAST_ENABLED_KEY);
-        Object customMediaReceiverIdObj = params.get(CAST_RECEIVER_APP_ID);
+        Object licenseKeyObj = params.get(Constants.LICENSE_KEY);
+        Object enableChromecastObj = params.get(Constants.CAST_ENABLED_KEY);
+        Object customMediaReceiverIdObj = params.get(Constants.CAST_RECEIVER_APP_ID);
 
         if (licenseKeyObj != null)
             licenseKey = licenseKeyObj.toString();
@@ -146,6 +159,8 @@ public class JWPlayerAdapter
      */
     @Override
     public void playInFullscreen(PlayableConfiguration configuration, int requestCode, @NonNull Context context) {
+        previousViewState = PlayerViewState.FULLSCREEN;
+        getPluginConfigurationParams().put(Constants.PREVIOUS_VIEW_STATE, previousViewState);
         openLoginPluginIfNeeded(false);
     }
 
@@ -158,22 +173,32 @@ public class JWPlayerAdapter
      */
     @Override
     public void attachInline(@NonNull ViewGroup videoContainerView) {
+        initPlayer(videoContainerView);
+        initAnalyticsAdapters();
+        openLoginPluginIfNeeded(true);
+        initChromecast();
+    }
 
+    private void initPlayer(@NonNull ViewGroup videoContainerView) {
         jwPlayerContainer = new JWPlayerContainer(videoContainerView.getContext());
         jwPlayerView = jwPlayerContainer.getJWPlayerView();
-        jwPlayerView.setFullscreenHandler(this);
-        jwPlayerView.addOnFullscreenListener(this);
-        jwPlayerView.addOnControlBarVisibilityListener(this);
-
+        previousViewState = PlayerViewState.INLINE;
+        setPlayerListeners();
         ViewGroup.LayoutParams playerContainerLayoutParams
                 = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT
                 , ViewGroup.LayoutParams.MATCH_PARENT);
         videoContainerView.addView(jwPlayerContainer, playerContainerLayoutParams);
+    }
 
-        AnalyticsData analyticsData = new AnalyticsData(getFirstPlayable(), jwPlayerView);
-        playerEventsAnalytics = new PlayerEventsAnalytics(analyticsData, getFirstPlayable(), jwPlayerView);
-        advertisingEventsAnalytics = new AdvertisingEventsAnalytics(analyticsData, getFirstPlayable(), jwPlayerView);
+    private void setPlayerListeners() {
+        jwPlayerView.setFullscreenHandler(this);
+        jwPlayerView.addOnFullscreenListener(this);
+        jwPlayerView.addOnControlBarVisibilityListener(this);
+        jwPlayerView.addOnPlayListener(this);
+        jwPlayerView.addOnFirstFrameListener(this);
+    }
 
+    private void initChromecast() {
         if (this.context instanceof Activity && enableChromecast) {
             castProvider = new CastProvider((Activity) this.context, jwPlayerContainer);
             castProvider.init(
@@ -182,10 +207,13 @@ public class JWPlayerAdapter
                     AnalyticsTypes.PlayerView.INLINE,
                     receiverApplicationID
             );
-            castProvider.addSessionManagerListener();
         }
+    }
 
-        openLoginPluginIfNeeded(true);
+    private void initAnalyticsAdapters() {
+        analyticsData = new AnalyticsData(getFirstPlayable(), jwPlayerView);
+        playerEventsAnalytics = new PlayerEventsAnalytics(analyticsData, getFirstPlayable(), jwPlayerView);
+        advertisingEventsAnalytics = new AdvertisingEventsAnalytics(analyticsData, getFirstPlayable(), jwPlayerView);
     }
 
     /**
@@ -277,9 +305,10 @@ public class JWPlayerAdapter
     }
 
     protected void displayVideo(boolean isInline){
-
         if (isInline){
-            jwPlayerView.load( JWPlayerUtil.getPlaylistItem(getFirstPlayable(), getPluginConfigurationParams()));
+            jwPlayerView.load(JWPlayerUtil.getPlaylistItem(getFirstPlayable(), getPluginConfigurationParams()));
+            new MidrollIntervalHandler(jwPlayerView, JWPlayerUtil.getConfigMidrollInterval());
+            jwPlayerView.seek(currentPlayerPosition);
             jwPlayerView.play();
         }else {
             JWPlayerActivity.startPlayerActivity(getContext(), getFirstPlayable(), getPluginConfigurationParams());
@@ -298,33 +327,54 @@ public class JWPlayerAdapter
         }
     }
 
+    @Override
+    public void onFirstFrame(FirstFrameEvent firstFrameEvent) {
+        if (castProvider != null)
+            castProvider.addSessionManagerListener();
+    }
+
+    @Override
+    public void onPlay(PlayEvent playEvent) {
+        seekAfterScreenSwitch();
+    }
+
+    private void seekAfterScreenSwitch() {
+        if (currentPlayerPosition > 0 && !isAlreadySeekRequested) {
+            jwPlayerView.seek(currentPlayerPosition);
+            isAlreadySeekRequested = true;
+        }
+    }
+
     /************************** FullscreenHandler implementation ********************/
 
     @Override
     public void onFullscreenRequested() {
-        if (context instanceof Activity) {
-            ((Activity) context).getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            ((Activity) context).getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
-        }
-        jwPlayerContainer.setFitsSystemWindows(false);
-        jwPlayerView.setFullscreen(true, true);
+        currentPlayerPosition = jwPlayerView.getPosition();
+        getPluginConfigurationParams().put(Constants.PLAYER_CURRENT_POSITION, currentPlayerPosition);
+        getPluginConfigurationParams().put(Constants.PREVIOUS_VIEW_STATE, previousViewState);
+        jwPlayerView.stop();
+        displayVideo(false);
         Log.d(JWPlayerAdapter.TAG, "onFullscreenRequested");
     }
 
     @Override
     public void onFullscreenExitRequested() {
-        if (context instanceof Activity) {
-            ((Activity) context).getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
-            ((Activity) context).getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        }
-        jwPlayerContainer.setFitsSystemWindows(true);
-        jwPlayerView.setFullscreen(false, true);
+        handleExitFullscreen();
         Log.d(JWPlayerAdapter.TAG, "onFullscreenExitRequested");
     }
 
     @Override
     public void onResume() {
-        jwPlayerView.play();
+        handleExitFullscreen();
+        if (castProvider != null) castProvider.removeSessionManagerListener();
+    }
+
+    private void handleExitFullscreen() {
+        if (previousViewState == PlayerViewState.FULLSCREEN) {
+            displayVideo(true);
+            previousViewState = PlayerViewState.INLINE;
+            isAlreadySeekRequested = false;
+        }
     }
 
     @Override
@@ -357,7 +407,6 @@ public class JWPlayerAdapter
     }
 
     //region PluginScreen
-
     //Necessary to implement this method to allow prehooks, however this constructor is never called for a player
     @Override
     public void present(Context context, HashMap<String, Object> screenMap, Serializable dataSource, boolean isActivity) { }

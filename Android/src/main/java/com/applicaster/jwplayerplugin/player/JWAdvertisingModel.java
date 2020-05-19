@@ -1,4 +1,4 @@
-package com.applicaster.jwplayerplugin;
+package com.applicaster.jwplayerplugin.player;
 
 import com.google.gson.annotations.SerializedName;
 

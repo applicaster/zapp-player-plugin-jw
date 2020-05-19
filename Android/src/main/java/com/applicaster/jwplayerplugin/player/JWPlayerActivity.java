@@ -1,4 +1,4 @@
-package com.applicaster.jwplayerplugin;
+package com.applicaster.jwplayerplugin.player;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,12 +14,18 @@ import android.view.WindowManager;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.applicaster.jwplayerplugin.JWPlayerAdapter;
+import com.applicaster.jwplayerplugin.R;
+import com.applicaster.jwplayerplugin.ad.MidrollIntervalHandler;
 import com.applicaster.jwplayerplugin.analytics.AnalyticsData;
 import com.applicaster.jwplayerplugin.analytics.events.AdvertisingEventsAnalytics;
 import com.applicaster.jwplayerplugin.analytics.events.PlayerEventsAnalytics;
 import com.applicaster.jwplayerplugin.cast.CastProvider;
+import com.applicaster.jwplayerplugin.ad.AdState;
 import com.applicaster.jwplayerplugin.networkutil.NetworkChangeReceiver;
+import com.applicaster.jwplayerplugin.networkutil.NetworkState;
 import com.applicaster.jwplayerplugin.networkutil.NetworkUtil;
+import com.applicaster.player.defaultplayer.gmf.layeredvideo.VideoPlayer;
 import com.applicaster.plugin_manager.playersmanager.Playable;
 import com.applicaster.plugin_manager.playersmanager.internal.PlayersManager;
 import com.applicaster.zapp_automation.AutomationManager;
@@ -32,7 +38,10 @@ import com.longtailvideo.jwplayer.events.AdPlayEvent;
 import com.longtailvideo.jwplayer.events.ControlBarVisibilityEvent;
 import com.longtailvideo.jwplayer.events.ErrorEvent;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
+import com.longtailvideo.jwplayer.events.PlayEvent;
+import com.longtailvideo.jwplayer.events.ReadyEvent;
 import com.longtailvideo.jwplayer.events.SeekEvent;
+import com.longtailvideo.jwplayer.events.TimeEvent;
 import com.longtailvideo.jwplayer.events.listeners.AdvertisingEvents;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 
@@ -42,13 +51,12 @@ public class JWPlayerActivity
         extends AppCompatActivity
         implements VideoPlayerEvents.OnFullscreenListener,
         VideoPlayerEvents.OnControlBarVisibilityListener,
+        VideoPlayerEvents.OnPlayListener,
         VideoPlayerEvents.OnSeekListener,
         AdvertisingEvents.OnAdCompleteListener,
         AdvertisingEvents.OnAdPlayListener,
         VideoPlayerEvents.OnErrorListener,
         NetworkUtil.ConnectionAvailabilityCallback {
-
-    private static final String PLAYABLE_KEY = "playable";
 
     /**
      * Reference to the {@link JWPlayerView}
@@ -62,9 +70,11 @@ public class JWPlayerActivity
     private CastProvider castProvider;
     private NetworkChangeReceiver networkChangeReceiver;
 
-    private double playerPosition;
-
+    private double playerPosition = -1;
+    private PlayerViewState previousViewState = PlayerViewState.FULLSCREEN;
     private AdState adState = AdState.IDLE;
+    private NetworkState networkState = NetworkState.CONNECTED;
+    private boolean isAlreadySeekRequested = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,19 +83,15 @@ public class JWPlayerActivity
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
 
-        jwPlayerContainer = findViewById(R.id.playerView);
-        mPlayerView = jwPlayerContainer.getJWPlayerView();
-        mPlayerView.addOnFullscreenListener(this);
-        mPlayerView.addOnSeekListener(this);
-        mPlayerView.addOnAdPlayListener(this);
-        mPlayerView.addOnAdCompleteListener(this);
-        mPlayerView.addOnControlBarVisibilityListener(this);
-        mPlayerView.addOnErrorListener(this);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+       initPlayer();
 
-        playable = (Playable) getIntent().getSerializableExtra(PLAYABLE_KEY);
-        boolean enableChromecast = getIntent().getBooleanExtra(JWPlayerAdapter.CAST_ENABLED_KEY, false);
-        String receiverAppId = getIntent().getStringExtra(JWPlayerAdapter.CAST_RECEIVER_APP_ID);
+        playable = (Playable) getIntent().getSerializableExtra(Constants.PLAYABLE_KEY);
+        boolean enableChromecast = getIntent().getBooleanExtra(Constants.CAST_ENABLED_KEY, false);
+        String receiverAppId = getIntent().getStringExtra(Constants.CAST_RECEIVER_APP_ID);
+        previousViewState = PlayerViewState.fromOrdinal(
+                getIntent().getIntExtra(Constants.PREVIOUS_VIEW_STATE,
+                        PlayerViewState.FULLSCREEN.ordinal())
+        );
 
         //analytics data and events
         AnalyticsData analyticsData = new AnalyticsData(playable, mPlayerView);
@@ -93,14 +99,7 @@ public class JWPlayerActivity
         advertisingEventsAnalytics = new AdvertisingEventsAnalytics(analyticsData, playable, mPlayerView);
 
         //Initialize cast provider
-        if (enableChromecast) {
-            castProvider = new CastProvider(this, jwPlayerContainer);
-            castProvider.init(playable,
-                    analyticsData,
-                    playerEventsAnalytics.getScreenAnalyticsState(),
-                    receiverAppId);
-        }
-
+        initChromecast(enableChromecast, receiverAppId, analyticsData);
 
         Map configuration = null;
         if (PlayersManager.getCurrentPlayer() != null) {
@@ -111,7 +110,42 @@ public class JWPlayerActivity
 
         // Load a media source
         mPlayerView.load(JWPlayerUtil.getPlaylistItem(playable, configuration));
+        new MidrollIntervalHandler(mPlayerView, JWPlayerUtil.getConfigMidrollInterval());
+        playerPosition =
+                getIntent().getDoubleExtra(Constants.PLAYER_CURRENT_POSITION, -1);
+        mPlayerView.play();
         analyticsData.setItemDuration(mPlayerView);
+        if (previousViewState == PlayerViewState.INLINE)
+            mPlayerView.setFullscreen(true, true);
+    }
+
+    private void initPlayer() {
+        jwPlayerContainer = findViewById(R.id.playerView);
+        mPlayerView = jwPlayerContainer.getJWPlayerView();
+        setPlayerListeners();
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+    }
+
+    private void setPlayerListeners() {
+        mPlayerView.addOnFullscreenListener(this);
+        mPlayerView.addOnSeekListener(this);
+        mPlayerView.addOnAdPlayListener(this);
+        mPlayerView.addOnAdCompleteListener(this);
+        mPlayerView.addOnControlBarVisibilityListener(this);
+        mPlayerView.addOnErrorListener(this);
+        mPlayerView.addOnPlayListener(this);
+    }
+
+    private void initChromecast(boolean enableChromecast,
+                                String receiverAppId,
+                                AnalyticsData analyticsData) {
+        if (enableChromecast) {
+            castProvider = new CastProvider(this, jwPlayerContainer);
+            castProvider.init(playable,
+                    analyticsData,
+                    playerEventsAnalytics.getScreenAnalyticsState(),
+                    receiverAppId);
+        }
     }
 
     @Override
@@ -160,12 +194,23 @@ public class JWPlayerActivity
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         // Exit fullscreen when the user pressed the Back button
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (mPlayerView.getFullscreen()) {
+            if (mPlayerView.getFullscreen() && previousViewState == PlayerViewState.FULLSCREEN) {
                 mPlayerView.setFullscreen(false, true);
                 return false;
             }
+            if (mPlayerView.getFullscreen() && previousViewState == PlayerViewState.INLINE) {
+                setExitFullscreenData();
+                return super.onKeyDown(keyCode, event);
+            }
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    private void setExitFullscreenData() {
+        if (mPlayerView.getFullscreen())
+            mPlayerView.setFullscreen(false, true);
+        JWPlayerAdapter.previousViewState = PlayerViewState.FULLSCREEN;
+        JWPlayerAdapter.currentPlayerPosition = mPlayerView.getPosition();
     }
 
     /**
@@ -175,27 +220,56 @@ public class JWPlayerActivity
      */
     @Override
     public void onFullscreen(FullscreenEvent fullscreenEvent) {
+        if (castProvider != null)
+            castProvider.setScreenAnalyticsState(playerEventsAnalytics.getScreenAnalyticsState());
+        // When going to Fullscreen we want to set fitsSystemWindows="false"
+        jwPlayerContainer.setFitsSystemWindows(!fullscreenEvent.getFullscreen());
         if (fullscreenEvent.getFullscreen()) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         } else {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            if (previousViewState == PlayerViewState.INLINE) {
+                setExitFullscreenData();
+                finish();
+            } else {
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            }
         }
-        castProvider.setScreenAnalyticsState(playerEventsAnalytics.getScreenAnalyticsState());
-
-        // When going to Fullscreen we want to set fitsSystemWindows="false"
-        jwPlayerContainer.setFitsSystemWindows(!fullscreenEvent.getFullscreen());
     }
 
-    public static void startPlayerActivity(Context context, Playable playable, Map<String, String> params) {
+    public static void startPlayerActivity(Context context, Playable playable, Map<String, Object> params) {
         Intent intent = new Intent(context, JWPlayerActivity.class);
 
         Bundle bundle = new Bundle();
-        bundle.putSerializable(PLAYABLE_KEY, playable);
-        bundle.putBoolean(JWPlayerAdapter.CAST_ENABLED_KEY, JWPlayerUtil.parseBoolean(params.get(JWPlayerAdapter.CAST_ENABLED_KEY)));
-        bundle.putString(JWPlayerAdapter.CAST_RECEIVER_APP_ID, params.get(JWPlayerAdapter.CAST_RECEIVER_APP_ID));
-        intent.putExtras(bundle);
+        bundle.putSerializable(Constants.PLAYABLE_KEY, playable);
 
+        //Obtain configuration params
+        Object isCastEnabled = params.get(Constants.CAST_ENABLED_KEY);
+        if (isCastEnabled instanceof String)
+            bundle.putBoolean(Constants.CAST_ENABLED_KEY, JWPlayerUtil.parseBoolean(isCastEnabled.toString()));
+        Object castReceiverAppId = params.get(Constants.CAST_RECEIVER_APP_ID);
+        if (castReceiverAppId instanceof String)
+            bundle.putString(Constants.CAST_RECEIVER_APP_ID, (String)castReceiverAppId);
+        Object playerCurrentPosition = params.get(Constants.PLAYER_CURRENT_POSITION);
+        if (playerCurrentPosition != null)
+            bundle.putDouble(Constants.PLAYER_CURRENT_POSITION, (double)playerCurrentPosition);
+        Object playerViewState = params.get(Constants.PREVIOUS_VIEW_STATE);
+        if (playerViewState instanceof PlayerViewState)
+            bundle.putInt(Constants.PREVIOUS_VIEW_STATE, ((PlayerViewState)playerViewState).ordinal());
+
+        intent.putExtras(bundle);
         context.startActivity(intent);
+    }
+
+    @Override
+    public void onPlay(PlayEvent playEvent) {
+        seekAfterScreenSwitch();
+    }
+
+    private void seekAfterScreenSwitch() {
+        if (playerPosition > 0 && !isAlreadySeekRequested) {
+            mPlayerView.seek(playerPosition);
+            isAlreadySeekRequested = true;
+        }
     }
 
     @Override
@@ -238,11 +312,6 @@ public class JWPlayerActivity
         }
     }
 
-    private enum AdState {
-        PLAYING,
-        IDLE
-    }
-
     @Override
     public void onAdPlay(AdPlayEvent adPlayEvent) {
         adState = AdState.PLAYING;
@@ -270,7 +339,8 @@ public class JWPlayerActivity
 
     @Override
     public void onNetworkAvailable() {
-        if (mPlayerView.getState() == PlayerState.IDLE) {
+        if (mPlayerView.getState() == PlayerState.IDLE
+                && networkState == NetworkState.DISCONNECTED) {
             Map configuration = null;
             if (PlayersManager.getCurrentPlayer() != null) {
                 configuration = PlayersManager.getCurrentPlayer().getPluginConfigurationParams();
@@ -279,10 +349,12 @@ public class JWPlayerActivity
             mPlayerView.seek(playerPosition);
             mPlayerView.play();
         }
+        networkState = NetworkState.CONNECTED;
     }
 
     @Override
     public void onNetworkLost() {
+        networkState = NetworkState.DISCONNECTED;
         Log.e(this.getClass().getSimpleName(), "Network connection was lost!");
     }
 

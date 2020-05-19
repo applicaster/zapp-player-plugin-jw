@@ -12,7 +12,7 @@ import android.widget.FrameLayout;
 import androidx.annotation.Nullable;
 import androidx.mediarouter.app.MediaRouteButton;
 
-import com.applicaster.jwplayerplugin.JWPlayerContainer;
+import com.applicaster.jwplayerplugin.player.JWPlayerContainer;
 import com.applicaster.jwplayerplugin.R;
 import com.applicaster.jwplayerplugin.analytics.AnalyticsAdapter;
 import com.applicaster.jwplayerplugin.analytics.AnalyticsData;
