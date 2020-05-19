@@ -15,8 +15,8 @@
   "platform": "android",
   "author_name": "Alex Khomich",
   "author_email": "a.khomich@applicaster.com",
-  "manifest_version": "2.6.0",
-  "dependency_version": "2.6.0",
+  "manifest_version": "2.7.0",
+  "dependency_version": "2.7.0",
   "name": "JW Player",
   "description": "Android plugin for JWPlayer",
   "type": "player",
@@ -40,16 +40,6 @@
     },
     {
       "type": "text",
-      "key": "live_ad_type",
-      "tooltip_text": "Live Ad Type"
-    },
-    {
-      "type": "text",
-      "key": "live_ad_offset",
-      "tooltip_text": "Live Ad Offset"
-    },
-    {
-      "type": "text",
       "key": "vod_midroll_ad_url",
       "tooltip_text": "VOD Midroll URL"
     },
@@ -62,11 +52,6 @@
       "type": "text",
       "key": "vod_preroll_ad_url",
       "tooltip_text": "VOD Preroll URL"
-    },
-    {
-      "type": "text",
-      "key": "vod_ad_type",
-      "tooltip_text": "VOD Ad Type"
     },
     {
       "type": "checkbox",

@@ -4,7 +4,6 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import com.applicaster.jwplayerplugin.JWPlayerActivity;
 import com.google.android.gms.cast.CastMediaControlIntent;
 import com.google.android.gms.cast.LaunchOptions;
 import com.google.android.gms.cast.MediaMetadata;
