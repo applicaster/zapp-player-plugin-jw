@@ -237,29 +237,19 @@ static JWCastingDevice *_connectedDevice;
     [self.analyticsStorage parseParametersFrom:playableItem];
 }
 
-- (void)setupPlayerAdvertisingWithConfiguration:(NSArray *)ads {
-    if (ads != nil && [ads isKindOfClass:NSArray.class] == false) {
-        return;
-    }
-    
+- (void)setupPlayerAdvertisingWithConfiguration:(id)ads {
     JWAdConfig *adConfig = [self createBaseAdConfiguration];
     NSMutableArray *scheduleArray = [NSMutableArray new];
     
     if (ads != nil) {
-        // ad configuration dictionary scheduling
-        for (NSDictionary *adConfiguration in ads)
-        {
-            if ([adConfiguration isKindOfClass:NSDictionary.class] == false) {
-                continue;
-            }
-            
-            NSString *type = adConfiguration[@"type"];
-            
-            if ([type  isEqual: @"vmap"]) {
-                // we are using a vmap configuration that includes scheduling inside one url
-                adConfig.adVmap = adConfiguration[@"ad_url"];
-                break;
-            } else {
+        if ([ads isKindOfClass:NSString.class]) {
+            adConfig.adVmap = ads;
+        }
+        if ([ads isKindOfClass:NSArray.class]) {
+            for (NSDictionary *adConfiguration in ads) {
+                if ([adConfiguration isKindOfClass:NSDictionary.class] == false) {
+                    continue;
+                }
                 NSObject *rawOffset = adConfiguration[@"offset"];
                 NSString *convertedOffset = nil;
                 
