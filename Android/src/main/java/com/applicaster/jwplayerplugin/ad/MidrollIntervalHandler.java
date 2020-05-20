@@ -48,6 +48,11 @@ public class MidrollIntervalHandler
         }
     }
 
+    public void release() {
+        midrollInterval = -1;
+        previousAbBreakPositionIndex = -1;
+    }
+
     @Override
     public void onFirstFrame(FirstFrameEvent firstFrameEvent) {
         this.midrollInterval = Double.valueOf(adBreak.getOffset()).intValue();
