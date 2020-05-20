@@ -32,11 +32,11 @@ import com.applicaster.plugin_manager.screen.PluginScreen;
 import com.google.android.gms.cast.framework.CastState;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.core.PlayerState;
+import com.longtailvideo.jwplayer.events.CompleteEvent;
 import com.longtailvideo.jwplayer.events.ControlBarVisibilityEvent;
 import com.longtailvideo.jwplayer.events.FirstFrameEvent;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.PlayEvent;
-import com.longtailvideo.jwplayer.events.TimeEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 import com.longtailvideo.jwplayer.fullscreen.FullscreenHandler;
 
@@ -51,7 +51,8 @@ public class JWPlayerAdapter
                    VideoPlayerEvents.OnFullscreenListener,
                    VideoPlayerEvents.OnControlBarVisibilityListener,
                    VideoPlayerEvents.OnPlayListener,
-                    VideoPlayerEvents.OnFirstFrameListener,
+                   VideoPlayerEvents.OnFirstFrameListener,
+                   VideoPlayerEvents.OnCompleteListener,
                    PluginScreen, LifecycleObserver {
 
 
@@ -73,6 +74,7 @@ public class JWPlayerAdapter
     public static PlayerViewState previousViewState = PlayerViewState.INLINE;
     public static double currentPlayerPosition = -1;
     private boolean isAlreadySeekRequested = false;
+    private MidrollIntervalHandler midrollIntervalHandler;
 
     /**
      * Optional initialization for the PlayerContract - will be called in the App's onCreate
@@ -196,6 +198,7 @@ public class JWPlayerAdapter
         jwPlayerView.addOnControlBarVisibilityListener(this);
         jwPlayerView.addOnPlayListener(this);
         jwPlayerView.addOnFirstFrameListener(this);
+        jwPlayerView.addOnCompleteListener(this);
     }
 
     private void initChromecast() {
@@ -307,7 +310,7 @@ public class JWPlayerAdapter
     protected void displayVideo(boolean isInline){
         if (isInline){
             jwPlayerView.load(JWPlayerUtil.getPlaylistItem(getFirstPlayable(), getPluginConfigurationParams()));
-            new MidrollIntervalHandler(jwPlayerView, JWPlayerUtil.getConfigMidrollInterval());
+            midrollIntervalHandler = new MidrollIntervalHandler(jwPlayerView, JWPlayerUtil.getConfigMidrollInterval());
             jwPlayerView.seek(currentPlayerPosition);
             jwPlayerView.play();
         }else {
@@ -331,6 +334,14 @@ public class JWPlayerAdapter
     public void onFirstFrame(FirstFrameEvent firstFrameEvent) {
         if (castProvider != null)
             castProvider.addSessionManagerListener();
+    }
+
+    @Override
+    public void onComplete(CompleteEvent completeEvent) {
+        if (midrollIntervalHandler != null) {
+            midrollIntervalHandler.release();
+            midrollIntervalHandler = new MidrollIntervalHandler(jwPlayerView, JWPlayerUtil.getConfigMidrollInterval());
+        }
     }
 
     @Override

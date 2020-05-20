@@ -35,6 +35,7 @@ import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.core.PlayerState;
 import com.longtailvideo.jwplayer.events.AdCompleteEvent;
 import com.longtailvideo.jwplayer.events.AdPlayEvent;
+import com.longtailvideo.jwplayer.events.CompleteEvent;
 import com.longtailvideo.jwplayer.events.ControlBarVisibilityEvent;
 import com.longtailvideo.jwplayer.events.ErrorEvent;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
@@ -53,6 +54,7 @@ public class JWPlayerActivity
         VideoPlayerEvents.OnControlBarVisibilityListener,
         VideoPlayerEvents.OnPlayListener,
         VideoPlayerEvents.OnSeekListener,
+        VideoPlayerEvents.OnCompleteListener,
         AdvertisingEvents.OnAdCompleteListener,
         AdvertisingEvents.OnAdPlayListener,
         VideoPlayerEvents.OnErrorListener,
@@ -75,6 +77,7 @@ public class JWPlayerActivity
     private AdState adState = AdState.IDLE;
     private NetworkState networkState = NetworkState.CONNECTED;
     private boolean isAlreadySeekRequested = false;
+    private MidrollIntervalHandler midrollIntervalHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,7 +113,7 @@ public class JWPlayerActivity
 
         // Load a media source
         mPlayerView.load(JWPlayerUtil.getPlaylistItem(playable, configuration));
-        new MidrollIntervalHandler(mPlayerView, JWPlayerUtil.getConfigMidrollInterval());
+        midrollIntervalHandler = new MidrollIntervalHandler(mPlayerView, JWPlayerUtil.getConfigMidrollInterval());
         playerPosition =
                 getIntent().getDoubleExtra(Constants.PLAYER_CURRENT_POSITION, -1);
         mPlayerView.play();
@@ -134,6 +137,7 @@ public class JWPlayerActivity
         mPlayerView.addOnControlBarVisibilityListener(this);
         mPlayerView.addOnErrorListener(this);
         mPlayerView.addOnPlayListener(this);
+        mPlayerView.addOnCompleteListener(this);
     }
 
     private void initChromecast(boolean enableChromecast,
@@ -211,6 +215,14 @@ public class JWPlayerActivity
             mPlayerView.setFullscreen(false, true);
         JWPlayerAdapter.previousViewState = PlayerViewState.FULLSCREEN;
         JWPlayerAdapter.currentPlayerPosition = mPlayerView.getPosition();
+    }
+
+    @Override
+    public void onComplete(CompleteEvent completeEvent) {
+        if (midrollIntervalHandler != null) {
+            midrollIntervalHandler.release();
+            midrollIntervalHandler = new MidrollIntervalHandler(mPlayerView, JWPlayerUtil.getConfigMidrollInterval());
+        }
     }
 
     /**
