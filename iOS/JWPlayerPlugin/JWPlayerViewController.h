@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL isInlinePlayer;
 
 - (void)setupPlayerWithPlayableItem:(NSObject <ZPPlayable> *)playableItem;
-- (void)setupPlayerAdvertisingWithConfiguration:(NSArray *)ads;
+- (void)setupPlayerAdvertisingWithConfiguration:(id)ads;
 - (void)setupPlayerSubtitleTracksWithConfiguration:(NSArray *)subtitleTracks;
 - (void)addCastButtons;
 - (void)play;
